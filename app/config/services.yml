@@ -33,3 +33,11 @@ services:
     # AppBundle\Service\ExampleService:
     #     arguments:
     #         $someArgument: 'some_value'
+
+    user_bundle.couchbase_user_provider:
+        class: UserBundle\Service\CbUserProvider
+        arguments: ["@couchbase.connector"]
+
+    user_bundle.couchbase_user_manager:
+            class: UserBundle\Service\CbUserManager
+            arguments: ["@couchbase.connector",'@security.encoder_factory']
