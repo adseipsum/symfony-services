@@ -16,10 +16,10 @@
                 <input type="password" id="password" name="_password" required="required" />
                 <input type="checkbox" id="remember_me" name="_remember_me" value="on" />
                 <label for="remember_me">Remember Me</label>
-                <input type="submit" class="login login-submit" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
+                <input type="submit" class="login login-submit" id="_submit" name="_submit" value="Login" />
             </form>
             <div class="login-help">
-                <a href="{{ path('fos_user_registration_register') }}">Register</a> - <a href="{{ path('fos_user_resetting_request') }}">Forgot Password</a>
+                <a href="{{ path('fos_user_resetting_request') }}">Forgot Password</a>
             </div>
         </div>
     </form>
