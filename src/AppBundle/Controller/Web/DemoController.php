@@ -13,9 +13,58 @@ class DemoController extends Controller
      */
     public function indexAction(Request $request)
     {
-        // replace this example code with whatever you need
-        return $this->render('demo/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-        ]);
+
+        $params = [];
+        $params['base_dir'] = realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR;
+        $params['drug_name'] = '';
+        $params['drug_id'] = '';
+
+        return $this->render('demo/index.html.twig', $params);
+    }
+
+    /**
+     * @Route("/demo/result", name="app_demo_result")
+     */
+    public function resultAction(Request $request)
+    {
+        $drug_name = $request->request->has('drug_name')? $request->request->get('drug_name') : null;
+        $drug_id = $request->request->has('drug_id')? $request->request->get('drug_id') : null;
+
+        $pPython = "/usr/bin/python";
+        $pScript = "/home/dev/www/demo/text-generator";
+
+        $out_finished = '';
+        $cycles = 0;
+        while(true)
+        {
+            $cycles++;
+            $out_finished = '';
+            $output = '';
+            $command = "cd $pScript && $pPython $pScript/render.py drug_info_2" . " \"" . $_POST["drug_name"] . "\" " . $_POST["drug_id"];
+            exec("$command", $output);
+
+            $brCount = 0;
+            foreach($output as $line) {
+                $out_finished .= $line . "<br>";
+                $brCount++;
+            }
+
+            if (strpos($out_finished, "!!! Error input params !!!") !== false) {
+                break;
+            }
+
+            if ((strlen($out_finished) > 1000 + ($brCount * 3)) || $cycles > 30) {
+                break;
+            }
+        }
+
+        $params = [];
+        $params['base_dir'] = realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR;
+        $params['drug_name'] = $drug_name != null ? $drug_name  : '';
+        $params['drug_id'] = $drug_id != null ? $drug_id  : '';
+        $params['result'] = $out_finished;
+
+
+        return $this->render('demo/result.html.twig', $params);
     }
 }
