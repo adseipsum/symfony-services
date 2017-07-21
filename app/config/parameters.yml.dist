@@ -21,3 +21,7 @@ parameters:
     couchbase_environment: ~
     couchbase_uri: ~
     couchbase_bucket_password: ~
+
+    python_bin: ~
+    generator_home: ~
+    generator_work_dir: ~

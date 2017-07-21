@@ -30,8 +30,8 @@ class DemoController extends Controller
         $drug_name = $request->request->has('drug_name')? $request->request->get('drug_name') : null;
         $drug_id = $request->request->has('drug_id')? $request->request->get('drug_id') : null;
 
-        $pPython = "/usr/bin/python";
-        $pScript = "/home/dev/www/demo/text-generator";
+        $pPython = $this->getParameter('python_bin');
+        $pScript = $this->getParameter('generator_home');
 
         $out_finished = '';
         $cycles = 0;
