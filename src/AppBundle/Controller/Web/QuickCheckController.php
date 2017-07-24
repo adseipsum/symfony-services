@@ -119,7 +119,7 @@ class QuickCheckController extends Controller
 
     function getLine($text, $linenumber)
     {
-        $lines = split("\n",$text);
+        $lines = preg_split("/\\n/",$text);
         return $lines[$linenumber-1];
     }
 }
