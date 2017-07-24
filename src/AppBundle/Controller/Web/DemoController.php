@@ -33,9 +33,6 @@ class DemoController extends Controller
         $pPython = $this->getParameter('python_bin');
         $pScript = $this->getParameter('generator_home');
 
-        $tmpDir = $this->getParameter('generator_demo_tmp_dir');
-        $templateDir = $this->getParameter('generator_demo_template_dir');
-
         $command = "cd $pScript && $pPython $pScript/render.py -t drug_info_2";
 
         if($drug_name != null)

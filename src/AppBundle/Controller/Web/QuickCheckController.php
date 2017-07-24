@@ -15,6 +15,7 @@ class QuickCheckController extends Controller
     {
 
         return $this->render('quickcheck/index.html.twig', [
+            'template' => '',
             'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
         ]);
     }
@@ -24,23 +25,39 @@ class QuickCheckController extends Controller
      */
     public function resultAction(Request $request)
     {
-        $template = $request->request->has('template')? $request->request->get('template') : null;
+        $template = $request->request->has('template')? $request->request->get('template') : '';
 
         $pPython = $this->getParameter('python_bin');
         $pScript = $this->getParameter('generator_home');
 
-        $tmpDir = $this->getParameter('generator_tmp_dir');
-        $templateDir = $this->getParameter('generator_template_dir');
+        $userDir = $this->getParameter('generator_user_dir');
+        $baseTemplate = $this->getParameter('generator_quickcheck_base');
 
+        $username = $this->getUser()->getUsernameCanonical();
+
+        $tmpDir = "$userDir/$username/tmp";
+        $templateDir = "$userDir/$username/template";
+        $templateFile = "$userDir/$username/template/quickcheck/main.tpl";
+
+
+        $base_template_content = file_get_contents($baseTemplate);
+
+        file_put_contents($templateFile, $baseTemplate."\n".$template);
 
         $command = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -v -t quickcheck";
 
-        print_r($command);
-        exit();
-
+        exec($command, $output);
+        $out_finished = '';
+        $brCount = 0;
+        foreach($output as $line) {
+            $out_finished .= $line . "<br>";
+            $brCount++;
+        }
 
 
         $params = [];
+        $params['template'] = $template;
+        $params['result'] = $out_finished;
         $params['base_dir'] = realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR;
 
         return $this->render('quickcheck/result.html.twig', $params);

@@ -1,0 +1,13 @@
+{% extends 'base.main.html.twig' %}
+
+{% set active_menu = 'quickcheck' %}
+
+{% block content %}
+
+{% include 'quickcheck/form.html.twig' %}
+
+<div class="center-block container" style="padding-top: 20px">
+{{ result | raw }}
+</div>
+
+{% endblock %}
