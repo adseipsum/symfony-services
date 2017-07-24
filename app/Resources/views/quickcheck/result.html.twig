@@ -6,8 +6,22 @@
 
 {% include 'quickcheck/form.html.twig' %}
 
-<div class="center-block container" style="padding-top: 20px">
-{{ result | raw }}
+<div class="container">
+
+    <div class="row">
+        <label for="comment">Validation result:</label>
+        <textarea class="form-control" rows="5" id="comment">{{ result_validation }}</textarea>
+    </div>
+
+</div>
+
+<div class="container">
+
+    <div class="row">
+        <label for="comment">Generation result:</label>
+        <textarea class="form-control" rows="5" id="comment">{{ result }}</textarea>
+    </div>
+
 </div>
 
 {% endblock %}
