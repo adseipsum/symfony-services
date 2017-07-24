@@ -23,5 +23,6 @@ parameters:
     couchbase_bucket_password: ~
 
     python_bin: ~
-    generator_home: ~
-    generator_work_dir: ~
+    generator_bin: ~
+    generator_tmp_dir: ~
+    generator_template_dir: ~

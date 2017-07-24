@@ -4,21 +4,9 @@
 
 {% block content %}
 
-<div class="input-group center-block container">
-<form method="post" action="{{ path('app_demo_result') }}">
-    <div class="row">
-        <input type="text" style="width: 380px" placeholder="Название препарата"  name="drug_name" value="{{ drug_name }}"/>
-    </div>
-    <div class="row">
-        <input type="number" style="width: 380px" placeholder="Id препарата (оставьте пустым если ввели название)" name="drug_id" value="{{ drug_id }}"/>
-    </div>
-    <div class="row">
-        <input type="submit" value="Submit"/>
-    </div>
-</form>
-</div>
+{% include 'demo/form.html.twig' %}
 
-<div class="center-block container">
+<div class="center-block container" style="padding-top: 20px">
 {{ result | raw }}
 </div>
 

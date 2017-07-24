@@ -33,6 +33,20 @@ class DemoController extends Controller
         $pPython = $this->getParameter('python_bin');
         $pScript = $this->getParameter('generator_home');
 
+        $tmpDir = $this->getParameter('generator_demo_tmp_dir');
+        $templateDir = $this->getParameter('generator_demo_template_dir');
+
+        $command = "cd $pScript && $pPython $pScript/render.py -t drug_info_2";
+
+        if($drug_name != null)
+        {
+            $command = $command.' -dn '.$drug_name;
+        }
+        else if($drug_id != null)
+        {
+            $command = $command.' -di '.$drug_id;
+        }
+
         $out_finished = '';
         $cycles = 0;
         while(true)
@@ -40,7 +54,7 @@ class DemoController extends Controller
             $cycles++;
             $out_finished = '';
             $output = '';
-            $command = "cd $pScript && $pPython $pScript/render.py drug_info_2" . " \"" . $_POST["drug_name"] . "\" " . $_POST["drug_id"];
+
             exec("$command", $output);
 
             $brCount = 0;
