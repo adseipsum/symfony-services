@@ -78,7 +78,7 @@ class QuickCheckController extends Controller
             }
             else {
                 $validate_ok = false;
-                preg_match_all('/\(([0-9\:]+?)\)/', $line, $errors);
+                preg_match_all('/\(([0-9\:\~\?]+?)\)/', $line, $errors);
 
                 foreach ($errors as $error)
                 {
