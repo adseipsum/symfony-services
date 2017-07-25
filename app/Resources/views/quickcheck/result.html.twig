@@ -6,14 +6,30 @@
 
 {% include 'quickcheck/form.html.twig' %}
 
-<div class="container">
-
+{% if validation_status == false %}
+<div class="container" style="padding-top: 15px">
     <div class="row">
-        <label for="comment">Validation result:</label>
-        <textarea class="form-control" rows="5" id="comment">{{ result_validation }}</textarea>
+        <label>Validation result:</label>
+    </div>
+
+
+    {% for line in validation_lines %}
+        {% if line.is_valid == true %}
+        <div class="row" style="background-color: #4cae4c">
+        {% else %}
+        <div class="row" style="background-color: #c9302c">
+        {% endif %}
+            {{ line.text }}
+        </div>
+    {% endfor %}
+
+    <div class="row" style="padding-top: 15px">
+        <label for="comment">Error detail:</label>
+        <textarea class="form-control" rows="5" id="comment">{{ validation_text }}</textarea>
     </div>
 
 </div>
+{% else %}
 
 <div class="container">
 
@@ -23,5 +39,7 @@
     </div>
 
 </div>
+
+{% endif %}
 
 {% endblock %}

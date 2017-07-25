@@ -51,10 +51,25 @@ class QuickCheckController extends Controller
 
         exec($command_validate, $output_validate);
 
-        $validate_ok = false;
+        $validate_ok = true;
 
         $out_validate_finished = '';
 
+        $template_text_lines = preg_split("/\\n/", $template);
+        $template_lines = [];
+        $first_line = $this->getLineCount($base_template_content);
+        $count = 0;
+
+        foreach ($template_text_lines as $line)
+        {
+            $elem['linenum'] = $first_line+$count;
+            $elem['text'] = $line;
+            $elem['is_valid'] = true;
+            $template_lines[] = $elem;
+            $count++;
+        }
+
+        $out_validate_text = '';
 
         foreach($output_validate as $line) {
             if(strpos($line, 'TemplateRenderException:') === false)
@@ -62,16 +77,29 @@ class QuickCheckController extends Controller
                 // do nothing, wierd logic when match at 0 position != false is true, but === false is false
             }
             else {
-                $linenum = $this->getLineNumber($line);
-                $out_validate_finished .= '>'.$this->getLine($combined_template_content, $linenum)."\n";
-                $out_validate_finished .= $this->getStripedError($line) . "\n";
+                $validate_ok = false;
+                preg_match_all('/\(([0-9\:]+?)\)/', $line, $errors);
+
+                foreach ($errors as $error)
+                {
+                    $pos = preg_split("/\:/",$error[0]);
+                    $linenum = intval(str_replace('(','',$pos[0]));
+
+                    $linenum--;
+
+                    foreach ($template_lines as &$tline)
+                    {
+                        if($tline['linenum']== $linenum)
+                        {
+                            $tline['is_valid'] = false;
+                        }
+                    }
+                }
+                $out_validate_text = $line."\n";
             }
         }
 
-        $out_finished = 'ERROR';
-
-
-        if(strlen($out_validate_finished) == 0)
+        if($validate_ok == true)
         {
             $out_finished = '';
             $command = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -t quickcheck";
@@ -84,17 +112,27 @@ class QuickCheckController extends Controller
                 $brCount++;
             }
         }
-
+        else {
+            $out_finished = 'ERROR';
+        }
 
         $params = [];
         $params['template'] = $template;
         $params['result'] = $out_finished;
-        $params['result_validation'] = $out_validate_finished;
+        $params['validation_lines'] = $template_lines;
+        $params['validation_text'] = $out_validate_text;
+        $params['validation_status'] = $validate_ok;
+
+
 
         $params['base_dir'] = realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR;
 
         return $this->render('quickcheck/result.html.twig', $params);
     }
+
+
+    // Helpers
+
 
     function getLineNumber($line)
     {
@@ -121,5 +159,11 @@ class QuickCheckController extends Controller
     {
         $lines = preg_split("/\\n/",$text);
         return $lines[$linenumber-1];
+    }
+
+    function getLineCount($text)
+    {
+        $lines = preg_split("/\\n/",$text);
+        return count($lines);
     }
 }
