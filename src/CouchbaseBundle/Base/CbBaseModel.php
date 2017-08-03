@@ -88,8 +88,6 @@ abstract class CbBaseModel
         return $this->prefix.CbBaseModel::KEY_SEPARATOR.CbBaseModel::SUFFIX_COUNTER;
     }
 
-
-
     public function id_next()
     {
         if($this->sequence_initialized == false)

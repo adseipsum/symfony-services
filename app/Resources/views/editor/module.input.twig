@@ -1,0 +1,47 @@
+<div class="container-fluid">
+    <h4>Блоки спиннера</h4>
+    <div class="row pre-scrollable">
+        <div class="panel-group" id="blocklist">
+
+            {% for block in blocklist %}
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        {% if  block.type != 'newblock' %}
+
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#blocklist" href="#blocklist-collapse{{ block.index }}">
+                                ({{ block.index }}) - {{ block.name }}</a>
+                        </h4>
+                        {% else %}
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#blocklist" href="#blocklist-collapse{{ block.index }}">
+                                 {{ block.name }}</a>
+                            </h4>
+                        {% endif %}
+                    </div>
+                    <div id="blocklist-collapse{{ block.index }}" class="panel-collapse collapse">
+                        <div class="panel-body">
+
+                            {%if block.type == 'database'  %}
+                                {% include 'editor/block/block.database.twig' %}
+                            {% elseif  block.type == 'newblock' %}
+                                {% include 'editor/block/block.newblock.twig' %}
+                            {% elseif  block.type == 'static' %}
+                                {% include 'editor/block/block.statictext.twig' %}
+                            {% elseif  block.type == 'spinsentence' %}
+                                {% include 'editor/block/block.spinsentence.twig' %}
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+
+    </div>
+    <div class="row">
+        <input type="button" class="btn-primary" value="Update"/>
+    </div>
+</div>

@@ -15,7 +15,7 @@ Encore
     .addEntry('app', './web-src/js/main.js')
 
     // will output as web/build/global.css
-    .addStyleEntry('global', './web-src/css/global.sass')
+    .addStyleEntry('global', './web-src/css/global.scss')
 
     // allow sass/scss files to be processed
     .enableSassLoader()
@@ -27,6 +27,8 @@ Encore
 
     // create hashed filenames (e.g. app.abc123.css)
     // .enableVersioning()
+
+    // http://querybuilder.js.org/
 ;
 
 // export the final configuration

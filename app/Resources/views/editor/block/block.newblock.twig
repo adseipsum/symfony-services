@@ -1,0 +1,26 @@
+<div class="panel-body form-group">
+    <div class="row">
+        <label for="newblocktype">Тип блока</label>
+        <select class="form-control" id="newblocktype">
+            <option value="spinsentence">Спиннер предложения</option>
+            <option value="static">Статический текст</option>
+            <option value="for">Цикл (for)</option>
+            <option value="if">Блок с условием(if)</option>
+            <option value="switch">Блок выбора из значений (switch)</option>
+        </select>
+    </div>
+
+    <div class="row">
+        <label for="newblockposition">Позиция блока, следующий после:</label>
+        <select class="form-control" id="newblockposition">
+        {% for block in blocklist %}
+            {% if block.type != 'newblock' %}
+            <option {% if loop.index == loop.length-1 %} selected {% endif %} value="{{ block.index }}">({{ block.index }}) {{ block.name }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    </div>
+    <div class="row">
+        <button type="submit" class="btn btn-default">Добавить</button>
+    </div>
+</div>

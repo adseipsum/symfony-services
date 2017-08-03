@@ -1,0 +1,105 @@
+@import '~bootstrap-sass/assets/stylesheets/bootstrap';
+
+body{
+  padding-top: 70px;
+}
+
+// Main Cell modules
+.module-rawtext {
+  height: 250px;
+  margin-left: 10px
+}
+
+.module-input {
+  border: 1px solid #9d9d9d;
+  border-radius: 3px;
+  margin-right: 5px;
+
+  .row {
+    padding: 5px;
+  }
+}
+
+.panel-body {
+  .row {
+    padding: 5px;
+  }
+}
+
+
+.module-output {
+  height: 300px;
+}
+
+// Right Cell modules
+.module-filesystem {
+  height: 250px;
+}
+
+.module-dictonary {
+  border: 1px solid #9d9d9d;
+  border-radius: 3px;
+  margin-right: 5px;
+
+  .action-icon-delete {
+    float: right;
+    color: black;
+  }
+
+h4 {
+}
+.row {
+  padding: 5px;
+}
+
+.pre-scrollable {
+  max-height: 270px;
+  height: 270px;
+  overflow-y: scroll;
+  textarea {
+    resize:none;
+  }
+}
+
+}
+
+
+.btn-blue {
+  background-color: #0000fe;
+}
+
+// Confirm loading
+
+.modal.loading .modal-content:before {
+  content: 'Processing...';
+  text-align: center;
+  line-height: 155px;
+  font-size: 20px;
+  background: rgba(0, 0, 0, .8);
+  position: absolute;
+  top: 55px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: #EEE;
+  z-index: 1000;
+}
+
+.modal {
+  text-align: center;
+}
+
+@media screen and (min-width: 768px) {
+  .modal:before {
+    display: inline-block;
+    vertical-align: middle;
+    content: " ";
+    height: 100%;
+  }
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
