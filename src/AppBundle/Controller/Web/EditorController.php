@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller\Web;
 
+use AppBundle\Extension\DictionaryExtension;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,11 +15,12 @@ class EditorController extends Controller
     public function indexAction(Request $request)
     {
 
+        $username = $this->getUser()->getUsernameCanonical();
+        $template = 'default';
+        $userdir = $this->getParameter('generator_user_dir');
 
-        $dict = [];
-        $dict['run'] = implode("\n", ['run','process', 'handle', 'get trough']);
-        $dict['amazing'] = implode("\n", ['amazing','wonderfull', 'outstanding', 'fantastic', 'very good']);
-        $dict['bad'] = implode("\n", ['bad', 'poor', 'creepy']);
+        $extDict = new DictionaryExtension($userdir, $username, $template);
+        $dict = $extDict->getGlobalDictonary();
 
 
         $blocks = [];

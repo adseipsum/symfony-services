@@ -3,37 +3,27 @@
 {% set active_menu = 'editor' %}
 
 {% block content %}
-    <div class="container-fluid">
+    <div class="container">
         <div class="row" >
-            <!-- Main Cell -->
-             <div class="col-md-9">
-                 <div class="container-fluid">
-                     <div class="row">
-                         {% include 'editor/module.rawtext.twig' %}
-                     </div>
-                     <div class="row" style="margin-top: 10px">
-                         {% include 'editor/module.input.twig' %}
-                     </div>
-                     <div class="row" style="margin-top: 10px">
-                         {% include 'editor/module.output.twig' %}
-                     </div>
-                 </div>
+            <!-- Left Main Cell -->
+             <div class="col-md-5 no-float">
+                {% include 'editor/module.info.twig' %}
+             </div>
+
+            <!-- Right Main Cell -->
+            <div class="col-md-5 no-float">
+                {% include 'editor/module.input.twig' %}
             </div>
 
 
-        <!-- Right Cell -->
-            <div class="col-md-3">
-                <div class="container-fluid">
-                    <div class="row">
-                        {% include 'editor/module.filestystem.twig' %}
-                    </div>
-                    <div class="row">
+            <!-- Right Cell -->
+            <div class="col-md-2 no-float">
                     {% include 'editor/module.dictonary.twig' %}
-                    </div>
-                </div>
             </div>
 
         </div>
     </div>
+
+    {% include 'editor/dialogs.twig' %}
 
 {% endblock %}

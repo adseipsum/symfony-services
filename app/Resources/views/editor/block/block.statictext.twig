@@ -1,12 +1,14 @@
 <div class="panel-body">
-    <div class="row">
-        <label for="name">Тип блока</label>
-        <select class="form-control" id="newblocktype">
-            <option value="spinsentence">Спиннер предложения</option>
-            <option value="static">Статический текст</option>
-            <option value="for">Цикл (for)</option>
-            <option value="if">Блок с условием(if)</option>
-            <option value="switch">Блок выбора из значений (switch)</option>
-        </select>
-    </div>
+
+        <label for="spin_block_name_sq">Название блока</label>
+        <input id="spin_block_name_sq" type="text" class="form-control"  value="Intro">
+
+        <label for="spin_block_value_sq">Контент</label>
+        <textarea id="spin_block_value_sq" rows="6" class="block-value form-control noresize"></textarea>
+
+        <div class="button-row">
+            <input type="button" class="block-generate btn btn-info" value="Generate"/>
+            <input type="button" class="block-update btn btn-primary" value="Update"/>
+        </div>
+
 </div>

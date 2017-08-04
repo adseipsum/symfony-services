@@ -1,7 +1,11 @@
-api:
+web:
     resource: '@AppBundle/Controller/Web'
     type: annotation
     prefix: '/'
+api:
+    resource: '@AppBundle/Controller/Api'
+    type: annotation
+    prefix: '/api/'
 
 #user_auth:
 #    resource: '@UserBundle/Controller/'

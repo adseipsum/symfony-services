@@ -1,12 +1,17 @@
 <div class="panel-body form-group">
     <div class="row">
+        <label for="newblockname">Название блока</label>
+        <input type="text" class="form-control" id="newblockname">
+    </div>
+
+    <div class="row">
         <label for="newblocktype">Тип блока</label>
         <select class="form-control" id="newblocktype">
             <option value="spinsentence">Спиннер предложения</option>
             <option value="static">Статический текст</option>
-            <option value="for">Цикл (for)</option>
-            <option value="if">Блок с условием(if)</option>
-            <option value="switch">Блок выбора из значений (switch)</option>
+            <option value="for" disabled>Цикл (for)</option>
+            <option value="if" disabled>Блок с условием(if)</option>
+            <option value="switch" disabled>Блок выбора из значений (switch)</option>
         </select>
     </div>
 
@@ -21,6 +26,6 @@
     </select>
     </div>
     <div class="row">
-        <button type="submit" class="btn btn-default">Добавить</button>
+        <button type="submit" class="form-control btn btn-primary">Добавить</button>
     </div>
 </div>
