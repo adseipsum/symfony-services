@@ -4,9 +4,11 @@
 
 
 
-<div class="container-fluid module-dictonary">
-    <h4>Словарь</h4>
-    <div class="row form-group">
+<div class="module-dictonary">
+    <div class="head-row">
+        <h4>Словарь</h4>
+    </div>
+    <div class="search-row form-group">
         <label class="sr-only" for="dictonary_search_bar">Search</label>
         <div class="input-group">
             <div class="input-group-addon">$</div>
@@ -16,13 +18,15 @@
             </span>
         </div>
     </div>
-    <div class="row pre-scrollable" style="background-color: #FAFAFA;">
-        <div class="panel-group" id="accordion_dictonary">
-            {# UPDATE DYNAMICALY #}
-        </div>
+    <div class="accordion-data-row">
+        <div class="pre-scrollable" style="background-color: #FAFAFA;">
+            <div class="panel-group" id="accordion_dictonary">
+                {# UPDATE DYNAMICALY #}
+            </div>
 
+         </div>
      </div>
-    <div class="row">
+    <div class="button-row">
         <input id="btn-dict-update" type="button" class="btn btn-primary" value="Update"/>
     </div>
 </div>

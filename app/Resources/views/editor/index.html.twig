@@ -3,22 +3,27 @@
 {% set active_menu = 'editor' %}
 
 {% block content %}
-    <div class="container">
-        <div class="row" >
+    <div class="container-fluid">
+        <div class="row" style="padding-left: 0px; padding-right: 3px">
             <!-- Left Main Cell -->
-             <div class="col-md-5 no-float">
+             <div class="col-md-4 no-float" style="padding-right: 3px">
                 {% include 'editor/module.info.twig' %}
              </div>
 
             <!-- Right Main Cell -->
-            <div class="col-md-5 no-float">
+            <div class="col-md-6 no-float" style="padding-left: 3px; padding-right: 3px">
                 {% include 'editor/module.input.twig' %}
             </div>
 
 
             <!-- Right Cell -->
-            <div class="col-md-2 no-float">
+            <div class="col-md-2 no-float" style="padding-left: 3px; padding-right: 3px">
+                <div>
+                    {% include 'editor/module.filesystem.twig' %}
+                </div>
+                <div style="margin-top: 5px">
                     {% include 'editor/module.dictonary.twig' %}
+                </div>
             </div>
 
         </div>
