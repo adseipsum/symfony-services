@@ -16,20 +16,22 @@ $(document).ready(function() {
 
     $.fn.spinblock_add_recalculate_options = function()
     {
-        $('#select-newblockposition option').empty();
+        $('#select-newblockposition').empty();
 
         var output = [];
         for (i=0; i<spinblock_data.length; i++)
         {
             if(spinblock_data[i].type != 'newblock')
             {
-                $('#select-newblockposition').append($('<option>',
+                if(i == spinblock_data.length-2)
                 {
-                    value: spinblock_data[i].index,
-                    text : '(' + spinblock_data[i].index + ') - '+spinblock_data[i].name
-                }));
-
-//                output[output.length] = '<option value="' + (spinblock_data[i].index+1) + '"></option>';
+                    $('#select-newblockposition').append('<option value='+spinblock_data[i].index+' selected>'
+                        + '(' + spinblock_data[i].index + ') - ' + spinblock_data[i].name + '</option>');
+                }
+                else {
+                    $('#select-newblockposition').append('<option value='+spinblock_data[i].index+'>'
+                        + '(' + spinblock_data[i].index + ') - ' + spinblock_data[i].name + '</option>');
+                }
             }
         }
         //console.log(output.join(''));
@@ -140,6 +142,7 @@ $(document).ready(function() {
                 var action = $(this).data('action');
                 var eListGroup = $( this ).closest( ".panel-body").find('.list-group');
 
+                alert('!!1');
             });
         }
 
