@@ -3,7 +3,7 @@
 namespace AppBundle\Controller\Api;
 
 use AppBundle\Extension\ApiResponse;
-use AppBundle\Extension\DictionaryExtension;
+use AppBundle\Extension\EditorExtension;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -24,7 +24,7 @@ class EditorDictionaryController extends Controller
         }
 
 
-        $extDict = new DictionaryExtension($this->getParameter('generator_user_dir'), $username, $template);
+        $extDict = new EditorExtension($this->getParameter('generator_user_dir'), $username, $template);
 
         return ApiResponse::resultValues($extDict->getGlobalDictonary());
 
@@ -41,7 +41,7 @@ class EditorDictionaryController extends Controller
         {
             return ApiResponse::resultUnauthorized();
         }
-        $extDict = new DictionaryExtension($this->getParameter('generator_user_dir'), $username, $template);
+        $extDict = new EditorExtension($this->getParameter('generator_user_dir'), $username, $template);
 
         $data = json_decode($request->getContent(), true);
         /*

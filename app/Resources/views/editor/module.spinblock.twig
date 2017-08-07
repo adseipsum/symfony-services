@@ -1,0 +1,37 @@
+<script type="text/javascript">
+    var page_spinblock_data = {{ blocklist_json |raw}};
+</script>
+
+
+<div class="module-spinblock">
+    <div class="head-row">
+        <h4>Блоки спиннера</h4>
+    </div>
+    <div class="accordion-row">
+        <div class="pre-scrollable">
+            <div class="panel-group" id="spinblock-element-panel">
+
+                {% for block in blocklist %}
+
+                    {%if block.type == 'database'  %}
+                        {% include 'editor/block/block.database.twig' %}
+                    {% elseif  block.type == 'newblock' %}
+                        {% include 'editor/block/block.newblock.twig' %}
+                    {% endif %}
+
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+    <div class="button-row">
+        <input type="button" class="btn btn-primary" value="Update"/>
+    </div>
+</div>
+
+
+{# templates #}
+
+
+ {% include 'editor/block/block.statictext.twig' %}
+ {% include 'editor/block/block.spinsentence.twig' %}

@@ -1,14 +1,35 @@
-<div class="panel-body">
+<div class="panel panel-default hidden" id="spinblock-element-statictext-template">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a class="title-collapse-href" data-toggle="collapse" data-parent="#spinblock-element-panel" href="#blocklist-collapse-bidx">bname</a>
 
-        <label for="spin_block_name_sq">Название блока</label>
-        <input id="spin_block_name_sq" type="text" class="form-control"  value="Intro">
+            <a href="#" class="title-delete-href"
+               data-record-id="acd_0_t"
+               data-record-title="{key}"
+               data-href="#"
+               data-toggle="modal" data-target="#dialog-spinblock-confirm-delete">
+                    <i class="action-icon-delete glyphicon glyphicon-trash"></i>
+            </a>
+        </h4>
+    </div>
 
-        <label for="spin_block_value_sq">Контент</label>
-        <textarea id="spin_block_value_sq" rows="6" class="block-value form-control noresize"></textarea>
+    <div id="blocklist-collapse-bidx" class="panel-collapse collapse">
+        <div class="panel-body" >
+            <form class="form-inline">
+                <label for="spin-block-name-sq"> Название блока </label>
 
-        <div class="button-row">
-            <input type="button" class="block-generate btn btn-info" value="Generate"/>
-            <input type="button" class="block-update btn btn-primary" value="Update"/>
+                <div class="input-group">
+                    <input id="spin-block-name-sq" type="text" class="form-control block-name" style="min-width: 300px" value="">
+                </div>
+                <input type="button" class="button-block-generate btn btn-info"  value="Test"/>
+                <input type="button" class="button-block-update btn btn-primary" value="Update"/>
+            </form>
+            <div class="element-content-row">
+                <label for="spin_block_value_sq">Контент</label>
+            </div>
+            <div class="element-content-row">
+                <textarea id="spin_block_value_sq" rows="6" class="block-value form-control noresize"></textarea>
+            </div>
         </div>
-
+    </div>
 </div>

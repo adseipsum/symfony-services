@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller\Web;
 
-use AppBundle\Extension\DictionaryExtension;
+use AppBundle\Extension\EditorExtension;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +19,7 @@ class EditorController extends Controller
         $template = 'default';
         $userdir = $this->getParameter('generator_user_dir');
 
-        $extDict = new DictionaryExtension($userdir, $username, $template);
+        $extDict = new EditorExtension($userdir, $username, $template);
         $dict = $extDict->getGlobalDictonary();
 
 
@@ -28,7 +28,7 @@ class EditorController extends Controller
         // Datablock
         $block = [];
         $block['name'] = 'Database block';
-        $block['type'] = 'database';
+        $block['type'] = EditorExtension::BLOCK_DATABASE;
         $block['variables'] = [];
 
         $variable = [];
@@ -48,11 +48,17 @@ class EditorController extends Controller
         $block['indexmodifible'] = false;
         $blocks[] = $block;
 
+
+        // New Block
+
+
+        /*
+
         // spin-sentence
 
         $block = [];
         $block['name'] = 'Title - Prozac thread depression';
-        $block['type'] = 'spinsentence';
+        $block['type'] = EditorExtension::BLOCK_SPINSENTENCES;
         $block['readonly'] = false;
         $block['values'] = implode("\n", ['bad', 'poor', 'creepy']);
         $block['index'] = 1;
@@ -61,12 +67,24 @@ class EditorController extends Controller
         // static
         $block = [];
         $block['name'] = 'intro';
-        $block['type'] = 'static';
+        $block['type'] = EditorExtension::BLOCK_STATICTEXT;
         $block['readonly'] = false;
         $block['value'] = implode("\n", ['bad', 'poor', 'creepy']);
         $block['index'] = 2;
         $block['indexmodifible'] = true;
         $blocks[] = $block;
+
+        // static
+        $block = [];
+        $block['name'] = 'intro 2';
+        $block['type'] = EditorExtension::BLOCK_STATICTEXT;
+        $block['readonly'] = false;
+        $block['value'] = implode("\n", ['bad', 'poor', 'creepy']);
+        $block['index'] = 3;
+        $block['indexmodifible'] = true;
+        $blocks[] = $block;
+
+        */
 
         // Add new block
 
@@ -80,8 +98,10 @@ class EditorController extends Controller
 
         $params = [];
         $params['base_dir'] = realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR;
-        $params['dictonary'] = $dict;
+
         $params['dictonary_json'] = json_encode($dict);
+        $params['blocklist_json'] = json_encode($blocks);
+
 
         $params['blocklist'] = $blocks;
 

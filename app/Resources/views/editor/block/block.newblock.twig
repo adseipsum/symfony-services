@@ -1,31 +1,40 @@
-<div class="panel-body form-group">
-    <div class="row">
-        <label for="newblockname">Название блока</label>
-        <input type="text" class="form-control" id="newblockname">
+<div class="panel panel-default" id="spinblock-element-10000">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a class="title-collapse-href" data-toggle="collapse" data-parent="#spinblock-element-panel" href="#blocklist-collapse-{{ block.index }}">
+                {{ block.name }}</a>
+        </h4>
     </div>
 
-    <div class="row">
-        <label for="newblocktype">Тип блока</label>
-        <select class="form-control" id="newblocktype">
-            <option value="spinsentence">Спиннер предложения</option>
-            <option value="static">Статический текст</option>
-            <option value="for" disabled>Цикл (for)</option>
-            <option value="if" disabled>Блок с условием(if)</option>
-            <option value="switch" disabled>Блок выбора из значений (switch)</option>
-        </select>
-    </div>
 
-    <div class="row">
-        <label for="newblockposition">Позиция блока, следующий после:</label>
-        <select class="form-control" id="newblockposition">
-        {% for block in blocklist %}
-            {% if block.type != 'newblock' %}
-            <option {% if loop.index == loop.length-1 %} selected {% endif %} value="{{ block.index }}">({{ block.index }}) {{ block.name }}</option>
-            {% endif %}
-        {% endfor %}
-    </select>
-    </div>
-    <div class="row">
-        <button type="submit" class="form-control btn btn-primary">Добавить</button>
+    <div id="blocklist-collapse-{{ block.index }}" class="panel-collapse collapse">
+        <div class="panel-body">
+            <div class="panel-body form-group">
+                <div class="row">
+                    <label for="input-newblockname">Название блока</label>
+                    <input type="text" class="form-control" id="input-newblockname">
+                </div>
+
+                <div class="row">
+                    <label for="input-newblocktype">Тип блока</label>
+                    <select class="form-control" id="input-newblocktype">
+                        <option value="spinsentence">Спиннер предложения</option>
+                        <option value="static">Статический текст</option>
+                        <option value="for" disabled>Цикл (for)</option>
+                        <option value="if" disabled>Блок с условием(if)</option>
+                        <option value="switch" disabled>Блок выбора из значений (switch)</option>
+                    </select>
+                </div>
+
+                <div class="row">
+                    <label for="select-newblockposition">Позиция блока, следующий после:</label>
+                    <select class="form-control" id="select-newblockposition">
+                    </select>
+                </div>
+                <div class="button-row">
+                    <button id="button-add-new-block" type="submit" class="form-control btn btn-primary">Добавить</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

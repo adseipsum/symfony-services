@@ -37,9 +37,22 @@ body{
 
 
 
-.module-input {
+.module-spinblock {
   border: 1px solid #9d9d9d;
   border-radius: 3px;
+
+  .action-icon-delete {
+    float: right;
+    color: black;
+  }
+
+  .element-control-row {
+
+  }
+
+  .element-content-row {
+
+  }
 
   .pre-scrollable {
     max-height: 600px;

@@ -16,6 +16,9 @@ require('./dictionary.js');
 global.data = {
     template: {
         name:'default'
+    },
+    dictionary: {
+        data: []
     }
 }
 

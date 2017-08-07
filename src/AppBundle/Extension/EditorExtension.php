@@ -1,8 +1,13 @@
 <?php
 namespace AppBundle\Extension;
 
-class DictionaryExtension
+class EditorExtension
 {
+    const BLOCK_DATABASE = 'database';
+    const BLOCK_NEWBLOCK = 'new';
+    const BLOCK_STATICTEXT = 'static';
+    const BLOCK_SPINSENTENCES = 'spinsentence';
+
     var $username;
     var $templatename;
     var $path;
@@ -14,7 +19,6 @@ class DictionaryExtension
         $this->username = $username;
         $this->templatename = $username;
         $this->path = "$userDir/$username/template/$templatename/";
-
     }
 
 
