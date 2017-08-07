@@ -6,8 +6,12 @@
 
 {% include 'demo/form.html.twig' %}
 
-<div class="center-block container" style="padding-top: 20px">
+<div class="container-fluid">
+    <div class="row" style="padding-left: 15px; padding-right: 15px">
+        <div class="col-md-12 no-float" style="padding-right: 3px">
 {{ result | raw }}
+        </div>
+    </div>
 </div>
 
 {% endblock %}

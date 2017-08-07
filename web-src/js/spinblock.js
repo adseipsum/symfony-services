@@ -6,6 +6,11 @@ $(document).ready(function() {
     const TYPE_BLOCK_SPINSENTENCE = 'spinsentence';
 
 
+    if(typeof(page_spinblock_data) === 'undefined')
+    {
+        return;
+    }
+
     var spinblock_data = page_spinblock_data;
 
 

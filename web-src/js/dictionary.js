@@ -9,6 +9,10 @@
 
 $(document).ready(function() {
 
+    if(typeof(page_dictonary_data) === 'undefined')
+    {
+        return;
+    }
 
     //
     // Dictonary block

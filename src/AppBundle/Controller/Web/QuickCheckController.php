@@ -68,6 +68,7 @@ class QuickCheckController extends Controller
             $template_lines[] = $elem;
             $count++;
         }
+        
 
         $out_validate_text = '';
 

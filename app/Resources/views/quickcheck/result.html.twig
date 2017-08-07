@@ -3,43 +3,46 @@
 {% set active_menu = 'quickcheck' %}
 
 {% block content %}
+<div class="container-fluid">
+        <div class="row" style="padding-left: 15px; padding-right: 15px">
+            <div class="col-md-6" style="padding-left: 15px; padding-right:15px">
+                {% include 'quickcheck/form.html.twig' %}
+            </div>
 
-{% include 'quickcheck/form.html.twig' %}
+            <div class="col-md-6" style="padding-left: 15px; padding-right:15px">
 
-{% if validation_status == false %}
-<div class="container" style="padding-top: 15px">
-    <div class="row">
-        <label>Validation result:</label>
+                {% if validation_status == false %}
+
+                        <div class="row" style="padding-top: 15px">
+                            <label for="comment">Error detail:</label>
+                            <textarea class="form-control" rows="5" id="comment">{{ validation_text }}</textarea>
+                        </div>
+
+
+                        <div class="row">
+                            <label>Validation result:</label>
+                        </div>
+
+
+                        {% for line in validation_lines %}
+                            {% if line.is_valid == true %}
+                            <div class="row" style="background-color: #4cae4c">
+                            {% else %}
+                            <div class="row" style="background-color: #c9302c">
+                            {% endif %}
+                                {{ line.text }}
+                            </div>
+                        {% endfor %}
+
+
+                    </div>
+                    {% else %}
+                            <div class="row">
+                                <label for="comment">Generation result:</label>
+                                <textarea class="form-control" rows="30" id="comment">{{ result }}</textarea>
+                            </div>
+                    {% endif %}
+            </div>
     </div>
-
-
-    {% for line in validation_lines %}
-        {% if line.is_valid == true %}
-        <div class="row" style="background-color: #4cae4c">
-        {% else %}
-        <div class="row" style="background-color: #c9302c">
-        {% endif %}
-            {{ line.text }}
-        </div>
-    {% endfor %}
-
-    <div class="row" style="padding-top: 15px">
-        <label for="comment">Error detail:</label>
-        <textarea class="form-control" rows="5" id="comment">{{ validation_text }}</textarea>
-    </div>
-
 </div>
-{% else %}
-
-<div class="container">
-
-    <div class="row">
-        <label for="comment">Generation result:</label>
-        <textarea class="form-control" rows="5" id="comment">{{ result }}</textarea>
-    </div>
-
-</div>
-
-{% endif %}
-
 {% endblock %}
