@@ -9,26 +9,39 @@
                     <a  href="#201" data-toggle="tab">Raw text</a>
                 </li>
                 <li >
-                    <a  href="#201" data-toggle="tab">Generator</a>
+                    <a  href="#202" data-toggle="tab">Generator</a>
                 </li>
-                <li><a href="#202" data-toggle="tab">Console</a>
+                <li><a href="#203" data-toggle="tab">Console</a>
                 </li>
-                <li><a href="#203" data-toggle="tab">Errors</a>
+                <li><a href="#204" data-toggle="tab">Errors</a>
                 </li>
             </ul>
 
             <div class="tab-content ">
                 <div class="tab-pane active" id="201">
-                    <textarea id="raw-text" rows="30" class="form-control" style="resize: none;min-width: 100%"></textarea>
+                    <textarea id="textarea-raw-text" rows="30" class="form-control" style="resize: none;min-width: 100%">{{ rawtext|raw }}</textarea>
+                    <div class="button-row">
+                        <input type="button" id="button-rawtext-save"  class="btn btn-primary"  value="Save"/>
+                        <input type="button" id="button-rawtext-reset" class=" btn btn-danger"  value="Reset"/>
+                    </div>
                 </div>
                 <div class="tab-pane" id="202">
                     <textarea id="out-generator" rows="30" class="form-control" style="resize: none;min-width: 100%"></textarea>
+                    <div class="button-row">
+                        <input type="button" class="button-generator-generate btn btn-info"  value="Generate"/>
+                    </div>
                 </div>
                 <div class="tab-pane" id="203">
                     <textarea id="out-console" rows="30" class="form-control" style="resize: none; min-width: 100%"></textarea>
+                    <div class="button-row">
+                        <input type="button" class="button-console-reset btn btn-danger"  value="Reset"/>
+                    </div>
                 </div>
                 <div class="tab-pane" id="204">
                     <textarea id="out-Errors" rows="30" class="form-control" style="resize: none;min-width: 100%"></textarea>
+                    <div class="button-row">
+                        <input type="button" class="button-error-reset btn btn-danger"  value="Reset"/>
+                    </div>
                 </div>
 
             </div>

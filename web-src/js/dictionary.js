@@ -41,6 +41,7 @@ $('#btn-dict-update').on('click', function(e) {
     $('#accordion_dictonary > .panel').each(function () {
         var word = $(this).find('.title-collapse-href').text();
         var value =  $(this).find('.dict-value').val();
+        value = value == undefined ? '':value;
         dictNew[word] = value;
     });
 
@@ -65,12 +66,11 @@ $('#btn-dict-update').on('click', function(e) {
         success: function(response) {
             bar.removeClass('animate');
             dialog.modal('hide');
-            alert('a');
         },
         error: function(){
             bar.removeClass('animate');
             dialog.modal('hide');
-            alert('error!');
+            alert('error cannot save!');
         }
     });
 });

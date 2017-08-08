@@ -39,4 +39,22 @@ class EditorExtension
         $filename = $this->path.'globaldict.json';
         file_put_contents($filename, json_encode($value));
     }
+
+    function getRawtext()
+    {
+        $filename = $this->path.'rawtext.txt';
+        if(file_exists($filename))
+        {
+            return file_get_contents($filename);
+        }
+        else {
+            return '';
+        }
+    }
+
+    function setRawtext($value)
+    {
+        $filename = $this->path.'rawtext.txt';
+        file_put_contents($filename, $value);
+    }
 }

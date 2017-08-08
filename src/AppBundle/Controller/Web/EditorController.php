@@ -19,8 +19,8 @@ class EditorController extends Controller
         $template = 'default';
         $userdir = $this->getParameter('generator_user_dir');
 
-        $extDict = new EditorExtension($userdir, $username, $template);
-        $dict = $extDict->getGlobalDictonary();
+        $extEditor = new EditorExtension($userdir, $username, $template);
+        $dict = $extEditor->getGlobalDictonary();
 
 
         $blocks = [];
@@ -101,6 +101,7 @@ class EditorController extends Controller
 
         $params['dictonary_json'] = json_encode($dict);
         $params['blocklist_json'] = json_encode($blocks);
+        $params['rawtext'] = $extEditor->getRawtext();
 
 
         $params['blocklist'] = $blocks;
