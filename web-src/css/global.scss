@@ -64,6 +64,23 @@ body{
     padding-right: 5px;
     padding-left: 5px;
   }
+
+  .active {
+      a {
+        color: white !important;
+        &:visited {
+          color: white !important;
+        }
+        &:hover {
+          color: white !important;
+        }
+        &:focus {
+          color: white !important;
+        }
+      }
+  }
+
+
 }
 
 

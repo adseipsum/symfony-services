@@ -31,13 +31,13 @@
                 <label for="value_t">Текст</label>
                 <textarea class="form-control input-sentence-value" name="sentence-value" rows="7" id="comment" style="resize: none; margin-bottom: 10px"></textarea>
 
-                <input type="button" class="buttonsentence-generate btn btn-info"  value="Test"/>
-                <input type="button" class="block-update btn btn-default" value="Add"/>
+                <input type="button" class="button-sentence-generate btn btn-info"  value="Test"/>
+                <input type="button" class="button-sentence-update btn btn-default" value="Add"/>
 
                 <div>
                     <label >Предложения</label>
                     <ul class="list-group">
-                        <li class="list-group-item">
+                        <li class="list-group-item active list-group-item-add">
                             <a href="#" class="action-spinblock-add-sentence" >
                                 Новое предложение
                             </a>
@@ -52,7 +52,7 @@
 {# Sentence template #}
 <li class="list-group-item hidden" id="spinblock-element-list-item-template">
     <a href="#" class="action-spinblock-update-sentence">
-        <span class="pull-right">
+        <span class="pull-right action-icon-span">
             <i class="action-spinblock-sentence-delete glyphicon glyphicon-trash"></i>
         </span>
     </a>

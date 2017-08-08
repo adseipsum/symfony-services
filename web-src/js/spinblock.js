@@ -5,6 +5,11 @@ $(document).ready(function() {
     const TYPE_BLOCK_STATIC = 'static';
     const TYPE_BLOCK_SPINSENTENCE = 'spinsentence';
 
+    const ACTION_SENTENCE_ADD = 'add';
+    const ACTION_SENTENCE_UPDATE = 'update';
+    const ACTION_SENTENCE_DELETE = 'delete';
+
+
 
     if(typeof(page_spinblock_data) === 'undefined')
     {
@@ -34,9 +39,6 @@ $(document).ready(function() {
                 }
             }
         }
-        //console.log(output.join(''));
-  //      $('#select-newblockposition').innerHTML = output.join('');
-
     };
 
 
@@ -92,25 +94,28 @@ $(document).ready(function() {
             spinblock_data[i+1] = spinblock_data[i];
         }
 
-        spinblock_data[position+1] = {
+        var newElementIndex = position+1;
+        // Define data in spinblock
+        spinblock_data[newElementIndex] = {
             name:name,
             type:type,
             readonly:false,
-            index:position+1,
-            indexmodifible:true
+            index:newElementIndex,
+            indexmodifible:true,
+            data: null,
         }
 
         var template = $(type_mapping[type].template_id);
         var newElem = template.clone();
-        var elementIndex = position+1;
 
-        newElem.attr('id','spinblock-element-'+elementIndex);
+        newElem.attr('id','spinblock-element-'+newElementIndex);
         newElem.removeClass('hidden');
-        $(newElem).find('.title-collapse-href').attr('href','#blocklist-collapse-'+elementIndex);
-        $(newElem).find('.title-collapse-href').text('( '+elementIndex + ' ) '+name);
-        $(newElem).find('.panel-collapse').attr('id','blocklist-collapse-'+elementIndex);
+        $(newElem).find('.title-collapse-href').attr('href','#blocklist-collapse-'+newElementIndex);
+        $(newElem).find('.title-collapse-href').text('( '+newElementIndex + ' ) '+name);
+        $(newElem).find('.panel-collapse').attr('id','blocklist-collapse-'+newElementIndex);
         $(newElem).find('.block-name').val(name);
-        $(newElem).data('blockIndex', elementIndex).attr('data-block-index', elementIndex);
+        $(newElem).data('blockIndex', newElementIndex).attr('data-block-index', newElementIndex);
+
 
 
         // CONTENT BLOCK
@@ -120,9 +125,89 @@ $(document).ready(function() {
         }
         else if (type == TYPE_BLOCK_SPINSENTENCE)
         {
-            var buttonUpdate =  $(newElem).find('.button-block-update');
-            $(buttonUpdate).data('action', 'add').attr('data-action', 'add');
-            $(buttonUpdate).data('sentenceIndex', 0).attr('data-sentence-index', 0);
+            spinblock_data[newElementIndex].data = [];
+
+            var buttonUpdate =  $(newElem).find('.button-sentence-update');
+            $(buttonUpdate).data('action', ACTION_SENTENCE_ADD).attr('data-action', ACTION_SENTENCE_ADD);
+            $(buttonUpdate).data('sentenceIndex', -1);
+
+
+            $(newElem).find('.action-spinblock-add-sentence').on('click', function(e){
+                $(buttonUpdate).data('action', ACTION_SENTENCE_ADD);
+                $(buttonUpdate).data('sentenceIndex', -1);
+                $(buttonUpdate).val('Add');
+                $( this ).closest( ".element-content-row").find('.input-sentence-value').val('');
+                $( this ).parent().parent().find('li.active').removeClass('active');
+                $( this ).parent().addClass('active');
+            });
+
+
+            // ONCLICK BUTTON UPDATE/ADD SPINSENTENCE
+
+            $(buttonUpdate).on('click', function(e){
+                var blockIndex = $( this ).closest( ".panel").data('blockIndex');
+                var sentenceIndex = $( this ).data('sentenceIndex');
+                var action = $(this).data('action');
+                var eListGroup = $( this ).closest( ".panel-body").find('.list-group')
+                var textarea = $( this ).closest( ".element-content-row").find('.input-sentence-value');
+                var content = $( textarea ).val();
+
+
+                // CREATE NEW SENTENCE ACTION
+                if(action == ACTION_SENTENCE_ADD)
+                {
+                    var spinIndex = spinblock_data[blockIndex].data.length;
+                    spinblock_data[blockIndex].data[spinIndex] = content;
+
+                    var template = $('#spinblock-element-list-item-template');
+                    var newSentence = template.clone();
+                    $(newSentence).data('spinIndex', spinIndex);
+
+                    alert($(newSentence).data('spinIndex'));
+
+                    $(newSentence).removeClass('hidden');
+
+                    var iconSpan = $(newSentence).find('.action-icon-span');
+                    $(newSentence).find('.action-spinblock-update-sentence').text(content.substr(0, 50));
+                    $(newSentence).find('.action-spinblock-update-sentence').append(iconSpan);
+
+
+
+                    // ON SENTENCE CLICK HEADER
+                    $(newSentence).find('.action-spinblock-update-sentence').on('click', function(e){
+                        var listItem = $( this ).closest( ".list-group-item");
+                        var spinIndex = $(listItem).data('spinIndex');
+                        var content = spinblock_data[blockIndex].data[spinIndex];
+                        var buttonUpdate = $( this ).closest( ".element-content-row").find('.button-sentence-update');
+
+                        $(buttonUpdate).data('action', ACTION_SENTENCE_UPDATE);
+                        $(buttonUpdate).data('sentenceIndex', spinIndex);
+                        $(buttonUpdate).val('Update');
+
+                        $that = $(this);
+                        $that.parent().parent().find('li.active').removeClass('active');
+                        $that.parent().addClass('active');
+                        $that.addClass('active');
+
+
+                        $( this ).closest( ".element-content-row").find('.input-sentence-value').val(content);
+                    });
+                    $( textarea ).val('');
+                    $( this ).closest( ".panel-body").find('.list-group-item-add').after(newSentence.fadeIn());
+
+                }
+                //UPDATE SENTENCE
+                else {
+                    var spinIndex = $(this).data('sentenceIndex');
+                    var textarea = $( this ).closest( ".element-content-row").find('.input-sentence-value');
+                    var content = $( textarea ).val();
+                    spinblock_data[blockIndex].data[spinIndex] = content;
+                    alert(spinIndex);
+                }
+            });
+
+
+
 
             $(newElem).find('.action-spinblock-add-sentence').on('click', function(e) {
                 var blockIndex = $( this ).closest( ".panel").data('blockIndex');
@@ -134,31 +219,21 @@ $(document).ready(function() {
                 $(buttonUpdate).text('Add');
                 $(buttonUpdate).data('action', 'add').attr('data-action', 'add');
                 $(buttonUpdate).data('sentenceIndex', 0).attr('data-sentence-index', 0);
+
+
+
+
             });
 
-            $(buttonUpdate).find('.button-block-update').on('click', function(e){
-                var blockIndex = $( this ).closest( ".panel").data('blockIndex');
-                var sentenceIndex = $( this ).data('sentenceIndex');
-                var action = $(this).data('action');
-                var eListGroup = $( this ).closest( ".panel-body").find('.list-group');
 
-                alert('!!1');
-            });
         }
 
-
-
-
-
-
-
-
-
-
-        var afterBlock = $('#spinblock-element-'+position).after(newElem.fadeIn());
+        $('#spinblock-element-'+position).after(newElem.fadeIn());
 
         return true;
     }
+
+
 
 
 
