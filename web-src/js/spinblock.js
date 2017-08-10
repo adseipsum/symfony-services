@@ -64,6 +64,37 @@ $(document).ready(function() {
         });
     }
 
+    $.fn.generate_content_block = function(index)
+    {
+        var dialog = $('.dialog-progress-bar');
+        var bar = dialog.find('.progress-bar');
+
+        dialog.modal('show');
+        bar.addClass('animate');
+
+        var content = spinblock_data[i];
+        var request = {"data":content };
+        var templateName = global.data.template.name;
+
+        $.ajax({
+            type: "POST",
+            url: "/api/editor/generateblock/"+templateName,
+            data: JSON.stringify(request),
+            dataType: "json",
+
+            success: function(response) {
+                bar.removeClass('animate');
+                dialog.modal('hide');
+            },
+            error: function(){
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                alert('Error, cannot save');
+            }
+        });
+    }
+
+
     $('#button-template-save').on('click',  function(e){
         $.fn.save_spinblock_content();
     });
@@ -213,6 +244,11 @@ $(document).ready(function() {
         $(newElem).find('.button-block-save').on('click', function(e) {
             $.fn.save_spinblock_content();
         });
+
+        $(newElem).find('.button-template-generate').on('click', function(e) {
+            $.fn.generate_content_block(newElementIndex);
+        });
+
 
 
         // CONTENT BLOCK

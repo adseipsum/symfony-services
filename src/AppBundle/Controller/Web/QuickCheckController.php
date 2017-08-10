@@ -53,8 +53,6 @@ class QuickCheckController extends Controller
 
         $validate_ok = true;
 
-        $out_validate_finished = '';
-
         $template_text_lines = preg_split("/\\n/", $template);
         $template_lines = [];
         $first_line = $this->getLineCount($base_template_content);

@@ -1,0 +1,1 @@
+<%include file="database.tpl"/><%include file="globaldict.tpl"/>

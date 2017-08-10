@@ -51,7 +51,6 @@ class EditorSpinblockController extends Controller
 
         $extEditor->setSpinblockData($data['data']);
         return ApiResponse::resultOk();
-
     }
 
 }
