@@ -25,7 +25,7 @@ class EditorExtension
     function __construct($userDir, $username, $templatename)
     {
         $this->username = $username;
-        $this->templatename = $username;
+        $this->templatename = $templatename;
         $this->path = "$userDir/$username/template/$templatename/";
     }
 

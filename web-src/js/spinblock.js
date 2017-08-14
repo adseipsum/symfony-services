@@ -62,7 +62,20 @@ $(document).ready(function() {
                 alert('Error, cannot save');
             }
         });
-    }
+    };
+
+    $.fn.handle_generator_result = function(data)
+    {
+        console.log(data);
+        if(data.status.code == 200)
+        {
+            if(data.result.value.validation_status == true)
+            {
+                $('#textarea-out-generator').val(data.result.value.generated);
+                $('#a-tab-generator').trigger('click');
+            }
+        }
+    };
 
     $.fn.generate_content_block = function(index)
     {
@@ -72,7 +85,7 @@ $(document).ready(function() {
         dialog.modal('show');
         bar.addClass('animate');
 
-        var content = spinblock_data[i];
+        var content = spinblock_data[index];
         var request = {"data":content };
         var templateName = global.data.template.name;
 
@@ -85,14 +98,19 @@ $(document).ready(function() {
             success: function(response) {
                 bar.removeClass('animate');
                 dialog.modal('hide');
+                $.fn.handle_generator_result(response);
             },
-            error: function(){
+            error: function(response){
                 bar.removeClass('animate');
                 dialog.modal('hide');
                 alert('Error, cannot save');
+
+                console.log(response);
+
             }
         });
-    }
+    };
+
 
 
     $('#button-template-save').on('click',  function(e){
@@ -103,8 +121,36 @@ $(document).ready(function() {
 
     $('#button-template-generate').on('click', function(e)
     {
+        var dialog = $('.dialog-progress-bar');
+        var bar = dialog.find('.progress-bar');
+
         dialog.modal('show');
         bar.addClass('animate');
+
+        var content = spinblock_data;
+        var request = {"data":content };
+        var templateName = global.data.template.name;
+
+        $.ajax({
+            type: "POST",
+            url: "/api/editor/generate/"+templateName,
+            data: JSON.stringify(request),
+            dataType: "json",
+
+            success: function(response) {
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                $.fn.handle_generator_result(response);
+            },
+            error: function(response){
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                alert('Error, cannot save');
+
+                console.log(response);
+
+            }
+        });
     });
 
 
@@ -245,7 +291,7 @@ $(document).ready(function() {
             $.fn.save_spinblock_content();
         });
 
-        $(newElem).find('.button-template-generate').on('click', function(e) {
+        $(newElem).find('.button-block-generate').on('click', function(e) {
             $.fn.generate_content_block(newElementIndex);
         });
 
@@ -254,12 +300,17 @@ $(document).ready(function() {
         // CONTENT BLOCK
         if(type == TYPE_BLOCK_STATIC) {
 
-            $(newElem).find('.block-value').on('blur', function (e) {
+            $(newElem).find('.textarea-block-value').on('blur', function (e) {
                 var content = $(this).val();
                 content = content == undefined ? '':content;
                 content = content == null ? '':content;
                 spinblock_data[newElementIndex].data = content;
             });
+
+            if(data != undefined && data != null)
+            {
+                $(newElem).find('.textarea-block-value').val(data);
+            }
         }
         else if (type == TYPE_BLOCK_SPINSENTENCE)
         {

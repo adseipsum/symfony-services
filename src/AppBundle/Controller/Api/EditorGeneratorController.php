@@ -29,12 +29,20 @@ class EditorGeneratorController extends Controller
         /*
          * {
          *    "meta": {}
-         *    "data": {spinblocks}
+         *    "data": [{spinblock},{spinblock}]
          * }
          */
+        $filename = 'temp.tpl';
+        //$extEditor->genTemplateFileStub($filename);
 
-        $extEditor->setSpinblockData($data['data']);
-        return ApiResponse::resultOk();
+        $content = '';
+        foreach($data['data'] as $block)
+        {
+            $content .= $content = $extEditor->genTemplateForBlock($block);
+        }
+
+        $result = self::_generateForTemplate($extEditor, $filename, $content);
+        return ApiResponse::resultValue($result);
     }
 
     /**
@@ -59,11 +67,10 @@ class EditorGeneratorController extends Controller
          */
 
         $filename = 'temp.tpl';
-        $extEditor->genTemplateFileStub($filename);
+        //$extEditor->genTemplateFileStub($filename);
         $content = $extEditor->genTemplateForBlock($data['data']);
 
         $result = self::_generateForTemplate($extEditor, $filename, $content);
-
 
         return ApiResponse::resultValue($result);
     }
@@ -83,13 +90,17 @@ class EditorGeneratorController extends Controller
 
         $tmpDir = "$userDir/$username/tmp";
         $templateDir = "$userDir/$username/template";
-        $templateFile = "$userDir/$username/template/default/".$templateFile;
 
-        $base_template_content = file_get_contents($templateFile);
-        file_put_contents($templateFile, $base_template_content.PHP_EOL.$content);
+        $templateBaseFilePath = $baseTemplate;
+        $templateFilePath = "$userDir/$username/template/default/".$templateFile;
+
+
+        $base_template_content = file_get_contents($templateBaseFilePath);
+        file_put_contents($templateFilePath, $base_template_content.PHP_EOL.$content);
 
         $command_validate = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -v -t $templateName -f $templateFile";
         exec($command_validate, $output_validate);
+
 
         $out_validate_text = '';
         $validate_ok = true;
@@ -157,9 +168,12 @@ class EditorGeneratorController extends Controller
 
         $params = [];
         $params['generated'] = $out_finished;
+        $params['content'] = $content;
         $params['validation_lines'] = $template_lines;
         $params['validation_text'] = $out_validate_text;
         $params['validation_status'] = $validate_ok;
+        $params['command_validate'] = $command_validate;
+
         return $params;
     }
 
