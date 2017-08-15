@@ -72,7 +72,33 @@ $(document).ready(function() {
             if(data.result.value.validation_status == true)
             {
                 $('#textarea-out-generator').val(data.result.value.generated);
+                $('#generator-error-container').empty();
                 $('#a-tab-generator').trigger('click');
+            }
+            else {
+                // Error div content
+                $('#generator-error-container').empty();
+                var startline = data.result.value.start_line;
+                for(i=0;i<data.result.value.validation_lines.length; i++)
+                {
+                    var line =  data.result.value.validation_lines[i];
+                    var linenum = line.linenum;
+                    var text = '('+linenum+') '+line.text;
+                    if(line.is_valid == true)
+                    {
+                        $('#generator-error-container').append('<div class="line-ok">'+text+'</div>');
+                    }
+                    else {
+                        $('#generator-error-container').append('<div class="line-error">'+text+'</div>');
+                    }
+                }
+
+                $('#textarea-out-console').val(data.result.value.validation_text);
+
+                $('#a-tab-errors').trigger('click');
+
+
+
             }
         }
     };
@@ -272,8 +298,6 @@ $(document).ready(function() {
             indexmodifible:true,
             data: null,
         }
-
-        console.log(spinblock_data);
 
         var template = $(type_mapping[type].template_id);
         console.log(template);

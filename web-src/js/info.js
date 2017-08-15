@@ -37,4 +37,11 @@ $(document).ready(function() {
         $('#textarea-raw-text').val('');
     });
 
+    $('#button-error-reset').on('click', function(e)
+    {
+        $('#generator-error-container').empty();
+    });
+
+
+
 });

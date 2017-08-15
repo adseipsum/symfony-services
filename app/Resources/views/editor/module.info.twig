@@ -32,15 +32,23 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tab-console">
-                    <textarea id="out-console" rows="30" class="form-control" style="resize: none; min-width: 100%"></textarea>
+                    <textarea id="textarea-out-console" rows="30" class="form-control" style="resize: none; min-width: 100%"></textarea>
                     <div class="button-row">
                         <input type="button" class="button-console-reset btn btn-danger"  value="Reset"/>
                     </div>
                 </div>
-                <div class="tab-pane" id="tab-errors">
-                    <textarea id="out-Errors" rows="30" class="form-control" style="resize: none;min-width: 100%"></textarea>
+                <div class="tab-errors tab-pane" id="tab-errors">
+                    <div id="generator-error-container" class="pre-scrollable">
+                        <div class="line-error">
+                            im-error
+                        </div>
+                        <div class="line-ok">
+                            im-error
+                        </div>
+
+                    </div>
                     <div class="button-row">
-                        <input type="button" class="button-error-reset btn btn-danger"  value="Reset"/>
+                        <input type="button" id="button-error-reset" class="btn btn-danger"  value="Reset"/>
                     </div>
                 </div>
 

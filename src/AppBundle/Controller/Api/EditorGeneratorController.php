@@ -169,6 +169,7 @@ class EditorGeneratorController extends Controller
         $params = [];
         $params['generated'] = $out_finished;
         $params['content'] = $content;
+        $params['start_line'] = $first_line;
         $params['validation_lines'] = $template_lines;
         $params['validation_text'] = $out_validate_text;
         $params['validation_status'] = $validate_ok;
