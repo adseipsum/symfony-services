@@ -96,7 +96,7 @@ class TemplateGeneratorController extends Controller
             file_put_contents($templateFilePath, $newContent);
         }
 
-        $command_validate = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -v -t $templateName -f $templateFile";
+        $command_validate = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -v -t $templateName -f $templateFile -op \"(( \" -os \" ))\"";
 
         exec($command_validate, $output_validate);
 
