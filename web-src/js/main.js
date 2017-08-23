@@ -19,7 +19,10 @@ global.data = {
     }
 }
 
-
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
 
 
 $(document).ready(function() {
@@ -49,6 +52,8 @@ $(document).ready(function() {
     $.expr[':'].containsCaseInsensitive = function (n, i, m) {
         return jQuery(n).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
     };
+
+
 });
 
 require('./spinblock.js');
