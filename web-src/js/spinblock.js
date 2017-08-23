@@ -66,7 +66,6 @@ $(document).ready(function() {
 
     $.fn.handle_generator_result = function(data)
     {
-        console.log(data);
         if(data.status.code == 200)
         {
             if(data.result.value.validation_status == true)

@@ -113,6 +113,14 @@ class TemplateContentController extends Controller
                 $object->setTemplate($data['template']);
                 $model->upsert($object);
 
+                $ret = [];
+                $ret['id'] = $object->getObjectId();
+                $ret['name'] = $object->getName();
+                $ret['template'] = $object->getTemplate();
+                $ret['count'] = $object->getCount();
+
+                return ApiResponse::resultValue($ret);
+
             }
             else {
                 $object = $model->get($templateId);
@@ -142,12 +150,65 @@ class TemplateContentController extends Controller
 
 
     /**
-     * @Route("/template/usage/plus", name="api_template_usage_plus", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route("/template/plus/{templateId}", name="api_template_usage_plus", requirements={"template": "[a-zA-Z0-9\-\:]+"})
      * @Method("POST")
      */
-    public function usagePlusCount(Request $request, $templateId)
+    public function usagePlusCount($templateId)
     {
+        try {
+            $cb = $this->get('couchbase.connector');
+            $model = new TemplateModel($cb);
+            $object = $model->get($templateId);
 
+            if($object != null)
+            {
+                $object->incCount();
+                $model->upsert($object);
+
+                $ret = [];
+                $ret['id'] = $object->getObjectId();
+                $ret['count'] = $object->getCount();
+
+                return ApiResponse::resultValue($ret);
+            }
+            else {
+                return ApiResponse::resultNotFound();
+            }
+
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
+    }
+
+    /**
+     * @Route("/template/minus/{templateId}", name="api_template_usage_minus", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Method("POST")
+     */
+    public function usageMinusCount($templateId)
+    {
+        try {
+            $cb = $this->get('couchbase.connector');
+            $model = new TemplateModel($cb);
+            $object = $model->get($templateId);
+
+            if($object != null)
+            {
+                $object->decCount();
+                $model->upsert($object);
+
+                $ret = [];
+                $ret['id'] = $object->getObjectId();
+                $ret['count'] = $object->getCount();
+
+                return ApiResponse::resultValue($ret);
+            }
+            else {
+                return ApiResponse::resultNotFound();
+            }
+
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
     }
 
 }

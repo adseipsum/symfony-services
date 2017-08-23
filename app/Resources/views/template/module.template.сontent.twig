@@ -28,12 +28,15 @@
             <label for="input-template-count">Количество использований</label>
             <input id="input-template-count" class="form-control" readonly type="text">
 
+            <label for="input-template-drug-name">Название препарата</label>
+            <input id="input-template-drug-name" class="form-control" type="text">
+
             <label for="comment">Сгенерированный текст:</label>
-            <textarea id="textarea-template-generator" rows="17" readonly class="form-control" style="resize: none;min-width: 100%"></textarea>
+            <textarea id="textarea-template-generator" rows="15" readonly class="form-control" style="resize: none;min-width: 100%"></textarea>
             <div class="button-row">
-                <input type="button" class="btn btn-info"  value="Generate"/>
-                <input type="button" class="btn btn-success"  value="+1"/>
-                <input type="button" class="btn btn-danger"  value="-1"/>
+                <input id="button-template-generate" type="button" class="btn btn-default"  value="Generate"/>
+                <input id="button-template-plus" type="button" class="btn btn-default"  value="+1"/>
+                <input id="button-template-minus" type="button" class="btn btn-default"  value="-1"/>
 
             </div>
         </div>
@@ -42,7 +45,7 @@
             <div id="generator-error-container" class="pre-scrollable">
 
             </div>
-            <label for="textarea-error-consolet">Консоль:</label>
+            <label for="textarea-error-console">Консоль:</label>
             <textarea id="textarea-error-console" rows="4" readonly class="form-control" style="resize: none;min-width: 100%"></textarea>
             <div class="button-row">
                 <input type="button" id="button-error-reset" class="btn btn-danger"  value="Reset"/>

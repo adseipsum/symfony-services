@@ -4,6 +4,7 @@ namespace AppBundle\Controller\Api;
 
 use AppBundle\Extension\ApiResponse;
 use AppBundle\Extension\EditorExtension;
+use AppBundle\Repository\TemplateModel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -16,21 +17,56 @@ class TemplateGeneratorController extends Controller
      * @Route("/template/generate/{templateId}", name="api_editor_generate_template", requirements={"template": "[a-zA-Z0-9\-\-]+"})
      * @Method("POST")
      */
-    public function generateTemplate($templateId)
+    public function generateTemplate(Request $request, $templateId)
     {
         $username = $this->getUser()->getUsernameCanonical();
         if($username == null)
         {
             return ApiResponse::resultUnauthorized();
         }
-        $extEditor = new EditorExtension($this->getParameter('generator_user_dir'), $username, $template);
 
-        return ApiResponse::resultOk();
+        try {
+            $cb = $this->get('couchbase.connector');
+            $model = new TemplateModel($cb);
+            $object = $model->get($templateId);
+
+            if($object != null)
+            {
+                $data = json_decode($request->getContent(), true);
+                /*
+                 * {
+                 *    "id":  "id"
+                 *    "name" "name"
+                 *    "template" "template"
+                 * }
+                 */
+
+                $drugName = null;
+
+                if(isset($data['drugName']))
+                {
+                    $drugName = $data['drugName'];
+                }
+
+                $extEditor = new EditorExtension($this->getParameter('generator_user_dir'), $username, 'globalTemplate');
+                $result = self::_generateForTemplate($extEditor, $templateId.'.tpl', $object->getTemplate(), $drugName);
+
+                return ApiResponse::resultValue($result);
+            }
+            else {
+                return ApiResponse::resultNotFound();
+            }
+
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
+
+
     }
 
 
 
-    function _generateForTemplate($ext,  $templateFile, $content)
+    function _generateForTemplate($ext,  $templateFile, $content, $drugName)
     {
         $templateName = $ext->getTemplateName();
 
@@ -46,13 +82,22 @@ class TemplateGeneratorController extends Controller
         $templateDir = "$userDir/$username/template";
 
         $templateBaseFilePath = $baseTemplate;
-        $templateFilePath = "$userDir/$username/template/default/".$templateFile;
+        $templateFilePath = "$userDir/$username/template/globalTemplate/".$templateFile;
 
 
         $base_template_content = file_get_contents($templateBaseFilePath);
-        file_put_contents($templateFilePath, $base_template_content.PHP_EOL.$content);
+
+
+        $newContent = $base_template_content.PHP_EOL.$content;
+        $oldContent = '';
+
+        if(file_exists($templateFilePath) == false || sha1($newContent) != sha1($oldContent))
+        {
+            file_put_contents($templateFilePath, $newContent);
+        }
 
         $command_validate = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -v -t $templateName -f $templateFile";
+
         exec($command_validate, $output_validate);
 
 
@@ -105,8 +150,12 @@ class TemplateGeneratorController extends Controller
 
         if($validate_ok == true)
         {
-            $out_finished = '';
             $command = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -t $templateName -f $templateFile";
+
+            if($drugName != null)
+            {
+                $command .= " -dn $drugName";
+            }
 
             exec($command, $output);
 

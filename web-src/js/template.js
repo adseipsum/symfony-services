@@ -50,6 +50,16 @@ $(document).ready(function() {
 
         $('#button-template-delete').removeClass('btn-danger');
         $('#button-template-delete').addClass('btn-default');
+
+        $('#button-template-generate').addClass('btn-default');
+        $('#button-template-generate').removeClass('btn-info');
+        $('#button-template-minus').addClass('btn-default');
+        $('#button-template-minus').removeClass('btn-danger');
+        $('#button-template-plus').addClass('btn-default');
+        $('#button-template-plus').removeClass('btn-success');
+
+        $('#generator-error-container').empty();
+        $('#textarea-template-generator').val('');
     });
 
 
@@ -82,6 +92,15 @@ $(document).ready(function() {
                 $('#button-template-delete').removeClass('btn-default');
                 $('#button-template-delete').addClass('btn-danger');
                 $('#button-template-save').val('Сохранить');
+
+                $('#button-template-generate').removeClass('btn-default');
+                $('#button-template-generate').addClass('btn-info');
+                $('#button-template-minus').removeClass('btn-default');
+                $('#button-template-minus').addClass('btn-danger');
+                $('#button-template-plus').removeClass('btn-default');
+                $('#button-template-plus').addClass('btn-success');
+                $('#generator-error-container').empty();
+                $('#textarea-template-generator').val('');
 
             },
             error: function(){
@@ -144,9 +163,142 @@ $(document).ready(function() {
         });
     });
 
+    $('#button-template-plus').on('click',  function(e) {
+        var tplId = $('#input-template-id').val();
+        if (tplId == 'none' || tplId == 'new') {
+            return;
+        }
+
+        var dialog = $('.dialog-progress-bar');
+        var bar = dialog.find('.progress-bar');
+
+        dialog.modal('show');
+        bar.addClass('animate');
+
+        $.ajax({
+            type: "POST",
+            url: "/api/template/plus/"+tplId,
+            dataType: "json",
+            success: function(data) {
+                bar.removeClass('animate');
+                dialog.modal('hide');
+
+                var obj = data.result.value;
+                $('#input-template-count').val(obj['count']);
+            },
+            error: function(){
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                alert('Error');
+            }
+        });
+    });
+
+    $('#button-template-minus').on('click',  function(e) {
+        var tplId = $('#input-template-id').val();
+        if (tplId == 'none' || tplId == 'new') {
+            return;
+        }
+
+        var dialog = $('.dialog-progress-bar');
+        var bar = dialog.find('.progress-bar');
+
+        dialog.modal('show');
+        bar.addClass('animate');
+
+        $.ajax({
+            type: "POST",
+            url: "/api/template/minus/"+tplId,
+            dataType: "json",
+            success: function(data) {
+                bar.removeClass('animate');
+                dialog.modal('hide');
+
+                var obj = data.result.value;
+                $('#input-template-count').val(obj['count']);
+            },
+            error: function(){
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                alert('Error');
+            }
+        });
+
+    });
+
+
+    $('#button-template-generate').on('click',  function(e) {
+        var tplId = $('#input-template-id').val();
+        if (tplId == 'none' || tplId == 'new') {
+            return;
+        }
+
+        var dialog = $('.dialog-progress-bar');
+        var bar = dialog.find('.progress-bar');
+
+
+        var param = {};
+        var drugName = $('#input-template-name').val().trim();
+
+        if(drugName.length > 0)
+        {
+            param['drugName'] = drugName;
+        }
 
 
 
+        dialog.modal('show');
+        bar.addClass('animate');
+
+        $.ajax({
+            type: "POST",
+            url: "/api/template/generate/"+tplId,
+            data: JSON.stringify(curr),
+            dataType: "json",
+            success: function(data) {
+                bar.removeClass('animate');
+                dialog.modal('hide');
+
+                if(data.status.code == 200) {
+                    if (data.result.value.validation_status == true) {
+                        $('#textarea-template-generator').val(data.result.value.generated);
+                        $('#generator-error-container').empty();
+                        $('#a-tab-generator').trigger('click');
+                    }
+                    else {
+                        // Error div content
+                        $('#generator-error-container').empty();
+                        var startline = data.result.value.start_line;
+                        for (i = 0; i < data.result.value.validation_lines.length; i++) {
+                            var line = data.result.value.validation_lines[i];
+                            var linenum = line.linenum;
+                            var text = '(' + linenum + ') ' + line.text;
+                            if (line.is_valid == true) {
+                                $('#generator-error-container').append('<div class="line-ok">' + text + '</div>');
+                            }
+                            else {
+                                $('#generator-error-container').append('<div class="line-error">' + text + '</div>');
+                            }
+                        }
+
+                        $('#textarea-error-console').val(data.result.value.validation_text);
+
+                        $('#a-tab-error').trigger('click');
+                    }
+                }
+                else {
+                    $('#textarea-error-console').val('Server respond with error:'+data.status.code);
+                }
+
+            },
+            error: function(){
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                alert('Error');
+            }
+        });
+
+    });
 
 
 
