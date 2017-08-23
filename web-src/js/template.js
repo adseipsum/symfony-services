@@ -253,7 +253,7 @@ $(document).ready(function() {
         $.ajax({
             type: "POST",
             url: "/api/template/generate/"+tplId,
-            data: JSON.stringify(curr),
+            data: JSON.stringify(param),
             dataType: "json",
             success: function(data) {
                 bar.removeClass('animate');
