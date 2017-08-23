@@ -238,7 +238,7 @@ $(document).ready(function() {
 
 
         var param = {};
-        var drugName = $('#input-template-name').val().trim();
+        var drugName = $('#input-template-drug-name').val().trim();
 
         if(drugName.length > 0)
         {
