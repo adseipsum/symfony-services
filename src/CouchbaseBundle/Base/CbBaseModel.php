@@ -372,20 +372,23 @@ abstract class CbBaseModel
     public function getAllObjects($descending=false, $skip=0, $limit=-1)
     {
         $objectIds =  $this->listObjectIdByView(CbBaseModel::VIEW_BY_ID, null, $descending, $skip, $limit);
-        return $this->get($objectIds);
+        $ret = $this->get($objectIds);
+        return $ret == null ? [] : $ret;
     }
 
 
     public function listObjects($descending=false, $skip=0, $limit=-1)
     {
         $objectIds = $this->listObjectIdByView(CbBaseModel::VIEW_BY_ID, null, $descending,$skip, $limit);
-        return $this->get($objectIds);
+        $ret = $this->get($objectIds);
+        return $ret == null ? [] : $ret;
     }
 
     public function listObjectsByTitle($descending=false, $skip=0, $limit=-1)
     {
         $objectIds = $this->listObjectIdByView(CbBaseModel::VIEW_BY_TITLE, $descending,$skip, $limit);
-        return $this->get($objectIds);
+        $ret = $this->get($objectIds);
+        return $ret == null ? [] : $ret;
     }
 
 

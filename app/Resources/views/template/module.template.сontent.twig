@@ -1,0 +1,53 @@
+<div class="module-template-content">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a id="a-tab-template" href="#tab-template" data-toggle="tab">Шаблон</a>
+        </li>
+        <li >
+            <a  id="a-tab-generator" href="#tab-generator" data-toggle="tab">Генератор</a>
+        </li>
+        <li >
+            <a  id="a-tab-error" href="#tab-errors" data-toggle="tab">Ошибки</a>
+        </li>
+    </ul>
+    <div class="tab-content ">
+        <div class="tab-pane active form-group" id="tab-template" style="padding-top: 5px">
+            <label for="input-template-name">Название шаблона</label>
+            <input id="input-template-name" class="form-control" type="text">
+
+            <label for="comment">Шаблон:</label>
+            <textarea id="textarea-template-content" rows="17" class="form-control" style="resize: none;min-width: 100%"></textarea>
+
+            <div class="button-row">
+                <input id="input-template-id"     type="hidden" value="none" >
+                <input id="button-template-save"   type="button" class="btn btn-default"  value="Сохранить"/>
+                <input id="button-template-delete" type="button" class="btn btn-default"  value="Удалить"/>
+            </div>
+        </div>
+        <div class="tab-pane" id="tab-generator" style="padding-top: 5px">
+            <label for="input-template-count">Количество использований</label>
+            <input id="input-template-count" class="form-control" readonly type="text">
+
+            <label for="comment">Сгенерированный текст:</label>
+            <textarea id="textarea-template-generator" rows="17" readonly class="form-control" style="resize: none;min-width: 100%"></textarea>
+            <div class="button-row">
+                <input type="button" class="btn btn-info"  value="Generate"/>
+                <input type="button" class="btn btn-success"  value="+1"/>
+                <input type="button" class="btn btn-danger"  value="-1"/>
+
+            </div>
+        </div>
+        <div class="tab-errors tab-pane" id="tab-errors">
+            <label for="generator-error-container">Ошибки:</label>
+            <div id="generator-error-container" class="pre-scrollable">
+
+            </div>
+            <label for="textarea-error-consolet">Консоль:</label>
+            <textarea id="textarea-error-console" rows="4" readonly class="form-control" style="resize: none;min-width: 100%"></textarea>
+            <div class="button-row">
+                <input type="button" id="button-error-reset" class="btn btn-danger"  value="Reset"/>
+            </div>
+        </div>
+    </div>
+</div>
+

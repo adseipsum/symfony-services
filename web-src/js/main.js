@@ -54,3 +54,4 @@ $(document).ready(function() {
 require('./spinblock.js');
 require('./dictionary.js');
 require('./info.js');
+require('./template.js');

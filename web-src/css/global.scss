@@ -223,3 +223,33 @@ body{
 .progress-bar.animate {
   width: 100%;
 }
+
+// Template module
+
+.module-template-selector {
+  border: 1px solid #9d9d9d;
+  border-radius: 3px;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+
+}
+
+.module-template-content {
+  border: 1px solid #9d9d9d;
+  border-radius: 3px;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+
+  .tab-errors {
+      .pre-scrollable {
+        max-height: 290px;
+        height: 290px;
+      }
+  }
+}
