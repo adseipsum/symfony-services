@@ -96,7 +96,7 @@ class TemplateGeneratorController extends Controller
             file_put_contents($templateFilePath, $newContent);
         }
 
-        $command_validate = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -v -t $templateName -f $templateFile -op \"(( \" -os \" ))\"";
+        $command_validate = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -v -t $templateName -f $templateFile";
 
         exec($command_validate, $output_validate);
 
@@ -150,7 +150,7 @@ class TemplateGeneratorController extends Controller
 
         if($validate_ok == true)
         {
-            $command = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -t $templateName -f $templateFile";
+            $command = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -t $templateName -f $templateFile -op \"(( \" -os \" ))\"";
 
             if($drugName != null)
             {
