@@ -13,6 +13,24 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class CbTemplate extends CbBaseObject
 {
+
+    public function setArchived($isArchived)
+    {
+        $this->set('isArchived', $isArchived);
+    }
+
+    public function isArchived()
+    {
+        $ret = $this->get('isArchived');
+        if($ret == null)
+        {
+            return false;
+        }
+        else {
+            return $ret;
+        }
+    }
+
     public function setCount($count)
     {
         $this->set('count', $count);

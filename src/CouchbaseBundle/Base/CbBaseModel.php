@@ -225,6 +225,33 @@ abstract class CbBaseModel
         }
     }
 
+    public function update($object, $ttl=0)
+    {
+        $key = $object->getObjectId();
+
+        if($key == null)
+        {
+            throw new \CouchbaseException("Invalid operation, lack of valid key");
+        }
+
+        $value = null;
+        if($this->filter != null)
+        {
+            $value = $this->filter->filter($object->getObjectAsArray());
+        }
+        else {
+            $value = $object->getObjectAsArray();
+        }
+
+        if($ttl == 0)
+        {
+            $this->bucket->update($key, $value);
+        }
+        else {
+            $this->bucket->update($key, $value, array('expiry' => $ttl ));
+        }
+    }
+
     public function get($key)
     {
         if($key == null){
@@ -380,15 +407,13 @@ abstract class CbBaseModel
     public function listObjects($descending=false, $skip=0, $limit=-1)
     {
         $objectIds = $this->listObjectIdByView(CbBaseModel::VIEW_BY_ID, null, $descending,$skip, $limit);
-        $ret = $this->get($objectIds);
-        return $ret == null ? [] : $ret;
+        return $this->get($objectIds);
     }
 
     public function listObjectsByTitle($descending=false, $skip=0, $limit=-1)
     {
         $objectIds = $this->listObjectIdByView(CbBaseModel::VIEW_BY_TITLE, $descending,$skip, $limit);
-        $ret = $this->get($objectIds);
-        return $ret == null ? [] : $ret;
+        return $this->get($objectIds);
     }
 
 

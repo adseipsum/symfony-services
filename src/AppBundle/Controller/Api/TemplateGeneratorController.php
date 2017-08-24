@@ -146,7 +146,7 @@ class TemplateGeneratorController extends Controller
             }
         }
 
-        $out_finished = '';
+        $generated = '';
 
         if($validate_ok == true)
         {
@@ -154,6 +154,7 @@ class TemplateGeneratorController extends Controller
 
             if($drugName != null)
             {
+                $drugName = strtolower($drugName);
                 $command .= " -dn $drugName";
             }
 
@@ -161,16 +162,16 @@ class TemplateGeneratorController extends Controller
 
             $brCount = 0;
             foreach($output as $line) {
-                $out_finished .= $line . "\n";
+                $generated .= $line . "\n";
                 $brCount++;
             }
         }
         else {
-            $out_finished = 'ERROR';
+            $generated = 'ERROR';
         }
 
         $params = [];
-        $params['generated'] = $out_finished;
+        $params['generated'] = $generated;
         $params['content'] = $content;
         $params['start_line'] = $first_line;
         $params['validation_lines'] = $template_lines;

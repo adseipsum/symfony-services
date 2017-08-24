@@ -55,7 +55,7 @@ $(document).ready(function() {
                 bar.removeClass('animate');
                 dialog.modal('hide');
                 $('#select-template-name').empty();
-                $('#select-template-name').append('<option disabled>Select template name</option>');
+                $('#select-template-name').append('<option value="0">Select template name</option>');
                 for(i=0;i<data.result.values.length; i++)
                 {
                     var elem = data.result.values[i];
@@ -82,6 +82,8 @@ $(document).ready(function() {
 
         $('#button-template-delete').removeClass('btn-danger');
         $('#button-template-delete').addClass('btn-default');
+        $('#button-template-delete').removeData('toggle');
+        $('#button-template-delete').removeData('target');
 
         $('#button-template-generate').addClass('btn-default');
         $('#button-template-generate').removeClass('btn-info');
@@ -96,6 +98,67 @@ $(document).ready(function() {
     });
 
 
+
+    $('#select-template-name').on('change',  function(e) {
+        var tplId = $('#select-template-name').val();
+        var tplIdSelected = $('#input-template-id').val();
+
+        if(tplId == 0 || tplId == tplIdSelected)
+        {
+            return; // do nothing
+        }
+        var dialog = $('.dialog-progress-bar');
+        var bar = dialog.find('.progress-bar');
+
+        dialog.modal('show');
+        bar.addClass('animate');
+
+        $.ajax({
+            type: "GET",
+            url: "/api/template/content/"+tplId,
+            dataType: "json",
+            success: function(data) {
+                bar.removeClass('animate');
+                dialog.modal('hide');
+
+                var obj = data.result.value;
+
+                $('#input-template-count').val(obj['count']);
+                $('#input-template-name').val(obj['name']);
+                $('#textarea-template-content').val(obj['template']);
+                $('#input-template-id').val(obj['id']);
+
+                $('#button-template-save').removeClass('btn-default');
+                $('#button-template-save').addClass('btn-success');
+
+                $('#button-template-delete').removeClass('btn-default');
+                $('#button-template-delete').addClass('btn-danger');
+                $('#button-template-delete').data('toggle','modal');
+                $('#button-template-delete').data('target','#dialog-template-confirm-delete');
+
+                $('#button-template-save').val('Сохранить');
+
+
+                console.log( $('#button-template-delete').data());
+
+                $('#button-template-generate').removeClass('btn-default');
+                $('#button-template-generate').addClass('btn-info');
+                $('#button-template-minus').removeClass('btn-default');
+                $('#button-template-minus').addClass('btn-danger');
+                $('#button-template-plus').removeClass('btn-default');
+                $('#button-template-plus').addClass('btn-success');
+                $('#generator-error-container').empty();
+                $('#textarea-template-generator').val('');
+                generated_template = '';
+            },
+            error: function(){
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                alert('Error');
+            }
+        });
+    });
+/*
     $('#button-template-load').on('click',  function(e){
         var tplId = $('#select-template-name').val();
 
@@ -144,7 +207,7 @@ $(document).ready(function() {
             }
         });
     });
-
+*/
 
     $('#button-template-save').on('click',  function(e){
         var tplId = $('#input-template-id').val();
@@ -185,6 +248,7 @@ $(document).ready(function() {
                 $('#button-template-save').addClass('btn-success');
                 $('#button-template-delete').removeClass('btn-default');
                 $('#button-template-delete').addClass('btn-danger');
+                $('#button-template-delete').removeClass('.disabled');
                 $('#button-template-save').val('Сохранить');
 
                 $('#button-template-generate').removeClass('btn-default');
@@ -203,6 +267,7 @@ $(document).ready(function() {
             }
         });
     });
+
 
     $('#button-template-plus').on('click',  function(e) {
         var tplId = $('#input-template-id').val();
@@ -286,8 +351,6 @@ $(document).ready(function() {
             param['drugName'] = drugName;
         }
 
-
-
         dialog.modal('show');
         bar.addClass('animate');
 
@@ -305,8 +368,9 @@ $(document).ready(function() {
                         $('#generator-error-container').empty();
                         $('#a-tab-generator').trigger('click');
                         generated_template = data.result.value.generated;
-                        $.fn.render_generated_template();
 
+                        console.log(generated_template);
+                        $.fn.render_generated_template();
                     }
                     else {
                         // Error div content
@@ -343,11 +407,38 @@ $(document).ready(function() {
 
     });
 
+
     $('#button-template-toggle-parenthesis').on('click',  function(e) {
         $.fn.toggle_parenthesiss_state();
     });
 
+    /*
+    $('#button-template-delete').on('click',  function(e) {
 
+    });
+    */
+
+
+    $('#dialog-template-confirm-delete').on('show.bs.modal', function(e) {
+        var tplId = $('#input-template-id').val();
+        var tplName = $('#select-template-name option:selected').text();
+
+        if (tplId == 'none' || tplId == 'new') {
+            e.preventDefault();
+            return;
+        }
+
+        var data = $(e.relatedTarget).data();
+        $('.title', this).text(tplName);
+        $('.btn-ok', this).data('recordId', tplId);
+    });
+
+    $('#dialog-dict-confirm-delete').on('click', '.btn-ok', function(e) {
+        var $modalDiv = $(e.delegateTarget);
+        var id = $(this).data('recordId');
+        $('#'+id).remove();
+        $modalDiv.modal('hide')
+    });
 
 
 

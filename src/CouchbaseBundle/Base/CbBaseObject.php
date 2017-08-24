@@ -24,6 +24,11 @@ abstract class CbBaseObject
         return $this->cas;
     }
 
+    public function mirror($cbobject)
+    {
+        $this->values = $cbobject->values;
+    }
+
     public function setCbValues($cbobject)
     {
        $this->values = json_decode(json_encode($cbobject), true);
