@@ -65,10 +65,10 @@ $(document).ready(function() {
                     $('#select-template-name option').removeAttr('selected').filter('[value=' + selectedTemplateId + ']').attr('selected', true);
                 }
             },
-            error: function(){
+            error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error');
+                alert('Error: ' + errorMsg);
             }
         });
     };
@@ -154,10 +154,10 @@ $(document).ready(function() {
                 $('#textarea-template-generator').val('');
                 generated_template = '';
             },
-            error: function(){
+            error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error');
+                alert('Error: ' + errorMsg);
             }
         });
     });
@@ -203,10 +203,10 @@ $(document).ready(function() {
                 generated_template = '';
 
             },
-            error: function(){
+            error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error');
+                alert('Error: ' + errorMsg);
             }
         });
     });
@@ -263,10 +263,10 @@ $(document).ready(function() {
 
                 $.fn.load_template_list(obj['id']);
             },
-            error: function(){
+            error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error');
+                alert('Error: ' + errorMsg);
             }
         });
     });
@@ -295,10 +295,10 @@ $(document).ready(function() {
                 var obj = data.result.value;
                 $('#input-template-count').val(obj['count']);
             },
-            error: function(){
+            error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error');
+                alert('Error: ' + errorMsg);
             }
         });
     });
@@ -326,10 +326,10 @@ $(document).ready(function() {
                 var obj = data.result.value;
                 $('#input-template-count').val(obj['count']);
             },
-            error: function(){
+            error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error');
+                alert('Error: ' + errorMsg);
             }
         });
 
