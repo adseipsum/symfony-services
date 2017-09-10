@@ -12,8 +12,7 @@ abstract class CbCompositeKeyObject extends CbBaseObject
 
     public function getObjectId()
     {
-        if(isset($this->values['docId']))
-        {
+        if (isset($this->values['docId'])) {
             return $this->values['docId'];
         }
 

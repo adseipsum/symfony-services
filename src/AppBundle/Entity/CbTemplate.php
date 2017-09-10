@@ -3,13 +3,6 @@
 namespace AppBundle\Entity;
 
 use CouchbaseBundle\Base\CbBaseObject;
-use Doctrine\Common\Collections\ArrayCollection;
-use FOS\UserBundle\Model\GroupableInterface;
-use Symfony\Component\Security\Core\User\EquatableInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use FOS\UserBundle\Model\UserInterface as FOSUserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-
 
 class CbTemplate extends CbBaseObject
 {
@@ -22,11 +15,9 @@ class CbTemplate extends CbBaseObject
     public function isArchived()
     {
         $ret = $this->get('isArchived');
-        if($ret == null)
-        {
+        if ($ret == null) {
             return false;
-        }
-        else {
+        } else {
             return $ret;
         }
     }
@@ -39,11 +30,9 @@ class CbTemplate extends CbBaseObject
     public function getCount()
     {
         $ret = $this->get('count');
-        if($ret == null)
-        {
+        if ($ret == null) {
             return 0;
-        }
-        else {
+        } else {
             return $ret;
         }
     }
@@ -51,13 +40,13 @@ class CbTemplate extends CbBaseObject
     public function incCount()
     {
         $count = $this->getCount();
-        $this->setCount($count+1);
+        $this->setCount($count + 1);
     }
 
     public function decCount()
     {
         $count = $this->getCount();
-        $this->setCount($count-1);
+        $this->setCount($count - 1);
     }
 
     public function setTemplate($text)
@@ -79,7 +68,4 @@ class CbTemplate extends CbBaseObject
     {
         return $this->get('name');
     }
-
-
-
 }

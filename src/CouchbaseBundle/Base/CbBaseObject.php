@@ -2,12 +2,14 @@
 
 namespace CouchbaseBundle\Base;
 
+use Couchbase\Exception as CouchbaseException;
 
 abstract class CbBaseObject
 {
-    // Field Names
 
+    // Field Names
     var $cas = null;
+
     var $values = array();
 
     public function __construct()
@@ -31,7 +33,7 @@ abstract class CbBaseObject
 
     public function setCbValues($cbobject)
     {
-       $this->values = json_decode(json_encode($cbobject), true);
+        $this->values = json_decode(json_encode($cbobject), true);
     }
 
     public function isNew()
@@ -46,8 +48,7 @@ abstract class CbBaseObject
 
     public function getObjectId()
     {
-        if(isset($this->values['docId']))
-        {
+        if (isset($this->values['docId'])) {
             return $this->values['docId'];
         }
 
@@ -63,37 +64,32 @@ abstract class CbBaseObject
     {
         $this->values['docType'] = $value;
 
-        if(isset($this->values['docType']))
-        {
+        if (isset($this->values['docType'])) {
             return $this->values['docType'];
         }
 
         return null;
     }
 
-    //Cauton with care, with big documents
+    // Cauton with care, with big documents
     public function isExist($key)
     {
         try {
             $this->bucket->get($key);
             return true;
-        } catch(\CouchbaseException $e) {
-           return false;
+        } catch (CouchbaseException $e) {
+            return false;
         }
     }
-
 
     public function get($key)
     {
-        if(isset($this->values[$key]))
-        {
+        if (isset($this->values[$key])) {
             return $this->values[$key];
-        }
-        else {
+        } else {
             return null;
         }
     }
-
 
     /**
      * Get on system: subobject array
@@ -102,23 +98,21 @@ abstract class CbBaseObject
     {
         $subarr = (array)$this->get($subobjKey);
 
-        if($subarr == null || isset($subarr[$key]) == false)
-        {
+        if ($subarr == null || isset($subarr[$key]) == false) {
             return null;
-        }
-        else {
+        } else {
             return $subarr[$key];
         }
     }
+
     /**
      * Set on system: subobject array
      */
     public function setInSubobject($subobjKey, $key, $value)
     {
-        $subarr = (array) $this->get($subobjKey);
+        $subarr = (array)$this->get($subobjKey);
 
-        if($subarr == null)
-        {
+        if ($subarr == null) {
             $subarr = [];
         }
 
@@ -132,15 +126,13 @@ abstract class CbBaseObject
      */
     public function resetInSubobject($subobjKey, $key)
     {
-        $subarr = (array) $this->get($subobjKey);
+        $subarr = (array)$this->get($subobjKey);
 
-        if($subarr == null)
-        {
+        if ($subarr == null) {
             return;
         }
 
-        if(isset($subarr[$key]))
-        {
+        if (isset($subarr[$key])) {
             unset($subarr[$key]);
         }
 
@@ -154,6 +146,7 @@ abstract class CbBaseObject
     {
         return $this->getInSubobject('cache', $key);
     }
+
     /**
      * Set on system: subobject array
      */
@@ -161,7 +154,6 @@ abstract class CbBaseObject
     {
         $this->setInSubobject('cache', $key, $value);
     }
-
 
     public function set($key, $value)
     {
@@ -177,18 +169,15 @@ abstract class CbBaseObject
     {
         $subarr = $this->get($key);
 
-        if($subarr == null)
-        {
+        if ($subarr == null) {
             $subarr = [];
             $subarr[] = $element;
-        }
-        else {
+        } else {
             $max = count($subarr);
-            for($i=0;$i<$max;$i++)
-            {
+            for ($i = 0; $i < $max; $i++) {
                 $elem = $subarr[$i];
 
-                if($elem == $element) // Already have this elem
+                if ($elem == $element) // Already have this elem
                 {
                     return;
                 }
@@ -201,10 +190,8 @@ abstract class CbBaseObject
     {
         $subarr = $this->get($key);
 
-        if($subarr == null)
-        {
+        if ($subarr == null) {
             $subarr = [];
-
         }
         $subarr[] = $element;
         $this->set($key, $subarr);
@@ -214,17 +201,15 @@ abstract class CbBaseObject
     {
         $subarr = $this->get($key);
 
-        if($subarr == null)
-        {
+        if ($subarr == null) {
             $subarr = [];
-
         }
         return $subarr;
     }
 
-
     /**
      * Set dateCreated
+     *
      * @param string $dataAuthor
      *
      */
@@ -235,6 +220,7 @@ abstract class CbBaseObject
 
     /**
      * Get dateCreated
+     *
      * @return string
      */
     public function getDateCreated()
@@ -242,9 +228,9 @@ abstract class CbBaseObject
         return $this->get('createdAt');
     }
 
-
     /**
      * set dateUpdated
+     *
      * @return string
      */
     public function setDateUpdated($date)
@@ -254,6 +240,7 @@ abstract class CbBaseObject
 
     /**
      * Get dateUpdated
+     *
      * @return string
      */
     public function getDateUpdated()
@@ -263,13 +250,11 @@ abstract class CbBaseObject
 
     public function trim($value)
     {
-        if($value != null)
-        {
+        if ($value != null) {
             $value = trim($value);
         }
         return $value;
     }
-
 
     /**
      * Возвращает внутреннее представление json объекта как ассоциативный массив
@@ -280,7 +265,4 @@ abstract class CbBaseObject
     {
         return $this->values;
     }
-
-
-
 }

@@ -1,17 +1,24 @@
 {
-  "devDependencies": {
-    "@symfony/webpack-encore": "^0.10.0",
-    "bootstrap-sass": "^3.3.7",
-    "jquery": "^3.2.1"
-  },
-  "dependencies": {
-    "install": "^0.10.1",
-    "jQuery-QueryBuilder": "^2.4.4",
-    "mustache": "^2.3.0",
-    "node-sass": "^4.5.3",
-    "requires": "^1.0.2",
-    "sass-loader": "^6.0.6",
-    "tabcordion": "^1.0.5",
-    "transition": "^0.1.1"
-  }
+    "license": "UNLICENSED",
+	"scripts": {
+		"assets:watch": "encore dev --watch",
+		"assets:dev": "encore dev",
+		"assets:build": "encore production"
+	},
+	"devDependencies": {
+		"@symfony/webpack-encore": "^0.14.0",
+		"bootstrap-sass": "^3.3.7",
+		"jquery": "^3.2.1"
+	},
+	"dependencies": {
+		"install": "^0.10.1",
+		"jQuery-QueryBuilder": "^2.4.4",
+		"mustache": "^2.3.0",
+		"node-sass": "^4.5.3",
+		"requires": "^1.0.2",
+		"sass-loader": "^6.0.6",
+		"tabcordion": "^1.0.5",
+		"transition": "^0.1.1",
+		"yarn": "^1.0.0"
+	}
 }

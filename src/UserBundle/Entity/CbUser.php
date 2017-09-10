@@ -4,26 +4,22 @@ namespace UserBundle\Entity;
 
 use CouchbaseBundle\Base\CbBaseObject;
 use Doctrine\Common\Collections\ArrayCollection;
-use FOS\UserBundle\Model\GroupableInterface;
+use FOS\UserBundle\Model\GroupInterface;
+use FOS\UserBundle\Model\UserInterface as FOSUserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use FOS\UserBundle\Model\UserInterface as FOSUserInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-
 
 class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, FOSUserInterface
 {
 
-    # const ROLE_DEFAULT = 'ROLE_UNKNOWN';
-    # const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
-
+    // const ROLE_DEFAULT = 'ROLE_UNKNOWN';
+    // const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
     protected $plainPassword;
 
     public function __construct()
     {
-        $this->set('enabled',false);
+        $this->set('enabled', false);
     }
-
 
     public function isEqualTo(UserInterface $user)
     {
@@ -47,6 +43,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function addRole($role)
@@ -61,6 +58,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function serialize()
@@ -73,11 +71,12 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
             $this->get('enabled'),
             $this->getObjectId(),
             $this->get('email'),
-            $this->get('emailCanonical'),
+            $this->get('emailCanonical')
         ));
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function unserialize($serialized)
@@ -105,6 +104,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function eraseCredentials()
@@ -113,6 +113,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getId()
@@ -121,6 +122,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getUsername()
@@ -129,6 +131,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getUsernameCanonical()
@@ -137,6 +140,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getSalt()
@@ -145,6 +149,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getEmail()
@@ -153,6 +158,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getEmailCanonical()
@@ -161,6 +167,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getPassword()
@@ -169,6 +176,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getPlainPassword()
@@ -187,6 +195,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getConfirmationToken()
@@ -195,6 +204,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getRoles()
@@ -206,14 +216,14 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
         }
 
         // we need to make sure to have at least one role
-        if(count($roles) == 0)
-        {
+        if (count($roles) == 0) {
             $roles[] = static::ROLE_DEFAULT;
         }
         return array_unique($roles);
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function hasRole($role)
@@ -222,6 +232,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function isAccountNonExpired()
@@ -230,6 +241,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function isAccountNonLocked()
@@ -238,6 +250,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function isCredentialsNonExpired()
@@ -251,6 +264,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function isSuperAdmin()
@@ -259,6 +273,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function removeRole($role)
@@ -269,22 +284,22 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
             $rolesNew = [];
 
             $max = count($rolesOld);
-            for($i=0;$i<$max;$i++) {
+            for ($i = 0; $i < $max; $i++) {
                 $elem = $rolesOld[$i];
 
-                if ($elem === $role) // ignore
-                {
+                if ($elem === $role) { // ignore
                     continue;
                 }
                 $rolesNew[] = $elem;
             }
-            $this->set('roles',$rolesNew);
+            $this->set('roles', $rolesNew);
         }
 
         return $this;
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setUsername($username)
@@ -295,6 +310,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setUsernameCanonical($usernameCanonical)
@@ -305,6 +321,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setSalt($salt)
@@ -315,6 +332,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setEmail($email)
@@ -325,6 +343,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setEmailCanonical($emailCanonical)
@@ -335,16 +354,18 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setEnabled($boolean)
     {
-        $this->set('enabled', (bool) $boolean);
+        $this->set('enabled', (bool)$boolean);
 
         return $this;
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setPassword($password)
@@ -355,6 +376,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setSuperAdmin($boolean)
@@ -369,6 +391,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setPlainPassword($password)
@@ -380,6 +403,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setLastLogin(\DateTime $time = null)
@@ -390,6 +414,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setConfirmationToken($confirmationToken)
@@ -400,6 +425,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setPasswordRequestedAt(\DateTime $date = null)
@@ -420,15 +446,16 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function isPasswordRequestNonExpired($ttl)
     {
-        return $this->getPasswordRequestedAt() instanceof \DateTime &&
-        $this->getPasswordRequestedAt()->getTimestamp() + $ttl > time();
+        return $this->getPasswordRequestedAt() instanceof \DateTime && $this->getPasswordRequestedAt()->getTimestamp() + $ttl > time();
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function setRoles(array $roles)
@@ -443,6 +470,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getGroups()
@@ -451,6 +479,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function getGroupNames()
@@ -464,6 +493,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function hasGroup($name)
@@ -472,6 +502,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function addGroup(GroupInterface $group)
@@ -484,6 +515,7 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function removeGroup(GroupInterface $group)
@@ -496,10 +528,11 @@ class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, 
     }
 
     /**
+     *
      * @return string
      */
     public function __toString()
     {
-        return (string) $this->getUsername();
+        return (string)$this->getUsername();
     }
 }

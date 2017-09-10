@@ -12,17 +12,20 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
+
     /**
+     *
      * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('couchbase');
-        $rootNode
-            ->children()
-            ->scalarNode('host')->end()
-            ->scalarNode('password')->end()
+        $rootNode->children()
+            ->scalarNode('host')
+            ->end()
+            ->scalarNode('password')
+            ->end()
             ->end();
 
         return $treeBuilder;

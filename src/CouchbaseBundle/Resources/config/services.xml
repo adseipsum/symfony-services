@@ -4,17 +4,17 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-<parameters>
-    <parameter key="couchbase.connector.class">CouchbaseBundle\CouchbaseService</parameter>
-</parameters>
+    <parameters>
+        <parameter key="couchbase.connector.class">CouchbaseBundle\CouchbaseService</parameter>
+    </parameters>
 
-<services>
-    <service id="couchbase.connector" class="%couchbase.connector.class%">
-        <argument type="collection">
-            <argument type="string" key="host">%couchbase.host%</argument>
-            <argument type="string" key="password">%couchbase.password%</argument>
-        </argument>
-    </service>
-</services>
+    <services>
+        <service id="couchbase.connector" class="%couchbase.connector.class%">
+            <argument type="collection">
+                <argument type="string" key="host">%couchbase.host%</argument>
+                <argument type="string" key="password">%couchbase.password%</argument>
+            </argument>
+        </service>
+    </services>
 
 </container>

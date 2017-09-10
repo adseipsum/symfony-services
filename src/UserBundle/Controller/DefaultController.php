@@ -8,12 +8,15 @@ use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
+
     /**
      * @Route("/admin/", name="list")
      */
     public function indexAction(Request $request)
     {
         // replace this example code with whatever you need
-        return json_encode(['ok'=>'true']);
+        return json_encode([
+            'ok' => 'true'
+        ]);
     }
 }

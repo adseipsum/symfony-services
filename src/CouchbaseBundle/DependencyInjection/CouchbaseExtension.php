@@ -2,10 +2,10 @@
 
 namespace CouchbaseBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * This is the class that loads and manages your bundle configuration.
@@ -14,7 +14,9 @@ use Symfony\Component\DependencyInjection\Loader;
  */
 class CouchbaseExtension extends Extension
 {
+
     /**
+     *
      * {@inheritdoc}
      */
     public function load(array $configs, ContainerBuilder $container)
@@ -25,7 +27,7 @@ class CouchbaseExtension extends Extension
         $container->setParameter('couchbase.host', $config['host']);
         $container->setParameter('couchbase.password', $config['password']);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
     }
 }

@@ -5,6 +5,9 @@ Encore
 // directory where all compiled assets will be stored
     .setOutputPath('web/assets/')
 
+    // for Windows https://github.com/symfony/webpack-encore/issues/13
+    .setManifestKeyPrefix('/assets')
+    
     // what's the public path to this directory (relative to your project's document root dir)
     .setPublicPath('/assets')
 

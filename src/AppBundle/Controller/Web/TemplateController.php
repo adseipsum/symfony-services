@@ -9,12 +9,12 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TemplateController extends Controller
 {
+
     /**
      * @Route("/template/main", name="app_template_index")
      */
     public function indexAction(Request $request)
     {
-
         $username = $this->getUser()->getUsernameCanonical();
         $template = 'default';
         $userdir = $this->getParameter('generator_user_dir');
@@ -28,5 +28,4 @@ class TemplateController extends Controller
 
         return $this->render('template/index.html.twig', $params);
     }
-
 }

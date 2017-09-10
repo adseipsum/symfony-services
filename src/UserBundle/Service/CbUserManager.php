@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: void
- * Date: 7/19/17
- * Time: 6:04 PM
- */
 
 namespace UserBundle\Service;
 
@@ -14,18 +8,18 @@ use FOS\UserBundle\Model\UserManager;
 use FOS\UserBundle\Util\CanonicalFieldsUpdater;
 use FOS\UserBundle\Util\Canonicalizer;
 use FOS\UserBundle\Util\PasswordUpdater;
-use FOS\UserBundle\Util\PasswordUpdaterInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use UserBundle\Entity\CbUser;
 use UserBundle\Repository\UserModel;
 
 class CbUserManager extends UserManager
 {
+
     protected $cb;
+
     protected $mdUser;
 
-    public function __construct(CouchbaseService $cb,
-                                EncoderFactoryInterface $encoder)
+    public function __construct(CouchbaseService $cb, EncoderFactoryInterface $encoder)
     {
         $this->cb = $cb;
         $this->mdUser = new UserModel($cb);
@@ -56,13 +50,9 @@ class CbUserManager extends UserManager
      */
     public function findUserBy(array $criteria)
     {
-
-        if(isset($criteria['username']))
-        {
+        if (isset($criteria['username'])) {
             return $this->mdUser->getUserByUsername($criteria['username']);
-        }
-        else if(isset($criteria['usernameCanonical']))
-        {
+        } else if (isset($criteria['usernameCanonical'])) {
             return $this->mdUser->getUserByUsername($criteria['usernameCanonical']);
         }
 
@@ -111,9 +101,8 @@ class CbUserManager extends UserManager
      */
     public function updateUser(UserInterface $user)
     {
-        if($user->getSalt() == null)
-        {
-//            $user->setSalt($this->getSalt());
+        if ($user->getSalt() == null) {
+            // $user->setSalt($this->getSalt());
         }
 
         $this->updateCanonicalFields($user);

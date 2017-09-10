@@ -38,7 +38,7 @@ $(document).ready(function() {
     };
 
 
-    $.fn.load_template_list = function()
+    $.fn.load_template_list = function(selectedTemplateId)
     {
         var dialog = $('.dialog-progress-bar');
         var bar = dialog.find('.progress-bar');
@@ -60,6 +60,9 @@ $(document).ready(function() {
                 {
                     var elem = data.result.values[i];
                     $('#select-template-name').append('<option value="'+elem['id']+'">'+elem['name']+'</option>');
+                }
+                if (selectedTemplateId) {
+                    $('#select-template-name option').removeAttr('selected').filter('[value=' + selectedTemplateId + ']').attr('selected', true);
                 }
             },
             error: function(){
@@ -230,7 +233,7 @@ $(document).ready(function() {
 
         $.ajax({
             type: "POST",
-            url: "/api/template/content/"+tplId,
+            url: "/api/template/save/"+tplId,
             data: JSON.stringify(curr),
             dataType: "json",
             success: function(data) {
@@ -258,7 +261,7 @@ $(document).ready(function() {
                 $('#button-template-plus').removeClass('btn-default');
                 $('#button-template-plus').addClass('btn-success');
 
-                $.fn.load_template_list();
+                $.fn.load_template_list(obj['id']);
             },
             error: function(){
                 bar.removeClass('animate');

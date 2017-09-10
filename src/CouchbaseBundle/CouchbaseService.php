@@ -2,13 +2,15 @@
 
 namespace CouchbaseBundle;
 
-/**
- * User: Alexey Kruchenok
- */
+use Couchbase\Cluster as CouchbaseCluster;
+
 class CouchbaseService
 {
+
     const PROD = 'prod';
+
     const STAGE = 'stage';
+
     const OPERATION_TIMEOUT = 5000000;
 
     private $cluster = null;
@@ -19,7 +21,6 @@ class CouchbaseService
 
     private $envronment = CouchbaseService::STAGE;
 
-
     public function __construct($config)
     {
         $this->config = $config;
@@ -27,10 +28,9 @@ class CouchbaseService
 
     public function connectToCluster()
     {
-        if($this->cluster == null)
-        {
+        if ($this->cluster == null) {
             $host = $this->config['host'];
-            $this->cluster = new \CouchbaseCluster($host);
+            $this->cluster = new CouchbaseCluster($host);
         }
     }
 
@@ -41,18 +41,14 @@ class CouchbaseService
 
     public function getGeneralBucket()
     {
-        if($this->bucketGeneral == null)
-        {
-            if($this->cluster == null)
-            {
+        if ($this->bucketGeneral == null) {
+            if ($this->cluster == null) {
                 $this->connectToCluster();
             }
 
-            if($this->envronment == CouchbaseService::PROD)
-            {
+            if ($this->envronment == CouchbaseService::PROD) {
                 $this->bucketGeneral = $this->cluster->openBucket('general', $this->config['password']);
-            }
-            else {
+            } else {
                 $this->bucketGeneral = $this->cluster->openBucket('stage-general', $this->config['password']);
             }
             $this->bucketGeneral->operationTimeout = CouchbaseService::OPERATION_TIMEOUT;
@@ -65,7 +61,6 @@ class CouchbaseService
         return $this->getGeneralBucket();
     }
 
-
     public function printConfig()
     {
         print_r($this->config);
@@ -75,6 +70,4 @@ class CouchbaseService
     {
         return $this->config;
     }
-
-
 }

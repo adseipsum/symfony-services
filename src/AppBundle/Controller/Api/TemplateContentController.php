@@ -4,19 +4,19 @@ namespace AppBundle\Controller\Api;
 
 use AppBundle\Entity\CbTemplate;
 use AppBundle\Extension\ApiResponse;
-use AppBundle\Extension\EditorExtension;
+use AppBundle\Repository\TemplateModel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
-use AppBundle\Repository\TemplateModel;
 
 class TemplateContentController extends Controller
 {
+
     /**
      * @Route("/template/list", name="api_template_list")
-     * @Method("GET")
+     *
+     * @method ("GET")
      */
     public function getTemplateList()
     {
@@ -37,7 +37,7 @@ class TemplateContentController extends Controller
                 $elem = [];
                 $elem['id'] = $object->getObjectId();
                 $elem['name'] = $object->getName();
-                $ret [] = $elem;
+                $ret[] = $elem;
             }
 
             return ApiResponse::resultValues($ret);
@@ -48,7 +48,8 @@ class TemplateContentController extends Controller
 
     /**
      * @Route("/template/content/{templateId}", name="api_template_get", requirements={"template": "[a-zA-Z0-9\-\:]+"})
-     * @Method("GET")
+     *
+     * @method ("GET")
      */
     public function getTemplateContent($templateId)
     {
@@ -62,8 +63,7 @@ class TemplateContentController extends Controller
             $model = new TemplateModel($cb);
             $object = $model->get($templateId);
 
-            if($object != null)
-            {
+            if ($object != null) {
                 $ret = [];
                 $ret['id'] = $object->getObjectId();
                 $ret['name'] = $object->getName();
@@ -71,19 +71,18 @@ class TemplateContentController extends Controller
                 $ret['count'] = $object->getCount();
 
                 return ApiResponse::resultValue($ret);
-            }
-            else {
+            } else {
                 return ApiResponse::resultNotFound();
             }
-
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
         }
     }
 
     /**
-     * @Route("/template/content/{templateId}", name="api_template_update", requirements={"template": "[a-zA-Z0-9\-\:]+"})
-     * @Method("POST")
+     * @Route("/template/save/{templateId}", name="api_template_update", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     *
+     * @method ("POST")
      */
     public function updateTemplateContent(Request $request, $templateId)
     {
@@ -97,17 +96,15 @@ class TemplateContentController extends Controller
             $model = new TemplateModel($cb);
             $data = json_decode($request->getContent(), true);
 
-
             /*
              * {
-             *    "id":  "id"
-             *    "name" "name"
-             *    "template" "template"
+             * "id": "id"
+             * "name" "name"
+             * "template" "template"
              * }
              */
 
-            if($templateId == 'new')
-            {
+            if ($templateId == 'new') {
                 $object = new CbTemplate();
                 $object->setName($data['name']);
                 $object->setTemplate($data['template']);
@@ -120,13 +117,10 @@ class TemplateContentController extends Controller
                 $ret['count'] = $object->getCount();
 
                 return ApiResponse::resultValue($ret);
-
-            }
-            else {
+            } else {
                 $object = $model->get($templateId);
 
-                if($object != null)
-                {
+                if ($object != null) {
                     $object->setName($data['name']);
                     $object->setTemplate($data['template']);
                     $model->upsert($object);
@@ -138,8 +132,7 @@ class TemplateContentController extends Controller
                     $ret['count'] = $object->getCount();
 
                     return ApiResponse::resultValue($ret);
-                }
-                else {
+                } else {
                     return ApiResponse::resultNotFound();
                 }
             }
@@ -148,10 +141,10 @@ class TemplateContentController extends Controller
         }
     }
 
-
     /**
      * @Route("/template/plus/{templateId}", name="api_template_usage_plus", requirements={"template": "[a-zA-Z0-9\-\:]+"})
-     * @Method("POST")
+     *
+     * @method ("POST")
      */
     public function usagePlusCount($templateId)
     {
@@ -160,8 +153,7 @@ class TemplateContentController extends Controller
             $model = new TemplateModel($cb);
             $object = $model->get($templateId);
 
-            if($object != null)
-            {
+            if ($object != null) {
                 $object->incCount();
                 $model->upsert($object);
 
@@ -170,11 +162,9 @@ class TemplateContentController extends Controller
                 $ret['count'] = $object->getCount();
 
                 return ApiResponse::resultValue($ret);
-            }
-            else {
+            } else {
                 return ApiResponse::resultNotFound();
             }
-
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
         }
@@ -182,7 +172,8 @@ class TemplateContentController extends Controller
 
     /**
      * @Route("/template/minus/{templateId}", name="api_template_usage_minus", requirements={"template": "[a-zA-Z0-9\-\:]+"})
-     * @Method("POST")
+     *
+     * @method ("POST")
      */
     public function usageMinusCount($templateId)
     {
@@ -191,8 +182,7 @@ class TemplateContentController extends Controller
             $model = new TemplateModel($cb);
             $object = $model->get($templateId);
 
-            if($object != null)
-            {
+            if ($object != null) {
                 $object->decCount();
                 $model->upsert($object);
 
@@ -201,14 +191,11 @@ class TemplateContentController extends Controller
                 $ret['count'] = $object->getCount();
 
                 return ApiResponse::resultValue($ret);
-            }
-            else {
+            } else {
                 return ApiResponse::resultNotFound();
             }
-
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
         }
     }
-
 }

@@ -3,7 +3,6 @@
 namespace UserBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-
 use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 
 /**
@@ -14,6 +13,7 @@ use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
  */
 class UserRepository extends EntityRepository
 {
+
     public function getSalt()
     {
         return base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
