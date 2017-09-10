@@ -401,10 +401,10 @@ $(document).ready(function() {
                 }
 
             },
-            error: function(){
+            error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error');
+                alert('Error: ' + errorMsg);
             }
         });
 
