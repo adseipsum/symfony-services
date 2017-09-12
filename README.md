@@ -1,4 +1,16 @@
 web-admin-backend
 =================
 
-A Symfony project created on July 14, 2017, 3:15 am.
+
+Процесс установки:
+
+su dev -l
+
+cd /home/dev/www/admin/
+git pull
+
+composer install
+bin/console cache:clear --env prod --no-warmup
+
+cd /home/dev/www/admin/python_generator/text-generator/
+git pull 
