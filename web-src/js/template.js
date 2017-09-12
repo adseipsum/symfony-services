@@ -86,7 +86,6 @@ $(document).ready(function() {
                             success: function(data) {
                                 bar.removeClass('animate');
                                 dialog.modal('hide');
-                                alert('Saved.');
                                 $.fn.load_generated_text_list(selectedTemplateId);
                             },
                             error: function(errorMsg){
@@ -295,7 +294,8 @@ $(document).ready(function() {
             return;
         }
 
-        var parsedText = generated_template.replaceAll('((','').replaceAll('))','');
+        var parsedText = $('#textarea-template-generator').val();
+        parsedText = parsedText.replaceAll('((','').replaceAll('))','');
         if (parsedText.length === 0 || !parsedText.trim()) {
             return;
         }
@@ -317,7 +317,6 @@ $(document).ready(function() {
             success: function(data) {
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Saved.');
                 $.fn.load_generated_text_list(tplId);
             },
             error: function(errorMsg){
