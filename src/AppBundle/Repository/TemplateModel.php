@@ -3,6 +3,7 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\CbTemplate;
+use CouchbaseBundle\Base\CbBaseObject;
 use Couchbase\Exception as CouchbaseException;
 use CouchbaseBundle\Base\CbBaseModel;
 use CouchbaseBundle\CouchbaseService;
@@ -10,96 +11,125 @@ use CouchbaseBundle\CouchbaseService;
 class TemplateModel extends CbBaseModel
 {
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     // Views Section
     const DISDOC_ID = "template";
 
-    var $version_sequence_initialized;
+    private $version_sequence_initialized;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public function __construct(CouchbaseService $service)
     {
         parent::__construct('tpl', 'Template', $service->getBucketForType('Template'));
     }
 
-    public function factory()
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function factory() : CbBaseObject
     {
         return new CbTemplate();
     }
 
-    public function getDisdocId()
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getDisdocId() : string
     {
         return self::DISDOC_ID;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     // Versioning
-    public function initialize_version_sequence($docId)
+    public function initializeVersionSequence(string $docId)
     {
         try {
-            $this->bucket->get($this->version_counter_key($docId));
+            $this->bucket->get($this->versionCounterKey($docId));
         } catch (CouchbaseException $e) {
-            $this->bucket->insert($this->version_counter_key($docId), CbBaseModel::SEQUENCE_START_VALUE);
+            $this->bucket->insert($this->versionCounterKey($docId), CbBaseModel::SEQUENCE_START_VALUE);
         }
         $this->version_sequence_initialized = true;
     }
 
-    public function version_counter_key($docId)
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function versionCounterKey(string $docId) : string
     {
         return $docId . CbBaseModel::KEY_SEPARATOR . CbBaseModel::SUFFIX_COUNTER;
     }
 
-    public function version_next($docId)
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function versionNext(string $docId) : int
     {
         if ($this->version_sequence_initialized == false) {
-            $this->initialize_version_sequence($docId);
+            $this->initializeVersionSequence($docId);
         }
-        return $this->bucket->counter($this->version_counter_key($docId), 1)->value;
+        return $this->bucket->counter($this->versionCounterKey($docId), 1)->value;
     }
 
-    public function version_current($docId)
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function versionCurrent(string $docId) : int
     {
         if ($this->version_sequence_initialized == false) {
-            $this->initialize_version_sequence($docId);
+            $this->initializeVersionSequence($docId);
         }
 
-        return $this->bucket->counter($this->version_counter_key($docId), 0)->value;
+        return $this->bucket->counter($this->versionCounterKey($docId), 0)->value;
     }
 
-    public function version_key($docId)
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function versionKey(string $docId) : string
     {
-        return $docId . CbBaseModel::KEY_SEPARATOR . $this->version_next($docId);
+        return $docId . CbBaseModel::KEY_SEPARATOR . $this->versionNext($docId);
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Patched update
-    private function _save_version(CbTemplate $object)
+    private function saveVersionInternal(CbBaseObject $object)
     {
         $archived = new CbTemplate();
         $archived->mirror($object);
         $archived->setArchived(true);
-        $key = $this->version_key($object->getObjectId());
+        $key = $this->versionKey($object->getObjectId());
         $archived->setObjectId($key);
         parent::upsert($archived);
     }
 
-    public function upsert($object, $ttl = 0)
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function upsert(CbBaseObject $object, int $ttl = 0)
     {
         parent::upsert($object, $ttl);
         if ($ttl == 0) {
-            $this->_save_version($object);
+            $this->saveVersionInternal($object);
         }
     }
 
-    public function update($object, $ttl = 0)
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function update(CbBaseObject $object, int $ttl = 0)
     {
         parent::update($object, $ttl);
         if ($ttl == 0) {
-            $this->_save_version($object);
+            $this->saveVersionInternal($object);
         }
     }
 
-    public function insert($object, $ttl = 0)
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function insert(CbBaseObject $object, int $ttl = 0)
     {
         parent::insert($object, $ttl);
         if ($ttl == 0) {
-            $this->_save_version($object);
+            $this->saveVersionInternal($object);
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 }

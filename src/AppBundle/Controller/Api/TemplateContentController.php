@@ -3,8 +3,10 @@
 namespace AppBundle\Controller\Api;
 
 use AppBundle\Entity\CbTemplate;
+use AppBundle\Entity\CbGeneratedText;
 use AppBundle\Extension\ApiResponse;
 use AppBundle\Repository\TemplateModel;
+use AppBundle\Repository\GeneratedTextModel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -12,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TemplateContentController extends Controller
 {
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @Route("/template/list", name="api_template_list")
@@ -29,6 +33,7 @@ class TemplateContentController extends Controller
             $cb = $this->get('couchbase.connector');
             $model = new TemplateModel($cb);
             $model->warmup();
+            /* @var $objects CbTemplate[] */
             $objects = $model->getAllObjects();
 
             $ret = [];
@@ -46,12 +51,14 @@ class TemplateContentController extends Controller
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * @Route("/template/content/{templateId}", name="api_template_get", requirements={"template": "[a-zA-Z0-9\-\:]+"})
      *
      * @method ("GET")
      */
-    public function getTemplateContent($templateId)
+    public function getTemplateContent(string $templateId)
     {
         $username = $this->getUser()->getUsernameCanonical();
         if ($username == null) {
@@ -61,6 +68,7 @@ class TemplateContentController extends Controller
         try {
             $cb = $this->get('couchbase.connector');
             $model = new TemplateModel($cb);
+            /* @var $object CbTemplate */
             $object = $model->get($templateId);
 
             if ($object != null) {
@@ -68,7 +76,6 @@ class TemplateContentController extends Controller
                 $ret['id'] = $object->getObjectId();
                 $ret['name'] = $object->getName();
                 $ret['template'] = $object->getTemplate();
-                $ret['count'] = $object->getCount();
 
                 return ApiResponse::resultValue($ret);
             } else {
@@ -79,12 +86,14 @@ class TemplateContentController extends Controller
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * @Route("/template/save/{templateId}", name="api_template_update", requirements={"template": "[a-zA-Z0-9\-\:]+"})
      *
      * @method ("POST")
      */
-    public function updateTemplateContent(Request $request, $templateId)
+    public function updateTemplateContent(Request $request, string $templateId)
     {
         $username = $this->getUser()->getUsernameCanonical();
         if ($username == null) {
@@ -114,10 +123,10 @@ class TemplateContentController extends Controller
                 $ret['id'] = $object->getObjectId();
                 $ret['name'] = $object->getName();
                 $ret['template'] = $object->getTemplate();
-                $ret['count'] = $object->getCount();
 
                 return ApiResponse::resultValue($ret);
             } else {
+                /* @var $object CbTemplate */
                 $object = $model->get($templateId);
 
                 if ($object != null) {
@@ -129,7 +138,6 @@ class TemplateContentController extends Controller
                     $ret['id'] = $object->getObjectId();
                     $ret['name'] = $object->getName();
                     $ret['template'] = $object->getTemplate();
-                    $ret['count'] = $object->getCount();
 
                     return ApiResponse::resultValue($ret);
                 } else {
@@ -141,61 +149,109 @@ class TemplateContentController extends Controller
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * @Route("/template/plus/{templateId}", name="api_template_usage_plus", requirements={"template": "[a-zA-Z0-9\-\:]+"})
      *
      * @method ("POST")
      */
-    public function usagePlusCount($templateId)
+    public function usagePlusCount(Request $request, $templateId)
     {
+        $username = $this->getUser()->getUsernameCanonical();
+        if ($username == null) {
+            return ApiResponse::resultUnauthorized();
+        }
+
         try {
             $cb = $this->get('couchbase.connector');
-            $model = new TemplateModel($cb);
-            $object = $model->get($templateId);
+            $model = new GeneratedTextModel($cb);
+            $data = json_decode($request->getContent(), true);
 
-            if ($object != null) {
-                $object->incCount();
-                $model->upsert($object);
+            $object = new CbGeneratedText();
+            $object->setText($data['text']);
+            $object->setTemplateId($templateId);
+            $model->upsert($object);
 
-                $ret = [];
-                $ret['id'] = $object->getObjectId();
-                $ret['count'] = $object->getCount();
-
-                return ApiResponse::resultValue($ret);
-            } else {
-                return ApiResponse::resultNotFound();
-            }
+            $ret = [];
+            return ApiResponse::resultValue($ret);
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @Route("/template/minus/{templateId}", name="api_template_usage_minus", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route("/generated-text/list/{templateId}", name="api_generated_text_list", requirements={"template": "[a-zA-Z0-9\-\:]+"})
      *
-     * @method ("POST")
+     * @method ("GET")
      */
-    public function usageMinusCount($templateId)
+    public function getGeneratedTextList(string $templateId)
     {
+        $username = $this->getUser()->getUsernameCanonical();
+        if ($username == null) {
+            return ApiResponse::resultUnauthorized();
+        }
+
         try {
             $cb = $this->get('couchbase.connector');
-            $model = new TemplateModel($cb);
-            $object = $model->get($templateId);
+            $model = new GeneratedTextModel($cb);
+            $model->warmup();
+            /* @var $objects CbGeneratedText[] */
+            $objects = $model->listObjectsByTemplateId($templateId);
 
-            if ($object != null) {
-                $object->decCount();
-                $model->upsert($object);
+            $ret = [];
 
-                $ret = [];
-                $ret['id'] = $object->getObjectId();
-                $ret['count'] = $object->getCount();
+            if (!is_null($objects)) {
+                foreach ($objects as $object) {
+                    $elem = [];
+                    $elem['id'] = $object->getObjectId();
+                    $elem['text'] = $object->getText();
+                    $elem['addDate'] = $object->getAddTime();
+                    $ret[] = $elem;
+                }
 
-                return ApiResponse::resultValue($ret);
-            } else {
-                return ApiResponse::resultNotFound();
+                usort($ret, function ($a, $b) {
+                    /* @var $a \DateTime[] */
+                    /* @var $b \DateTime[] */
+                    return $a['addDate']->getTimestamp() < $b['addDate']->getTimestamp();
+                });
             }
+
+            return ApiResponse::resultValues($ret);
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
         }
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @Route("/generated-text/remove/{generateTextId}", name="api_generated_text_remove", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     *
+     * @method ("GET")
+     */
+    public function removeGeneratedText(string $generateTextId)
+    {
+        $username = $this->getUser()->getUsernameCanonical();
+        if ($username == null) {
+            return ApiResponse::resultUnauthorized();
+        }
+
+        try {
+            $cb = $this->get('couchbase.connector');
+            $model = new GeneratedTextModel($cb);
+            $model->warmup();
+            $model->removeByKey($generateTextId);
+
+            $ret = [];
+
+            return ApiResponse::resultValues($ret);
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

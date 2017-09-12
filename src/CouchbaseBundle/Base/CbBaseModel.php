@@ -4,6 +4,7 @@ namespace CouchbaseBundle\Base;
 
 use Couchbase\Exception as CouchbaseException;
 use Couchbase\ViewQuery as CouchbaseViewQuery;
+use Couchbase\Bucket as CouchbaseBucket;
 
 /**
  *
@@ -25,31 +26,38 @@ abstract class CbBaseModel
 
     protected $counter;
     protected $prefix;
-    protected $doctype;
+    protected $docType;
+
+    /**
+     * @var CouchbaseBucket
+     */
     protected $bucket;
 
+    /**
+     * @var IFilter
+     */
     protected $filter;
 
     protected $sequence_initialized;
 
-    public function __construct($prefix, $doctype, $bucket)
+    public function __construct($prefix, $docType, $bucket)
     {
         $this->prefix = $prefix;
-        $this->doctype = $doctype;
+        $this->docType = $docType;
         $this->bucket = $bucket;
     }
 
-    abstract public function factory();
+    abstract public function factory() : CbBaseObject;
 
     abstract public function getDisdocId();
 
 
-    public function setBucket($bucket)
+    public function setBucket(CouchbaseBucket $bucket)
     {
         $this->bucket = $bucket;
     }
 
-    public function getBucket()
+    public function getBucket() : CouchbaseBucket
     {
         return $this->bucket;
     }
@@ -61,19 +69,19 @@ abstract class CbBaseModel
     }
 
 
-    public function initialize_sequence()
+    public function initializeSequence()
     {
         try {
-            $this->bucket->get($this->count_key());
+            $this->bucket->get($this->countKey());
         } catch (CouchbaseException $e) {
-            $this->bucket->insert($this->count_key(), CbBaseModel::SEQUENCE_START_VALUE);
+            $this->bucket->insert($this->countKey(), CbBaseModel::SEQUENCE_START_VALUE);
         }
         $this->sequence_initialized = true;
     }
 
     public function docType()
     {
-        return $this->doctype;
+        return $this->docType;
     }
 
     public function prefix()
@@ -86,27 +94,27 @@ abstract class CbBaseModel
         return $this->prefix . CbBaseModel::KEY_SEPARATOR . $id;
     }
 
-    public function count_key()
+    public function countKey()
     {
         return $this->prefix . CbBaseModel::KEY_SEPARATOR . CbBaseModel::SUFFIX_COUNTER;
     }
 
-    public function id_next()
+    public function idNext()
     {
         if ($this->sequence_initialized == false) {
-            $this->initialize_sequence();
+            $this->initializeSequence();
         }
 
-        return $this->bucket->counter($this->count_key(), 1)->value;
+        return $this->bucket->counter($this->countKey(), 1)->value;
     }
 
-    public function id_current()
+    public function idCurrent()
     {
         if ($this->sequence_initialized == false) {
-            $this->initialize_sequence();
+            $this->initializeSequence();
         }
 
-        return $this->bucket->counter($this->count_key(), 0)->value;
+        return $this->bucket->counter($this->countKey(), 0)->value;
     }
 
     public function isExist($key)
@@ -139,14 +147,14 @@ abstract class CbBaseModel
     }
 
 
-    public function create($object)
+    public function create(CbBaseObject $object)
     {
 
         $key = $object->getObjectId();
 
         if ($key == null) {
-            $object->setObjectId($this->key($this->id_next()));
-            $object->setDocType($this->doctype);
+            $object->setObjectId($this->key($this->idNext()));
+            $object->setDocType($this->docType);
             $key = $object->getObjectId();
         }
 
@@ -160,15 +168,15 @@ abstract class CbBaseModel
         return $key;
     }
 
-    public function create_insert($object, $ttl = 0)
+    public function createInsert($object, $ttl = 0)
     {
         $this->insert($object, $ttl);
     }
 
-    public function insert($object, $ttl = 0)
+    public function insert(CbBaseObject $object, int $ttl = 0)
     {
-        $object->setObjectId($this->key($this->id_next()));
-        $object->setDocType($this->doctype);
+        $object->setObjectId($this->key($this->idNext()));
+        $object->setDocType($this->docType);
         $key = $object->getObjectId();
 
         $value = null;
@@ -187,13 +195,13 @@ abstract class CbBaseModel
         return $key;
     }
 
-    public function upsert($object, $ttl = 0)
+    public function upsert(CbBaseObject $object, int $ttl = 0)
     {
         $key = $object->getObjectId();
 
         if ($key == null) {
-            $object->setObjectId($this->key($this->id_next()));
-            $object->setDocType($this->doctype);
+            $object->setObjectId($this->key($this->idNext()));
+            $object->setDocType($this->docType);
             $key = $object->getObjectId();
         }
 
@@ -211,7 +219,7 @@ abstract class CbBaseModel
         }
     }
 
-    public function update($object, $ttl = 0)
+    public function update(CbBaseObject $object, int $ttl = 0)
     {
         $key = $object->getObjectId();
 
@@ -253,7 +261,6 @@ abstract class CbBaseModel
             }
             return $ret;
         } else {
-
             try {
                 $retCbs = $this->bucket->get($key);
                 $ret = $this->factory();
@@ -270,16 +277,15 @@ abstract class CbBaseModel
     }
 
 
-    public function validateObject($object, $id = null)
+    public function validateObject(CbBaseObject $object, $id = null)
     {
 
         if ($id != null && $object->getObjectId() != $id) {
             return false;
-        } else if ($object->getDocType() != $this->doctype()) {
+        } elseif ($object->getDocType() != $this->doctype()) {
             return false;
         }
         return true;
-
     }
 
     /**

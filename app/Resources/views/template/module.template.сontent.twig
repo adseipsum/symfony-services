@@ -7,6 +7,9 @@
             <a  id="a-tab-generator" href="#tab-generator" data-toggle="tab">Генератор</a>
         </li>
         <li >
+            <a  id="a-tab-generated-texts" href="#tab-generated-texts" data-toggle="tab">Сгенерированные тексты</a>
+        </li>
+        <li >
             <a  id="a-tab-error" href="#tab-errors" data-toggle="tab">Ошибки</a>
         </li>
     </ul>
@@ -16,10 +19,10 @@
             <input id="input-template-name" class="form-control" type="text">
 
             <label for="comment">Шаблон:</label>
-            <textarea id="textarea-template-content" rows="17" class="form-control" style="resize: none;min-width: 100%"></textarea>
+            <textarea id="textarea-template-content" rows="17" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
 
             <div class="button-row">
-                <input id="input-template-id"     type="hidden" value="none" >
+                <input id="input-template-id"     type="hidden" value="none" />
                 <input id="button-template-save"   type="button" class="btn btn-default"  value="Сохранить"/>
                 <input id="button-template-delete" type="button" class="btn btn-default"  value="Удалить"
                     data-toggle="modal" data-target="#dialog-template-confirm-delete"/>
@@ -27,23 +30,25 @@
         </div>
         <div class="tab-pane" id="tab-generator" style="padding-top: 5px">
             <label for="input-template-count">Количество использований</label>
-            <input id="input-template-count" class="form-control" readonly type="text">
+            <input id="input-template-count" class="form-control" readonly type="text"/>
 
             <label for="input-template-drug-name">Название препарата</label>
-            <input id="input-template-drug-name" class="form-control" type="text">
+            <input id="input-template-drug-name" class="form-control" type="text"/>
 
             <label for="comment">Сгенерированный текст:</label>
-            <textarea id="textarea-template-generator" rows="15" readonly class="form-control" style="resize: none;min-width: 100%"></textarea>
+            <textarea id="textarea-template-generator" rows="15" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
             <div class="button-row">
                 <input id="button-template-generate" type="button" class="btn btn-default"  value="Generate"/>
 
                 <input id="button-template-toggle-parenthesis" type="button" class="btn btn-success"  value="Hide (( ))"/>
                 <input id="input-generated-raw" type="hidden"/>
 
-                <input id="button-template-plus" type="button" class="btn btn-default"  value="+1"/>
-                <input id="button-template-minus" type="button" class="btn btn-default"  value="-1"/>
-
+                <input id="button-template-plus" type="button" class="btn btn-default"  value="Сохранить текст"/>
             </div>
+        </div>
+        <div class="tab-pane" id="tab-generated-texts" style="padding-top: 5px">
+            <label for="comment">Сгенерированные тексты:</label>
+            <div id="generated-texts"></div>
         </div>
         <div class="tab-errors tab-pane" id="tab-errors">
             <label for="generator-error-container">Ошибки:</label>
@@ -51,7 +56,7 @@
 
             </div>
             <label for="textarea-error-console">Консоль:</label>
-            <textarea id="textarea-error-console" rows="4" readonly class="form-control" style="resize: none;min-width: 100%"></textarea>
+            <textarea id="textarea-error-console" rows="4" readonly class="form-control" style="resize: vertical;min-width: 100%"></textarea>
             <div class="button-row">
                 <input type="button" id="button-error-reset" class="btn btn-danger"  value="Reset"/>
             </div>

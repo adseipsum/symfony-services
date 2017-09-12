@@ -3,6 +3,7 @@
 namespace CouchbaseBundle;
 
 use Couchbase\Cluster as CouchbaseCluster;
+use Couchbase\Bucket as CouchbaseBucket;
 
 class CouchbaseService
 {
@@ -13,8 +14,14 @@ class CouchbaseService
 
     const OPERATION_TIMEOUT = 5000000;
 
+    /**
+     * @var CouchbaseCluster
+     */
     private $cluster = null;
 
+    /**
+     * @var CouchbaseBucket
+     */
     private $bucketGeneral = null;
 
     private $config = null;
@@ -39,7 +46,7 @@ class CouchbaseService
         $this->envronment = $env;
     }
 
-    public function getGeneralBucket()
+    public function getGeneralBucket() : CouchbaseBucket
     {
         if ($this->bucketGeneral == null) {
             if ($this->cluster == null) {

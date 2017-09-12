@@ -4,54 +4,60 @@ namespace AppBundle\Entity;
 
 use CouchbaseBundle\Base\CbBaseObject;
 
-class CbTemplate extends CbBaseObject
+class CbGeneratedText extends CbBaseObject
 {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function setArchived($isArchived)
+    public function __construct()
     {
-        $this->set('isArchived', $isArchived);
+        parent::__construct();
+        $this->setAddTime(new \DateTime());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function isArchived()
-    {
-        $ret = $this->get('isArchived');
-        if ($ret == null) {
-            return false;
-        } else {
-            return $ret;
-        }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public function setTemplate($text)
+    public function setText(string $text)
     {
         $this->set('templateText', $text);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function getTemplate()
+    public function getText() : string
     {
         return $this->get('templateText');
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function setName($name)
+    public function setTemplateId(string $name)
     {
-        $this->set('name', $name);
+        $this->set('templateId', $name);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function getName()
+    public function getTemplateId() : string
     {
-        return $this->get('name');
+        return $this->get('templateId');
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getAddTime() : \DateTime
+    {
+        $ret = new \DateTime();
+        $unixtimestamp = $this->get('unixtimestamp');
+        $ret->setTimestamp($unixtimestamp);
+        return $ret;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setAddTime(\DateTime $time = null)
+    {
+        $this->set('unixtimestamp', $time->getTimestamp());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

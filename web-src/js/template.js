@@ -37,6 +37,77 @@ $(document).ready(function() {
         }
     };
 
+    $.fn.load_generated_text_list = function(selectedTemplateId)
+    {
+        if (!selectedTemplateId) {
+            $('#generated-texts').empty();
+        }
+
+        var dialog = $('.dialog-progress-bar');
+        var bar = dialog.find('.progress-bar');
+
+        dialog.modal('show');
+        bar.addClass('animate');
+
+        $.ajax({
+            type: "GET",
+            url: "/api/generated-text/list/" + selectedTemplateId,
+            dataType: "json",
+
+            success: function(data) {
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                var generated_texts = $('#generated-texts')
+                generated_texts.empty();
+                for(var i=0;i<data.result.values.length; i++)
+                {
+                    var elem = data.result.values[i];
+                    var textArea = $('<textarea rows="5" readonly class="form-control" style="resize: vertical;min-width: 100%; margin-bottom: 5px"/>');
+                    textArea.text(elem['text']);
+                    generated_texts.append(textArea);
+                    var generateTextId = elem['id'];
+                    var minusBtn = $('<input id="button-template-minus-' + generateTextId + '" type="button" class="btn button-template-minus btn-default" value="Удалить текст"/>');
+                    minusBtn.on('click',  function(e) {
+                        var resultConfirm = confirm("Вы уверены что данный текст нужно удалить безвозвратно?");
+                        if (!resultConfirm) {
+                            return;
+                        }
+
+                        var dialog = $('.dialog-progress-bar');
+                        var bar = dialog.find('.progress-bar');
+
+                        dialog.modal('show');
+                        bar.addClass('animate');
+
+                        $.ajax({
+                            type: "GET",
+                            url: "/api/generated-text/remove/"+generateTextId,
+                            dataType: "json",
+                            success: function(data) {
+                                bar.removeClass('animate');
+                                dialog.modal('hide');
+                                alert('Saved.');
+                                $.fn.load_generated_text_list(selectedTemplateId);
+                            },
+                            error: function(errorMsg){
+                                bar.removeClass('animate');
+                                dialog.modal('hide');
+                                alert('Error: ' + errorMsg);
+                            }
+                        });
+                    });
+                    generated_texts.append(minusBtn);
+                    generated_texts.append($('<hr/>'));
+                }
+            },
+            error: function(errorMsg){
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                alert('Error: ' + errorMsg);
+            }
+        });
+    };
+
 
     $.fn.load_template_list = function(selectedTemplateId)
     {
@@ -54,12 +125,13 @@ $(document).ready(function() {
             success: function(data) {
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                $('#select-template-name').empty();
-                $('#select-template-name').append('<option value="0">Select template name</option>');
-                for(i=0;i<data.result.values.length; i++)
+                var selectTemplateName = $('#select-template-name');
+                selectTemplateName.empty();
+                selectTemplateName.append('<option value="0">Select template name</option>');
+                for(var i=0;i<data.result.values.length; i++)
                 {
                     var elem = data.result.values[i];
-                    $('#select-template-name').append('<option value="'+elem['id']+'">'+elem['name']+'</option>');
+                    selectTemplateName.append('<option value="'+elem['id']+'">'+elem['name']+'</option>');
                 }
                 if (selectedTemplateId) {
                     $('#select-template-name option').removeAttr('selected').filter('[value=' + selectedTemplateId + ']').attr('selected', true);
@@ -90,8 +162,6 @@ $(document).ready(function() {
 
         $('#button-template-generate').addClass('btn-default');
         $('#button-template-generate').removeClass('btn-info');
-        $('#button-template-minus').addClass('btn-default');
-        $('#button-template-minus').removeClass('btn-danger');
         $('#button-template-plus').addClass('btn-default');
         $('#button-template-plus').removeClass('btn-success');
 
@@ -126,7 +196,6 @@ $(document).ready(function() {
 
                 var obj = data.result.value;
 
-                $('#input-template-count').val(obj['count']);
                 $('#input-template-name').val(obj['name']);
                 $('#textarea-template-content').val(obj['template']);
                 $('#input-template-id').val(obj['id']);
@@ -146,13 +215,12 @@ $(document).ready(function() {
 
                 $('#button-template-generate').removeClass('btn-default');
                 $('#button-template-generate').addClass('btn-info');
-                $('#button-template-minus').removeClass('btn-default');
-                $('#button-template-minus').addClass('btn-danger');
                 $('#button-template-plus').removeClass('btn-default');
                 $('#button-template-plus').addClass('btn-success');
                 $('#generator-error-container').empty();
                 $('#textarea-template-generator').val('');
                 generated_template = '';
+                $.fn.load_generated_text_list(tplId);
             },
             error: function(errorMsg){
                 bar.removeClass('animate');
@@ -161,56 +229,7 @@ $(document).ready(function() {
             }
         });
     });
-/*
-    $('#button-template-load').on('click',  function(e){
-        var tplId = $('#select-template-name').val();
 
-        var dialog = $('.dialog-progress-bar');
-        var bar = dialog.find('.progress-bar');
-
-        dialog.modal('show');
-        bar.addClass('animate');
-
-        $.ajax({
-            type: "GET",
-            url: "/api/template/content/"+tplId,
-            dataType: "json",
-            success: function(data) {
-                bar.removeClass('animate');
-                dialog.modal('hide');
-
-                var obj = data.result.value;
-
-                $('#input-template-count').val(obj['count']);
-                $('#input-template-name').val(obj['name']);
-                $('#textarea-template-content').val(obj['template']);
-                $('#input-template-id').val(obj['id']);
-
-                $('#button-template-save').removeClass('btn-default');
-                $('#button-template-save').addClass('btn-success');
-                $('#button-template-delete').removeClass('btn-default');
-                $('#button-template-delete').addClass('btn-danger');
-                $('#button-template-save').val('Сохранить');
-
-                $('#button-template-generate').removeClass('btn-default');
-                $('#button-template-generate').addClass('btn-info');
-                $('#button-template-minus').removeClass('btn-default');
-                $('#button-template-minus').addClass('btn-danger');
-                $('#button-template-plus').removeClass('btn-default');
-                $('#button-template-plus').addClass('btn-success');
-                $('#generator-error-container').empty();
-                $('#textarea-template-generator').val('');
-                generated_template = '';
-
-            },
-            error: function(errorMsg){
-                bar.removeClass('animate');
-                dialog.modal('hide');
-                alert('Error: ' + errorMsg);
-            }
-        });
-    });
-*/
 
     $('#button-template-save').on('click',  function(e){
         var tplId = $('#input-template-id').val();
@@ -234,6 +253,7 @@ $(document).ready(function() {
         $.ajax({
             type: "POST",
             url: "/api/template/save/"+tplId,
+            contentType: "application/json; charset=utf-8",
             data: JSON.stringify(curr),
             dataType: "json",
             success: function(data) {
@@ -242,7 +262,6 @@ $(document).ready(function() {
 
                 var obj = data.result.value;
 
-                $('#input-template-count').val(obj['count']);
                 $('#input-template-name').val(obj['name']);
                 $('#textarea-template-content').val(obj['template']);
                 $('#input-template-id').val(obj['id']);
@@ -256,8 +275,6 @@ $(document).ready(function() {
 
                 $('#button-template-generate').removeClass('btn-default');
                 $('#button-template-generate').addClass('btn-info');
-                $('#button-template-minus').removeClass('btn-default');
-                $('#button-template-minus').addClass('btn-danger');
                 $('#button-template-plus').removeClass('btn-default');
                 $('#button-template-plus').addClass('btn-success');
 
@@ -278,34 +295,8 @@ $(document).ready(function() {
             return;
         }
 
-        var dialog = $('.dialog-progress-bar');
-        var bar = dialog.find('.progress-bar');
-
-        dialog.modal('show');
-        bar.addClass('animate');
-
-        $.ajax({
-            type: "POST",
-            url: "/api/template/plus/"+tplId,
-            dataType: "json",
-            success: function(data) {
-                bar.removeClass('animate');
-                dialog.modal('hide');
-
-                var obj = data.result.value;
-                $('#input-template-count').val(obj['count']);
-            },
-            error: function(errorMsg){
-                bar.removeClass('animate');
-                dialog.modal('hide');
-                alert('Error: ' + errorMsg);
-            }
-        });
-    });
-
-    $('#button-template-minus').on('click',  function(e) {
-        var tplId = $('#input-template-id').val();
-        if (tplId == 'none' || tplId == 'new') {
+        var parsedText = generated_template.replaceAll('((','').replaceAll('))','');
+        if (parsedText.length === 0 || !parsedText.trim()) {
             return;
         }
 
@@ -317,14 +308,17 @@ $(document).ready(function() {
 
         $.ajax({
             type: "POST",
-            url: "/api/template/minus/"+tplId,
+            url: "/api/template/plus/"+tplId,
             dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
+                'text': parsedText
+            }),
             success: function(data) {
                 bar.removeClass('animate');
                 dialog.modal('hide');
-
-                var obj = data.result.value;
-                $('#input-template-count').val(obj['count']);
+                alert('Saved.');
+                $.fn.load_generated_text_list(tplId);
             },
             error: function(errorMsg){
                 bar.removeClass('animate');
@@ -332,9 +326,7 @@ $(document).ready(function() {
                 alert('Error: ' + errorMsg);
             }
         });
-
     });
-
 
     $('#button-template-generate').on('click',  function(e) {
         var tplId = $('#input-template-id').val();
@@ -414,12 +406,6 @@ $(document).ready(function() {
     $('#button-template-toggle-parenthesis').on('click',  function(e) {
         $.fn.toggle_parenthesiss_state();
     });
-
-    /*
-    $('#button-template-delete').on('click',  function(e) {
-
-    });
-    */
 
 
     $('#dialog-template-confirm-delete').on('show.bs.modal', function(e) {

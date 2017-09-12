@@ -1,0 +1,51 @@
+<?php
+
+namespace AppBundle\Repository;
+
+use AppBundle\Entity\CbGeneratedText;
+use CouchbaseBundle\Base\CbBaseModel;
+use CouchbaseBundle\CouchbaseService;
+use CouchbaseBundle\Base\CbBaseObject;
+
+class GeneratedTextModel extends CbBaseModel
+{
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Views Section
+    const DISDOC_ID = "generated_text";
+
+    const VIEW_BY_TEMPLATE_ID = 'templateId';
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function __construct(CouchbaseService $service)
+    {
+        parent::__construct('generate-text', 'GeneratedText', $service->getBucketForType('GeneratedText'));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function factory() : CbBaseObject
+    {
+        $ret = new CbGeneratedText();
+        return $ret;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getDisdocId() : string
+    {
+        return self::DISDOC_ID;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function listObjectsByTemplateId(string $templateId)
+    {
+        $objectIds = $this->listObjectIdByView(self::VIEW_BY_TEMPLATE_ID, $templateId);
+        return $this->get($objectIds);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
