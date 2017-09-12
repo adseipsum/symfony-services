@@ -67,34 +67,36 @@ $(document).ready(function() {
                     generated_texts.append(textArea);
                     var generateTextId = elem['id'];
                     var minusBtn = $('<input id="button-template-minus-' + generateTextId + '" type="button" class="btn button-template-minus btn-default" value="Удалить текст"/>');
-                    minusBtn.on('click',  function(e) {
-                        var resultConfirm = confirm("Вы уверены что данный текст нужно удалить безвозвратно?");
-                        if (!resultConfirm) {
-                            return;
-                        }
-
-                        var dialog = $('.dialog-progress-bar');
-                        var bar = dialog.find('.progress-bar');
-
-                        dialog.modal('show');
-                        bar.addClass('animate');
-
-                        $.ajax({
-                            type: "GET",
-                            url: "/api/generated-text/remove/"+generateTextId,
-                            dataType: "json",
-                            success: function(data) {
-                                bar.removeClass('animate');
-                                dialog.modal('hide');
-                                $.fn.load_generated_text_list(selectedTemplateId);
-                            },
-                            error: function(errorMsg){
-                                bar.removeClass('animate');
-                                dialog.modal('hide');
-                                alert('Error: ' + errorMsg);
+                    (function(minusBtn, generateTextId) {
+                        minusBtn.on('click',  function(e) {
+                            var resultConfirm = confirm("Вы уверены что данный текст нужно удалить безвозвратно?");
+                            if (!resultConfirm) {
+                                return;
                             }
-                        });
-                    });
+
+                            var dialog = $('.dialog-progress-bar');
+                            var bar = dialog.find('.progress-bar');
+
+                            dialog.modal('show');
+                            bar.addClass('animate');
+
+                            $.ajax({
+                                type: "GET",
+                                url: "/api/generated-text/remove/"+generateTextId,
+                                dataType: "json",
+                                success: function(data) {
+                                    bar.removeClass('animate');
+                                    dialog.modal('hide');
+                                    $.fn.load_generated_text_list(selectedTemplateId);
+                                },
+                                error: function(errorMsg){
+                                    bar.removeClass('animate');
+                                    dialog.modal('hide');
+                                    alert('Error: ' + errorMsg);
+                                }
+                            });
+                        })
+                    })(minusBtn, generateTextId);
                     generated_texts.append(minusBtn);
                     generated_texts.append($('<hr/>'));
                 }
@@ -293,7 +295,11 @@ $(document).ready(function() {
         if (tplId == 'none' || tplId == 'new') {
             return;
         }
-
+        
+        if (generated_template.length === 0 || !generated_template.trim()) {
+            return;
+        }
+        
         var parsedText = $('#textarea-template-generator').val();
         parsedText = parsedText.replaceAll('((','').replaceAll('))','');
         if (parsedText.length === 0 || !parsedText.trim()) {
