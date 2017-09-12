@@ -147,7 +147,6 @@ $(document).ready(function() {
     };
 
     $('#button-template-new').on('click',  function(e){
-        $('#input-template-count').val(0);
         $('#input-template-name').val('');
         $('#textarea-template-content').val('');
         $('#input-template-id').val('new');

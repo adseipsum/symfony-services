@@ -23,14 +23,14 @@
 
             <div class="button-row">
                 <input id="input-template-id"     type="hidden" value="none" />
-                <input id="button-template-save"   type="button" class="btn btn-default"  value="Сохранить"/>
-                <input id="button-template-delete" type="button" class="btn btn-default"  value="Удалить"
+                <input id="button-template-save"   type="button" class="btn btn-default"  value="Сохранить шаблон"/>
+                <input id="button-template-delete" type="button" class="btn btn-default"  value="Удалить шаблон"
                     data-toggle="modal" data-target="#dialog-template-confirm-delete"/>
             </div>
         </div>
         <div class="tab-pane" id="tab-generator" style="padding-top: 5px">
-            <label for="input-template-count">Количество использований</label>
-            <input id="input-template-count" class="form-control" readonly type="text"/>
+            <!--label for="input-template-count">Количество использований</label>
+            <input id="input-template-count" class="form-control" readonly type="text"/-->
 
             <label for="input-template-drug-name">Название препарата</label>
             <input id="input-template-drug-name" class="form-control" type="text"/>
@@ -38,7 +38,7 @@
             <label for="comment">Сгенерированный текст:</label>
             <textarea id="textarea-template-generator" rows="15" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
             <div class="button-row">
-                <input id="button-template-generate" type="button" class="btn btn-default"  value="Generate"/>
+                <input id="button-template-generate" type="button" class="btn btn-default"  value="Сгенерировать текст"/>
 
                 <input id="button-template-toggle-parenthesis" type="button" class="btn btn-success"  value="Hide (( ))"/>
                 <input id="input-generated-raw" type="hidden"/>
