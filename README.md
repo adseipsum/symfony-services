@@ -11,6 +11,7 @@ git pull
 
 composer install
 bin/console cache:clear --env prod --no-warmup
+bin/console cache:clear --env dev --no-warmup
 
 cd /home/dev/www/admin/python_generator/text-generator/
 git pull 
