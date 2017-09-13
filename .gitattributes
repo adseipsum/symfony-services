@@ -1,0 +1,79 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+composer.json text eol=lf
+package.json text eol=lf
+
+# Explicitly declare text files we want to always be normalized and converted to native line endings on checkout.
+
+*.c             text
+*.h             text
+*.java          text
+
+*.vert          text
+
+*.json          text
+*.puml          text
+*.tmx           text
+*.xml           text
+*.yml           text
+*.html          text
+*.sh            text
+*.css           text
+*.js            text
+*.txt           text
+*.md            text
+*.gradle        text
+*.properties    text
+*.bat           text
+
+*.bdx           text
+*.fntx          text
+*.frag          text
+
+*.classpath     text
+*.project       text
+*.gitattributes text
+.gitignore      text
+gradlew         text
+assets          text
+gradlew         text
+*.launch        text
+
+
+# Denote all files that are truly binary and should not be modified.
+
+*.blend1        binary
+*.blend         binary
+
+*.bin           binary
+*.so            binary
+*.dll           binary
+
+*.class         binary
+*.war binary
+*.jar           binary
+*.ear           binary
+
+*.db            binary
+
+*.jpeg          binary
+*.png           binary
+*.gif           binary
+*.jpg           binary
+*.ico           binary
+
+*.ttf           binary
+
+# diff config
+
+*.doc	 diff=astextplain
+*.DOC	 diff=astextplain
+*.docx diff=astextplain
+*.DOCX diff=astextplain
+*.dot  diff=astextplain
+*.DOT  diff=astextplain
+*.pdf  diff=astextplain
+*.PDF	 diff=astextplain
+*.rtf	 diff=astextplain
+*.RTF diff=astextplain
