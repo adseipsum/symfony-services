@@ -25,7 +25,7 @@ $(document).ready(function() {
         $.fn.render_generated_template();
     };
 
-    $.fn.render_generated_template = function()
+    $.fn.render_generated_template = function(distances)
     {
         if(parenthesis_state_show == true)
         {
@@ -34,6 +34,12 @@ $(document).ready(function() {
         else {
             var parsed = generated_template.replaceAll('((','').replaceAll('))','');
             $('#textarea-template-generator').val(parsed);
+        }
+        if (!distances) {
+            $('#generate-distance-out').text('');
+        } else {
+            var distance_text = JSON.stringify(distances, null, '    ');
+            $('#generate-distance-out').text(distance_text);
         }
     };
 
@@ -62,10 +68,14 @@ $(document).ready(function() {
                 for(var i=0;i<data.result.values.length; i++)
                 {
                     var elem = data.result.values[i];
+
+                    var generateTextId = elem['id'];
+                    generated_texts.append($('<div><span>id: ' + generateTextId + '</span></div>'));
+
                     var textArea = $('<textarea rows="5" readonly class="form-control" style="resize: vertical;min-width: 100%; margin-bottom: 5px"/>');
                     textArea.text(elem['text']);
                     generated_texts.append(textArea);
-                    var generateTextId = elem['id'];
+
                     var minusBtn = $('<input id="button-template-minus-' + generateTextId + '" type="button" class="btn button-template-minus btn-default" value="Удалить текст"/>');
                     (function(minusBtn, generateTextId) {
                         minusBtn.on('click',  function(e) {
@@ -98,6 +108,7 @@ $(document).ready(function() {
                         })
                     })(minusBtn, generateTextId);
                     generated_texts.append(minusBtn);
+
                     generated_texts.append($('<hr/>'));
                 }
             },
@@ -129,10 +140,15 @@ $(document).ready(function() {
                 var selectTemplateName = $('#select-template-name');
                 selectTemplateName.empty();
                 selectTemplateName.append('<option value="0">Select template name</option>');
-                for(var i=0;i<data.result.values.length; i++)
-                {
+                for(var i=0;i<data.result.values.length; i++) {
                     var elem = data.result.values[i];
-                    selectTemplateName.append('<option value="'+elem['id']+'">'+elem['name']+'</option>');
+                    selectTemplateName.append('<option value="' + elem['id'] + '">' + elem['name'] + '</option>');
+                }
+                if (!selectedTemplateId) {
+                    var tplId = $('#input-template-id').val();
+                    if(!(tplId == 'none' || tplName.length == 0)) {
+                        selectedTemplateId = tplId;
+                    }
                 }
                 if (selectedTemplateId) {
                     $('#select-template-name option').removeAttr('selected').filter('[value=' + selectedTemplateId + ']').attr('selected', true);
@@ -146,10 +162,14 @@ $(document).ready(function() {
         });
     };
 
-    $('#button-template-new').on('click',  function(e){
+    $.fn.clear_content = function() {
         $('#input-template-name').val('');
         $('#textarea-template-content').val('');
         $('#input-template-id').val('new');
+
+        $('#generate-distance-out').text('');
+        
+        $('#generated-texts').empty();
 
         $('#button-template-save').removeClass('btn-default');
         $('#button-template-save').addClass('btn-success');
@@ -168,6 +188,11 @@ $(document).ready(function() {
         $('#generator-error-container').empty();
         $('#textarea-template-generator').val('');
         generated_template = '';
+    }
+
+
+    $('#button-template-new').on('click',  function(e){
+        $.fn.clear_content();
     });
 
 
@@ -210,8 +235,7 @@ $(document).ready(function() {
 
                 $('#button-template-save').val('Сохранить');
 
-
-                console.log( $('#button-template-delete').data());
+                // console.log( $('#button-template-delete').data());
 
                 $('#button-template-generate').removeClass('btn-default');
                 $('#button-template-generate').addClass('btn-info');
@@ -350,6 +374,10 @@ $(document).ready(function() {
             param['drugName'] = drugName;
         }
 
+        param['generateLoop'] = $('#input-template-pregenerated-count').val();
+        param['removeStopwords'] = $('#input-template-use-stopwords').val();
+        param['algorithm'] = $('#input-template-algorithm').val();
+
         dialog.modal('show');
         bar.addClass('animate');
 
@@ -367,9 +395,10 @@ $(document).ready(function() {
                         $('#generator-error-container').empty();
                         $('#a-tab-generator').trigger('click');
                         generated_template = data.result.value.generated;
+                        var distances = data.result.value.distances;
 
-                        console.log(generated_template);
-                        $.fn.render_generated_template();
+                        // console.log(generated_template);
+                        $.fn.render_generated_template(distances);
                     }
                     else {
                         // Error div content
@@ -406,25 +435,46 @@ $(document).ready(function() {
 
     });
 
+    $('#button-template-delete').on('click',  function(e) {
+        var tplIdSelected = $('#select-template-name').val();
+        if (tplIdSelected === undefined || tplIdSelected == 0) {
+            return;
+        }
+
+        var resultConfirm = confirm("Вы уверены что данный шаблон нужно удалить безвозвратно?");
+        if (!resultConfirm) {
+            return;
+        }
+
+        var dialog = $('.dialog-progress-bar');
+        var bar = dialog.find('.progress-bar');
+
+        dialog.modal('show');
+        bar.addClass('animate');
+
+        $.ajax({
+            type: "GET",
+            url: "/api/template/remove/"+tplIdSelected,
+            dataType: "json",
+            success: function(data) {
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                $.fn.load_template_list();
+                $.fn.clear_content();
+            },
+            error: function(errorMsg){
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                alert('Error: ' + errorMsg);
+            }
+        });
+    });
+
 
     $('#button-template-toggle-parenthesis').on('click',  function(e) {
         $.fn.toggle_parenthesiss_state();
     });
 
-
-    $('#dialog-template-confirm-delete').on('show.bs.modal', function(e) {
-        var tplId = $('#input-template-id').val();
-        var tplName = $('#select-template-name option:selected').text();
-
-        if (tplId == 'none' || tplId == 'new') {
-            e.preventDefault();
-            return;
-        }
-
-        var data = $(e.relatedTarget).data();
-        $('.title', this).text(tplName);
-        $('.btn-ok', this).data('recordId', tplId);
-    });
 
     $('#dialog-dict-confirm-delete').on('click', '.btn-ok', function(e) {
         var $modalDiv = $(e.delegateTarget);

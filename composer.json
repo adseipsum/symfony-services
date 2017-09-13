@@ -35,6 +35,7 @@
 		"symfony/swiftmailer-bundle": "^2.3.10",
 		"symfony/symfony": "3.3.*",
 		"twig/twig": "^1.0||^2.0",
+		"oefenweb/damerau-levenshtein": "2.1.*@dev",
 		"nlp-tools/nlp-tools": "1.0.*@dev"
 	},
 	"require-dev": {

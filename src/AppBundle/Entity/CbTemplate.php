@@ -9,14 +9,14 @@ class CbTemplate extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function setArchived($isArchived)
+    public function setArchived(bool $isArchived)
     {
         $this->set('isArchived', $isArchived);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function isArchived()
+    public function isArchived() : bool
     {
         $ret = $this->get('isArchived');
         if (isset($ret)) {
@@ -28,14 +28,14 @@ class CbTemplate extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function setValidate($isValidate)
+    public function setValidate(bool $isValidate)
     {
         $this->set('isValidate', $isValidate);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function isValidate()
+    public function isValidate() : bool
     {
         $ret = $this->get('isValidate');
         if (isset($ret)) {
@@ -47,28 +47,28 @@ class CbTemplate extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function setTemplate($text)
+    public function setTemplate(string $text)
     {
         $this->set('templateText', $text);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function getTemplate()
+    public function getTemplate() : string
     {
         return $this->get('templateText');
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->set('name', $name);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function getName()
+    public function getName() : string
     {
         return $this->get('name');
     }

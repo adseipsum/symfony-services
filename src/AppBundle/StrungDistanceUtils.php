@@ -2,12 +2,15 @@
 
 namespace AppBundle;
 
-use NlpTools\Utils\Normalizers\Normalizer;
-use NlpTools\Documents\TokensDocument;
-use NlpTools\Utils\StopWords;
-use NlpTools\Stemmers\PorterStemmer;
+use \NlpTools\Utils\Normalizers\Normalizer;
+use \NlpTools\Documents\TokensDocument;
+use \NlpTools\Utils\StopWords;
+use \NlpTools\Stemmers\PorterStemmer;
 use \NlpTools\Tokenizers\WhitespaceAndPunctuationTokenizer;
 use \NlpTools\Similarity\Simhash;
+use \NlpTools\Similarity\JaccardIndex;
+use \NlpTools\Similarity\CosineSimilarity;
+use \Oefenweb\DamerauLevenshtein\DamerauLevenshtein;
 
 class StrungDistanceUtils
 {
@@ -16,12 +19,12 @@ class StrungDistanceUtils
 
     public static function prepareTextForDistanceCalcVersion() : int
     {
-        return 1;
+        return 2;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static function prepareTextForDistanceCalc(string $text) : array
+    public static function prepareTextForDistanceCalc(string $text, bool $removeStopwords = true) : array
     {
         // http://php-nlp-tools.com/documentation/tokenizers.html
         $punct = new WhitespaceAndPunctuationTokenizer();
@@ -37,8 +40,10 @@ class StrungDistanceUtils
         $norm = Normalizer::factory("English");
         $d->applyTransformation($norm);
 
-        $stop = new StopWords(StrungDistanceUtils::STOP_WORDS);
-        $d->applyTransformation($stop);
+        if ($removeStopwords) {
+            $stop = new StopWords(StrungDistanceUtils::STOP_WORDS);
+            $d->applyTransformation($stop);
+        }
 
         $stemmer = new PorterStemmer();
         $d->applyTransformation($stemmer);
@@ -49,27 +54,54 @@ class StrungDistanceUtils
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static function calcDistanceMetricForTexts(array $newTextTokens, array $oldTextsTokens) : float
-    {
-        $ret = INF;
-        foreach ($oldTextsTokens as $oldTextTokens) {
-            $distanceMetric = StrungDistanceUtils::calcDistanceMetricForText($newTextTokens, $oldTextTokens);
-            if ($distanceMetric < $ret) {
-                $ret = $distanceMetric;
-            }
+    public static function calcDistanceMetricForTexts(
+        array $newTextTokens,
+        array $oldTextsTokens,
+        string $algorithm
+    ) : array {
+        $ret = [];
+        foreach ($oldTextsTokens as $objectId => $oldTextTokens) {
+            $distanceMetric = StrungDistanceUtils::calcDistanceMetricForText(
+                $newTextTokens,
+                $oldTextTokens,
+                $algorithm
+            );
+            $ret[$objectId] = $distanceMetric;
         }
         return $ret;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static function calcDistanceMetricForText(array $newTextTokens, array $oldTextTokens) : float
-    {
+    public static function calcDistanceMetricForText(
+        array $newTextTokens,
+        array $oldTextTokens,
+        string $algorithm
+    ) : float {
         // http://php-nlp-tools.com/documentation/similarity.html
 
-        $simhash = new Simhash(16); // 16 bits hash
-
-        $ret = $simhash->similarity($newTextTokens, $oldTextTokens);
+        switch ($algorithm) {
+            case "Simhash":
+                $simhash = new Simhash(16); // 16 bits hash
+                $ret = $simhash->similarity($newTextTokens, $oldTextTokens);
+                break;
+            case "JaccardIndex":
+                $J = new JaccardIndex();
+                $ret = $J->similarity($newTextTokens, $oldTextTokens);
+                break;
+            case "CosineSimilarity":
+                $cos  = new CosineSimilarity();
+                $ret = $cos->similarity($newTextTokens, $oldTextTokens);
+                break;
+            case "DamerauLevenshtein":
+                $firstString = implode(" ", $newTextTokens);
+                $secondString = implode(" ", $oldTextTokens);
+                $dl = new DamerauLevenshtein($firstString, $secondString);
+                $ret = $dl->getRelativeDistance();
+                break;
+            default:
+                $ret = 0.0;
+        }
 
         return $ret;
     }

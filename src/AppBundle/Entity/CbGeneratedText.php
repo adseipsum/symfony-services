@@ -50,6 +50,25 @@ class CbGeneratedText extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public function setPreparedTextWithoutStopwords(array $text)
+    {
+        $this->set('preparedTextWithoutStopwords', $text);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getPreparedTextWithoutStopwords() : array
+    {
+        $ret = $this->get('preparedTextWithoutStopwords');
+        if (isset($ret)) {
+            return $ret;
+        } else {
+            return [];
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public function setPreparedTextVersion(string $textVersion)
     {
         $this->set('preparedTextVersion', $textVersion);

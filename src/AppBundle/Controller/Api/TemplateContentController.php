@@ -255,5 +255,31 @@ class TemplateContentController extends Controller
         }
     }
 
+    /**
+     * @Route("/template/remove/{templateId}", name="api_generated_text_remove", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     *
+     * @method ("GET")
+     */
+    public function removeTemplate(string $templateId)
+    {
+        $username = $this->getUser()->getUsernameCanonical();
+        if ($username == null) {
+            return ApiResponse::resultUnauthorized();
+        }
+
+        try {
+            $cb = $this->get('couchbase.connector');
+            $model = new TemplateModel($cb);
+            $model->warmup();
+            $model->removeByKey($templateId);
+
+            $ret = [];
+
+            return ApiResponse::resultValues($ret);
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

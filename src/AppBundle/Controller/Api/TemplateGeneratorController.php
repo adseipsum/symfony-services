@@ -54,6 +54,21 @@ class TemplateGeneratorController extends Controller
                     $drugName = $data['drugName'];
                 }
 
+                $removeStopwords = true;
+                if (isset($data['removeStopwords'])) {
+                    $removeStopwords = $data['removeStopwords'];
+                }
+
+                $generateLoop = TemplateGeneratorController::GENERATE_TEXT_COUNT;
+                if (isset($data['generateLoop'])) {
+                    $generateLoop = $data['generateLoop'];
+                }
+
+                $algorithm = "Simhash";
+                if (isset($data['algorithm'])) {
+                    $algorithm = $data['algorithm'];
+                }
+
                 $extEditor = new EditorExtension(
                     $this->getParameter('generator_user_dir'),
                     $username,
@@ -67,7 +82,10 @@ class TemplateGeneratorController extends Controller
                     $cbTemplate->isValidate(),
                     $cb,
                     $templateId,
-                    $drugName
+                    $drugName,
+                    $removeStopwords,
+                    $generateLoop,
+                    $algorithm
                 );
 
                 if (!$cbTemplate->isValidate() and $result['validation_status']) {
@@ -86,8 +104,18 @@ class TemplateGeneratorController extends Controller
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private function generateForTemplate(EditorExtension $ext, $templateFile, $content, $validate_ok, $cb, string $templateId, $drugName)
-    {
+    private function generateForTemplate(
+        EditorExtension $ext,
+        $templateFile,
+        $content,
+        bool $validate_ok,
+        $cb,
+        string $templateId,
+        $drugName,
+        bool $removeStopwords,
+        int $generateLoop,
+        string $algorithm
+    ) {
         $templateName = $ext->getTemplateName();
 
         $pPython = $this->getParameter('python_bin');
@@ -118,7 +146,8 @@ class TemplateGeneratorController extends Controller
         }
 
         if (!$validate_ok) {
-            $command_validate = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -v -t $templateName -f $templateFile";
+            $command_validate = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir " .
+                "-v -t $templateName -f $templateFile";
 
             exec($command_validate, $output_validate);
 
@@ -159,8 +188,19 @@ class TemplateGeneratorController extends Controller
             }
         }
 
+        $params = [
+            'generated' => "",
+            'distances' => [],
+            'content' => $content,
+            'start_line' => $first_line,
+            'validation_lines' => $template_lines,
+            'validation_text' => $out_validate_text,
+            'validation_status' => $validate_ok
+        ];
+
         if ($validate_ok) {
-            $command = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -t $templateName -f $templateFile -op \"(( \" -os \" ))\"";
+            $command = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -t $templateName " .
+                "-f $templateFile -op \"(( \" -os \" ))\"";
 
             if ($drugName != null) {
                 $drugName = strtolower($drugName);
@@ -169,26 +209,22 @@ class TemplateGeneratorController extends Controller
 
             $generated = TemplateGeneratorController::generateText(
                 $command,
-                TemplateGeneratorController::getOldGeneratedTexts($cb, $templateId)
+                TemplateGeneratorController::getOldGeneratedTexts($cb, $templateId, $removeStopwords),
+                $removeStopwords,
+                $generateLoop,
+                $algorithm
             );
-        } else {
-            $generated = 'ERROR';
-        }
 
-        $params = [];
-        $params['generated'] = $generated;
-        $params['content'] = $content;
-        $params['start_line'] = $first_line;
-        $params['validation_lines'] = $template_lines;
-        $params['validation_text'] = $out_validate_text;
-        $params['validation_status'] = $validate_ok;
+            $params['generated'] = $generated["text"];
+            $params['distances'] = $generated["distances"];
+        }
 
         return $params;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private static function getOldGeneratedTexts($cb, string $templateId) : array
+    private static function getOldGeneratedTexts($cb, string $templateId, bool $removeStopwords) : array
     {
         $generatedTextModel = new GeneratedTextModel($cb);
         /* @var $cbGeneratedTexts CbGeneratedText[] */
@@ -199,19 +235,27 @@ class TemplateGeneratorController extends Controller
             $preparedTextVersionReal = StrungDistanceUtils::prepareTextForDistanceCalcVersion();
 
             foreach ($cbGeneratedTexts as $cbGeneratedText) {
-                $preparedText = $cbGeneratedText->getPreparedText();
                 $preparedTextVersion = $cbGeneratedText->getPreparedTextVersion();
 
                 if ($preparedTextVersion < $preparedTextVersionReal) {
-                    $preparedText = StrungDistanceUtils::prepareTextForDistanceCalc($cbGeneratedText->getText());
-
-                    $cbGeneratedText->setPreparedText($preparedText);
+                    $cbGeneratedText->setPreparedTextWithoutStopwords(
+                        StrungDistanceUtils::prepareTextForDistanceCalc($cbGeneratedText->getText(), true)
+                    );
+                    $cbGeneratedText->setPreparedText(
+                        StrungDistanceUtils::prepareTextForDistanceCalc($cbGeneratedText->getText(), false)
+                    );
                     $cbGeneratedText->setPreparedTextVersion($preparedTextVersionReal);
                     $generatedTextModel->upsert($cbGeneratedText);
                 }
 
+                if ($removeStopwords) {
+                    $preparedText = $cbGeneratedText->getPreparedTextWithoutStopwords();
+                } else {
+                    $preparedText = $cbGeneratedText->getPreparedText();
+                }
+
                 if (isset($preparedText)) {
-                    $ret[] = $preparedText;
+                    $ret[$cbGeneratedText->getObjectId()] = $preparedText;
                 }
             }
         }
@@ -241,29 +285,43 @@ class TemplateGeneratorController extends Controller
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private static function generateText(string $command, array $oldGeneratedTexts)
-    {
+    private static function generateText(
+        string $command,
+        array $oldGeneratedTexts,
+        bool $removeStopwords,
+        int $generateLoop,
+        string $algorithm
+    ) {
+        $ret = [
+            "text" => "",
+            "distances" => [],
+        ];
+
         if (empty($oldGeneratedTexts)) {
-            $generated = TemplateGeneratorController::generateTextFromCommand($command);
-            return $generated;
-        }
+            $ret["text"] = TemplateGeneratorController::generateTextFromCommand($command);
+        } else {
+            $current_distance = 0.0;
 
-        $generated = '';
-        $current_distance = 0.0;
+            for ($i = 0; $i < $generateLoop; $i++) {
+                $generatedText = TemplateGeneratorController::generateTextFromCommand($command);
 
-        for ($i = 0; $i < TemplateGeneratorController::GENERATE_TEXT_COUNT; $i++) {
-            $generated_temp = TemplateGeneratorController::generateTextFromCommand($command);
+                $preparedText = StrungDistanceUtils::prepareTextForDistanceCalc($generatedText, $removeStopwords);
 
-            $preparedText = StrungDistanceUtils::prepareTextForDistanceCalc($generated_temp);
-
-            $distance_temp = StrungDistanceUtils::calcDistanceMetricForTexts($preparedText, $oldGeneratedTexts);
-            if ($distance_temp > $current_distance) {
-                $current_distance = $distance_temp;
-                $generated = $generated_temp;
+                $distances = StrungDistanceUtils::calcDistanceMetricForTexts(
+                    $preparedText,
+                    $oldGeneratedTexts,
+                    $algorithm
+                );
+                $distance_temp = min($distances);
+                if ($distance_temp > $current_distance) {
+                    $current_distance = $distance_temp;
+                    $ret["text"] = $generatedText;
+                    $ret["distances"] = $distances;
+                }
             }
         }
 
-        return $generated;
+        return $ret;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

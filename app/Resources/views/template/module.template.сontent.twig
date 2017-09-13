@@ -24,19 +24,39 @@
             <div class="button-row">
                 <input id="input-template-id"     type="hidden" value="none" />
                 <input id="button-template-save"   type="button" class="btn btn-default"  value="Сохранить шаблон"/>
-                <input id="button-template-delete" type="button" class="btn btn-default"  value="Удалить шаблон"
-                    data-toggle="modal" data-target="#dialog-template-confirm-delete"/>
+                <input id="button-template-delete" type="button" class="btn btn-default"  value="Удалить шаблон"/>
             </div>
         </div>
         <div class="tab-pane" id="tab-generator" style="padding-top: 5px">
             <!--label for="input-template-count">Количество использований</label>
             <input id="input-template-count" class="form-control" readonly type="text"/-->
 
-            <label for="input-template-drug-name">Название препарата</label>
+            <label for="input-template-drug-name">Название препарата:</label>
             <input id="input-template-drug-name" class="form-control" type="text"/>
+
+            <label for="input-template-pregenerated-count">Колличество предгенерированных текстов:</label>
+            <input id="input-template-pregenerated-count" class="form-control" type="number" value="10"/>
+
+            <div>
+                <input type="checkbox" name="input-template-use-stopwords" id="input-template-use-stopwords" checked="true"/>
+                <label for="input-template-use-stopwords">Удалять стоп-слова из текста.</label>
+            </div>
+
+            <div>
+                <label for="input-template-use-stopwords">Алгоритм расчета похожести текстов</label>
+                <select id="input-template-algorithm" size="1" name="input-template-algorithm">
+                    <option selected value="Simhash">Simhash</option>
+                    <option value="DamerauLevenshtein">Damerau-Levenshtein distance</option>
+                    <option value="JaccardIndex">Jaccard Index</option>
+                    <option value="CosineSimilarity">Cosine Similarity</option>
+                </select>
+            </div>
 
             <label for="comment">Сгенерированный текст:</label>
             <textarea id="textarea-template-generator" rows="15" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
+            <div>
+                <pre><code id="generate-distance-out"></code></pre>
+            </div>
             <div class="button-row">
                 <input id="button-template-generate" type="button" class="btn btn-default"  value="Сгенерировать текст"/>
 
