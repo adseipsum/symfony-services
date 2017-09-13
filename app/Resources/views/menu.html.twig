@@ -1,7 +1,7 @@
-{% macro ifmch(varname, varvalue, valmatch, vardefault) %}{% if varname == varvalue %}{{ valmatch }} {% else %} {{ vardefault }}{% endif %} {% endmacro %}
 {% macro ifactive(varname, varvalue) %}{% if varname == varvalue %}active{% endif %}{% endmacro %}
-{% macro ifpath(varname, varvalue,pathname) %}{% if varname == varvalue %}#{% else %} {{ path(pathname)  }} {% endif %}{% endmacro %}
+{% macro ifpath(varname, varvalue, pathname) %}{% if varname == varvalue %}#{% else %} {{ path(pathname)  }} {% endif %}{% endmacro %}
 
+{% import _self as utils %}
 
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
@@ -19,10 +19,10 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li class="{{ _self.ifactive(active_menu, 'demo')}}"><a href="{{ _self.ifpath(active_menu,'demo','app_demo_index') }}">Demo</a></li>
-                <li class="{{ _self.ifactive(active_menu, 'template')}}"><a href="{{ _self.ifpath(active_menu,'template','app_template_index') }}">Template</a></li>
-                <li class="{{ _self.ifactive(active_menu, 'quickcheck')}}"><a href="{{ _self.ifpath(active_menu,'quickcheck','app_quickcheck_index') }}">QuickCheck</a></li>
-                <li class="{{ _self.ifactive(active_menu, 'editor')}}"><a href="{{ _self.ifpath(active_menu,'editor','app_editor_index') }}">Editor</a></li>
+                <li class="{{ utils.ifactive(active_menu, 'demo')}}"><a href="{{ utils.ifpath(active_menu,'demo','app_demo_index') }}">Demo</a></li>
+                <li class="{{ utils.ifactive(active_menu, 'template')}}"><a href="{{ utils.ifpath(active_menu,'template','app_template_index') }}">Template</a></li>
+                <li class="{{ utils.ifactive(active_menu, 'quickcheck')}}"><a href="{{ utils.ifpath(active_menu,'quickcheck','app_quickcheck_index') }}">QuickCheck</a></li>
+                <li class="{{ utils.ifactive(active_menu, 'editor')}}"><a href="{{ utils.ifpath(active_menu,'editor','app_editor_index') }}">Editor</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">

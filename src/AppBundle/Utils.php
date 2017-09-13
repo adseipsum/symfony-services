@@ -10,7 +10,7 @@ class Utils
      * @param String $filepath
      * @param String $message
      */
-    public function forceFilePutContents($filepath, $message)
+    public static function forceFilePutContents($filepath, $message)
     {
         try {
             $isInFolder = preg_match("/^(.*)\/([^\/]+)$/", $filepath, $filepathMatches);

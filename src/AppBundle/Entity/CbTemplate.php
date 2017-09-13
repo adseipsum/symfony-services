@@ -19,10 +19,29 @@ class CbTemplate extends CbBaseObject
     public function isArchived()
     {
         $ret = $this->get('isArchived');
-        if ($ret == null) {
-            return false;
-        } else {
+        if (isset($ret)) {
             return $ret;
+        } else {
+            return false;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setValidate($isValidate)
+    {
+        $this->set('isValidate', $isValidate);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function isValidate()
+    {
+        $ret = $this->get('isValidate');
+        if (isset($ret)) {
+            return $ret;
+        } else {
+            return false;
         }
     }
 

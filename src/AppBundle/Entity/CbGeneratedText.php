@@ -31,6 +31,44 @@ class CbGeneratedText extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public function setPreparedText(array $text)
+    {
+        $this->set('preparedText', $text);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getPreparedText() : array
+    {
+        $ret = $this->get('preparedText');
+        if (isset($ret)) {
+            return $ret;
+        } else {
+            return [];
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setPreparedTextVersion(string $textVersion)
+    {
+        $this->set('preparedTextVersion', $textVersion);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getPreparedTextVersion() : int
+    {
+        $ret = $this->get('preparedTextVersion');
+        if (isset($ret)) {
+            return $ret;
+        } else {
+            return 0;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public function setTemplateId(string $name)
     {
         $this->set('templateId', $name);

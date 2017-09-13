@@ -117,6 +117,7 @@ class TemplateContentController extends Controller
                 $object = new CbTemplate();
                 $object->setName($data['name']);
                 $object->setTemplate($data['template']);
+                $object->setValidate(false);
                 $model->upsert($object);
 
                 $ret = [];
@@ -132,6 +133,7 @@ class TemplateContentController extends Controller
                 if ($object != null) {
                     $object->setName($data['name']);
                     $object->setTemplate($data['template']);
+                    $object->setValidate(false);
                     $model->upsert($object);
 
                     $ret = [];
@@ -203,7 +205,7 @@ class TemplateContentController extends Controller
 
             $ret = [];
 
-            if (!is_null($objects)) {
+            if (isset($objects)) {
                 foreach ($objects as $object) {
                     $elem = [];
                     $elem['id'] = $object->getObjectId();

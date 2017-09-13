@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "90e75b1079ef9a2ccc0c7daa3e943796",
+    "content-hash": "8bc856c41f537a36e88e411931e80b2e",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -1216,6 +1216,51 @@
                 "psr-3"
             ],
             "time": "2017-06-19T01:22:40+00:00"
+        },
+        {
+            "name": "nlp-tools/nlp-tools",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/angeloskath/php-nlp-tools.git",
+                "reference": "18148a5219b52f30d14ca034c4eeaf1b557011f5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/angeloskath/php-nlp-tools/zipball/18148a5219b52f30d14ca034c4eeaf1b557011f5",
+                "reference": "18148a5219b52f30d14ca034c4eeaf1b557011f5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "NlpTools\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "WTFPL"
+            ],
+            "authors": [
+                {
+                    "name": "Angelos Katharopoulos",
+                    "email": "angelos@yourse.gr"
+                }
+            ],
+            "description": "NlpTools is a set of php 5.3+ classes for beginner to semi advanced natural language processing work.",
+            "keywords": [
+                "machine learning",
+                "nlp"
+            ],
+            "time": "2017-03-08T16:14:57+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -2521,7 +2566,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "nlp-tools/nlp-tools": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
