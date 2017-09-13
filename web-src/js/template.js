@@ -102,7 +102,7 @@ $(document).ready(function() {
                                 error: function(errorMsg){
                                     bar.removeClass('animate');
                                     dialog.modal('hide');
-                                    alert('Error: ' + errorMsg);
+                                    alert('Error (' + errorMsg.status + '): ' + errorMsg.statusText);
                                 }
                             });
                         })
@@ -115,7 +115,7 @@ $(document).ready(function() {
             error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error: ' + errorMsg);
+                alert('Error (' + errorMsg.status + '): ' + errorMsg.statusText);
             }
         });
     };
@@ -157,7 +157,7 @@ $(document).ready(function() {
             error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error: ' + errorMsg);
+                alert('Error (' + errorMsg.status + '): ' + errorMsg.statusText);
             }
         });
     };
@@ -168,7 +168,7 @@ $(document).ready(function() {
         $('#input-template-id').val('new');
 
         $('#generate-distance-out').text('');
-        
+
         $('#generated-texts').empty();
 
         $('#button-template-save').removeClass('btn-default');
@@ -249,7 +249,7 @@ $(document).ready(function() {
             error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error: ' + errorMsg);
+                alert('Error (' + errorMsg.status + '): ' + errorMsg.statusText);
             }
         });
     });
@@ -307,7 +307,7 @@ $(document).ready(function() {
             error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error: ' + errorMsg);
+                alert('Error (' + errorMsg.status + '): ' + errorMsg.statusText);
             }
         });
     });
@@ -351,7 +351,7 @@ $(document).ready(function() {
             error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error: ' + errorMsg);
+                alert('Error (' + errorMsg.status + '): ' + errorMsg.statusText);
             }
         });
     });
@@ -429,7 +429,7 @@ $(document).ready(function() {
             error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error: ' + errorMsg);
+                alert('Error (' + errorMsg.status + '): ' + errorMsg.statusText);
             }
         });
 
@@ -465,7 +465,7 @@ $(document).ready(function() {
             error: function(errorMsg){
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                alert('Error: ' + errorMsg);
+                alert('Error (' + errorMsg.status + '): ' + errorMsg.statusText);
             }
         });
     });
