@@ -90,7 +90,7 @@ class StrungDistanceUtils
         foreach ($oldTextsTokens as $objectId => $oldTextTokens) {
             $fp2 = $simhash->hash($oldTextTokens, SimHash::SIMHASH_512);
 
-            $ret[$objectId] = $comparator->compare($fp1, $fp2);
+            $ret[] = ['id' => $objectId, 'distance' => $comparator->compare($fp1, $fp2)];
         }
         return $ret;
     }

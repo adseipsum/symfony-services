@@ -330,21 +330,28 @@ class TemplateGeneratorController extends Controller
                     $useStemmer
                 );
 
-                $distances = StrungDistanceUtils::calcDistanceMetricForTexts(
+                $generate_info = StrungDistanceUtils::calcDistanceMetricForTexts(
                     $preparedText,
                     $oldGeneratedTexts,
                     $deviation
                 );
 
-                $distance_temp = max($distances);
+                $distance_temp = array_reduce($generate_info, function($carry = null, $item) {
+                    $val = $item['distance'];
+                    return ($carry == null || $val > $carry) ? $val : $carry;
+                });
 
                 if ($distance_temp < $current_distance) {
                     $current_distance = $distance_temp;
                     $ret["text"] = $generatedText;
-                    $ret["generate_info"] = $distances;
+                    $ret["generate_info"] = $generate_info;
                 }
             }
         }
+        
+        usort($ret["generate_info"], function ($item1, $item2) {
+            return -1 * strnatcasecmp($item1['id'], $item2['id']);
+        });
 
         return $ret;
     }
@@ -414,13 +421,17 @@ class TemplateGeneratorController extends Controller
                         $useStemmer
                     );
 
-                    $distances = StrungDistanceUtils::calcDistanceMetricForTexts(
+                    $generate_info = StrungDistanceUtils::calcDistanceMetricForTexts(
                         $preparedText,
                         $oldGeneratedTexts,
                         $deviation
                     );
+                    
+                    usort($generate_info, function ($item1, $item2) {
+                        return -1 * strnatcasecmp($item1['id'], $item2['id']);
+                    });
 
-                    $result["generate_info"] = $distances;
+                    $result["generate_info"] = $generate_info;
                 }
 
                 return ApiResponse::resultValue($result);

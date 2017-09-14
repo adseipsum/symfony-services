@@ -46,8 +46,7 @@ class TemplateContentController extends Controller
             }
 
             usort($ret, function ($item1, $item2) {
-                $rez = strnatcasecmp($item1['name'], $item2['name']);
-                return $rez;
+                return strnatcasecmp($item1['name'], $item2['name']);
             });
 
             return ApiResponse::resultValues($ret);
@@ -231,10 +230,8 @@ class TemplateContentController extends Controller
                     $ret[] = $elem;
                 }
 
-                usort($ret, function ($a, $b) {
-                    /* @var $a \DateTime[] */
-                    /* @var $b \DateTime[] */
-                    return $a['addDate']->getTimestamp() < $b['addDate']->getTimestamp();
+                usort($ret, function ($item1, $item2) {
+                    return -1 * strnatcasecmp($item1['id'], $item2['id']);
                 });
             }
 
