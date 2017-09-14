@@ -420,7 +420,7 @@ class TemplateGeneratorController extends Controller
                         $deviation
                     );
 
-                    $result["generate_info"] = max($distances);
+                    $result["generate_info"] = $distances;
                 }
 
                 return ApiResponse::resultValue($result);
