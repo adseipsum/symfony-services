@@ -89,7 +89,11 @@ class TemplateContentController extends Controller
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @Route("/template/save/{templateId}", name="api_template_update", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route(
+     *     "/template/save/{templateId}",
+     *     name="api_template_update",
+     *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
+     * )
      *
      * @method ("POST")
      */
@@ -154,7 +158,11 @@ class TemplateContentController extends Controller
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @Route("/template/plus/{templateId}", name="api_template_usage_plus", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route(
+     *     "/template/plus/{templateId}",
+     *     name="api_template_usage_plus",
+     *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
+     * )
      *
      * @method ("POST")
      */
@@ -185,7 +193,11 @@ class TemplateContentController extends Controller
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @Route("/generated-text/list/{templateId}", name="api_generated_text_list", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route(
+     *     "/generated-text/list/{templateId}",
+     *     name="api_generated_text_list",
+     *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
+     * )
      *
      * @method ("GET")
      */
@@ -230,7 +242,11 @@ class TemplateContentController extends Controller
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @Route("/generated-text/remove/{generateTextId}", name="api_generated_text_remove", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route(
+     *     "/generated-text/remove/{generateTextId}",
+     *     name="api_generated_text_remove",
+     *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
+     * )
      *
      * @method ("GET")
      */
@@ -256,7 +272,11 @@ class TemplateContentController extends Controller
     }
 
     /**
-     * @Route("/template/remove/{templateId}", name="api_template_remove", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route(
+     *     "/template/remove/{templateId}",
+     *     name="api_template_remove",
+     *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
+     * )
      *
      * @method ("GET")
      */

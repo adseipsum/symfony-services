@@ -27,4 +27,13 @@ class Utils
         }
     }
 
+    /**
+     * вернуть хэш всех параметров
+     */
+    public static function md5Multiple()
+    {
+        $args = func_get_args();
+        return md5(serialize($args));
+    }
+
 }

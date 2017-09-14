@@ -7,10 +7,11 @@ use \NlpTools\Documents\TokensDocument;
 use \NlpTools\Utils\StopWords;
 use \NlpTools\Stemmers\PorterStemmer;
 use \NlpTools\Tokenizers\WhitespaceAndPunctuationTokenizer;
-use \NlpTools\Similarity\Simhash;
-use \NlpTools\Similarity\JaccardIndex;
-use \NlpTools\Similarity\CosineSimilarity;
-use \Oefenweb\DamerauLevenshtein\DamerauLevenshtein;
+use \Tga\SimHash\SimHash;
+use \Tga\SimHash\Tokenizer\String512Tokenizer;
+use \Tga\SimHash\Comparator\GaussianComparator;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class StrungDistanceUtils
 {
@@ -19,13 +20,16 @@ class StrungDistanceUtils
 
     public static function prepareTextForDistanceCalcVersion() : int
     {
-        return 2;
+        return 3;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static function prepareTextForDistanceCalc(string $text, bool $removeStopwords = true) : array
-    {
+    public static function prepareTextForDistanceCalc(
+        string $text,
+        bool $removeStopwords,
+        bool $useStemmer
+    ) : array {
         // http://php-nlp-tools.com/documentation/tokenizers.html
         $punct = new WhitespaceAndPunctuationTokenizer();
         $tokens = $punct->tokenize($text);
@@ -45,8 +49,10 @@ class StrungDistanceUtils
             $d->applyTransformation($stop);
         }
 
-        $stemmer = new PorterStemmer();
-        $d->applyTransformation($stemmer);
+        if ($useStemmer) {
+            $stemmer = new PorterStemmer();
+            $d->applyTransformation($stemmer);
+        }
 
         $ret = $d->getDocumentData();
         return $ret;
@@ -57,52 +63,35 @@ class StrungDistanceUtils
     public static function calcDistanceMetricForTexts(
         array $newTextTokens,
         array $oldTextsTokens,
-        string $algorithm
+        int $deviation
     ) : array {
+
+        $simhash = new class extends SimHash
+        {
+            protected $tokenizer;
+
+            protected function findTokenizer($element, $size)
+            {
+                return $this->tokenizer;
+            }
+
+            public function __construct()
+            {
+                parent::__construct();
+                $this->tokenizer = new String512Tokenizer();
+            }
+        };
+
+        $comparator = new GaussianComparator($deviation);
+
+        $fp1 = $simhash->hash($newTextTokens, SimHash::SIMHASH_512);
+
         $ret = [];
         foreach ($oldTextsTokens as $objectId => $oldTextTokens) {
-            $distanceMetric = StrungDistanceUtils::calcDistanceMetricForText(
-                $newTextTokens,
-                $oldTextTokens,
-                $algorithm
-            );
-            $ret[$objectId] = $distanceMetric;
+            $fp2 = $simhash->hash($oldTextTokens, SimHash::SIMHASH_512);
+
+            $ret[$objectId] = $comparator->compare($fp1, $fp2);
         }
-        return $ret;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public static function calcDistanceMetricForText(
-        array $newTextTokens,
-        array $oldTextTokens,
-        string $algorithm
-    ) : float {
-        // http://php-nlp-tools.com/documentation/similarity.html
-
-        switch ($algorithm) {
-            case "Simhash":
-                $simhash = new Simhash(16); // 16 bits hash
-                $ret = $simhash->similarity($newTextTokens, $oldTextTokens);
-                break;
-            case "JaccardIndex":
-                $J = new JaccardIndex();
-                $ret = $J->similarity($newTextTokens, $oldTextTokens);
-                break;
-            case "CosineSimilarity":
-                $cos  = new CosineSimilarity();
-                $ret = $cos->similarity($newTextTokens, $oldTextTokens);
-                break;
-            case "DamerauLevenshtein":
-                $firstString = implode(" ", $newTextTokens);
-                $secondString = implode(" ", $oldTextTokens);
-                $dl = new DamerauLevenshtein($firstString, $secondString);
-                $ret = $dl->getRelativeDistance();
-                break;
-            default:
-                $ret = 0.0;
-        }
-
         return $ret;
     }
 
@@ -110,7 +99,7 @@ class StrungDistanceUtils
 
     // https://en.wikipedia.org/wiki/Stop_words
     // http://www.ranks.nl/stopwords
-    private const STOP_WORDS = array(
+    public const STOP_WORDS = array(
         "a",
         "able",
         "about",
