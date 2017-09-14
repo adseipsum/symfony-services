@@ -300,7 +300,7 @@ class TemplateGeneratorController extends Controller
         if (empty($oldGeneratedTexts)) {
             $ret["text"] = TemplateGeneratorController::generateTextFromCommand($command);
         } else {
-            $current_distance = 0.0;
+            $current_distance = INF;
 
             for ($i = 0; $i < $generateLoop; $i++) {
                 $generatedText = TemplateGeneratorController::generateTextFromCommand($command);
@@ -312,8 +312,8 @@ class TemplateGeneratorController extends Controller
                     $oldGeneratedTexts,
                     $algorithm
                 );
-                $distance_temp = min($distances);
-                if ($distance_temp > $current_distance) {
+                $distance_temp = max($distances);
+                if ($distance_temp < $current_distance) {
                     $current_distance = $distance_temp;
                     $ret["text"] = $generatedText;
                     $ret["distances"] = $distances;
