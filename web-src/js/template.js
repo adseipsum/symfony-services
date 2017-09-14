@@ -220,6 +220,7 @@ $(document).ready(function() {
                 dialog.modal('hide');
 
                 var obj = data.result.value;
+                $.fn.clear_content();
 
                 $('#input-template-name').val(obj['name']);
                 $('#textarea-template-content').val(obj['template']);

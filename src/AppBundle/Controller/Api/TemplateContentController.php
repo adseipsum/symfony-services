@@ -256,7 +256,7 @@ class TemplateContentController extends Controller
     }
 
     /**
-     * @Route("/template/remove/{templateId}", name="api_generated_text_remove", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route("/template/remove/{templateId}", name="api_template_remove", requirements={"template": "[a-zA-Z0-9\-\:]+"})
      *
      * @method ("GET")
      */
