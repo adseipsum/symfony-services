@@ -45,6 +45,11 @@ class TemplateContentController extends Controller
                 $ret[] = $elem;
             }
 
+            usort($ret, function ($item1, $item2) {
+                $rez = strnatcasecmp($item1['name'], $item2['name']);
+                return $rez;
+            });
+
             return ApiResponse::resultValues($ret);
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
