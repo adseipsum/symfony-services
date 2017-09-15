@@ -45,7 +45,7 @@ class StringDistanceExtension
         $d->applyTransformation($norm);
 
         if ($removeStopwords) {
-            $stop = new StopWords(StrungDistanceUtils::STOP_WORDS);
+            $stop = new StopWords(self::STOP_WORDS);
             $d->applyTransformation($stop);
         }
 
