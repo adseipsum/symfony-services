@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 class TemplateGeneratorController extends Controller
 {
     const GENERATE_TEXT_COUNT = 50;
-    const GENERATE_TEXT_DEVIATION = 10;
+    const GENERATE_TEXT_DEVIATION = 100;
 
     /**
      * @Route("/template/generate/{templateId}", name="api_editor_generate_template",
