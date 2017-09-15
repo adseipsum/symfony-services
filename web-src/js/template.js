@@ -2,7 +2,9 @@ $(document).ready(function() {
 
 
     var parenthesis_state_show = true;
+    var parenthesis_state_ngmc = true;
     var generated_template = '';
+    var generated_marcov_chain = '';
 
 
     if(typeof(template_page) === 'undefined')
@@ -36,6 +38,36 @@ $(document).ready(function() {
             $('#textarea-template-generator').val(parsed);
         }
     };
+
+
+    $.fn.toggle_ngmc_parenthesiss_state = function()
+    {
+        parenthesis_state_ngmc = !parenthesis_state_ngmc;
+
+        if(parenthesis_state_ngmc == true)
+        {
+            $('#button-template-toggle-parenthesis').val('Hide (( ))');
+        }
+        else {
+            $('#button-template-toggle-parenthesis').val('Show (( ))');
+        }
+
+        $.fn.render_ngmc_text();
+    };
+
+    $.fn.render_ngmc_text = function()
+    {
+        if(parenthesis_state_ngmc == true)
+        {
+            $('#textarea-ngmc-replaced').val(generated_marcov_chain);
+        }
+        else {
+            var parsed = generated_marcov_chain.replaceAll('[[','').replaceAll(']]','');
+            $('#textarea-ngmc-replaced').val(parsed);
+        }
+    };
+
+
 
     $.fn.render_generate_info = function(generate_info)
     {
@@ -545,7 +577,7 @@ $(document).ready(function() {
         var param = {};
         param['text'] = parsedText;
         param['frame_size'] = $('#input-template-ngmc-framesize').val();
-        param['frame_peek_probability'] = $('#frame_peek_probability').val();
+        param['frame_peek_probability'] = $('#input-template-ngmc-peekprob').val();
 
         dialog.modal('show');
         bar.addClass('animate');
@@ -558,7 +590,8 @@ $(document).ready(function() {
                 success: function(data) {
                     bar.removeClass('animate');
                     dialog.modal('hide');
-                    $('#textarea-ngmc-replaced').val(data.result.value);
+                    generated_marcov_chain = data.result.value;
+                    $.fn.render_ngmc_text();
                 },
                 error: function(errorMsg){
                     bar.removeClass('animate');
@@ -567,6 +600,10 @@ $(document).ready(function() {
                 }
         });
 
+    });
+
+    $('#button-template-toggle-parenthesis_ngmc').on('click',  function(e) {
+        $.fn.toggle_ngmc_parenthesiss_state()
     });
 
 
