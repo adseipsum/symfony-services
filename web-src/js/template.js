@@ -608,8 +608,9 @@ $(document).ready(function() {
     });
 
     $('#button-template-move-to-ngmc').on('click',  function(e) {
-        var content = $('#textarea-ngmc-orig').val();
-        $('#textarea-template-generator').val(content);
+        var content = $('#textarea-template-generator').val();
+        $('#textarea-ngmc-orig').val(content);
+        $('#a-tab-ngmc').trigger('click');
     });
 
 
