@@ -19,7 +19,7 @@ class PythonToolsExtension
         $this->username = $username;
     }
 
-    function transformTextNGMC($text, $framesize, $prob)
+    function transformTextNGMC($text, $framesize, $prob, $mode)
     {
         $path = $this->user_dir.'/'.$this->username.'/'.'ngmc.tmp';
         file_put_contents($path, $text);
@@ -27,7 +27,7 @@ class PythonToolsExtension
         $pPython = $this->python_bin;
         $pScript = $this->ngram_mc_bin;
 
-        $command = "$pPython $pScript -f $path -FR $framesize -FP $prob";
+        $command = "$pPython $pScript -f $path -FR $framesize -FP $prob -m $mode";
         exec($command, $output);
         $generated = '';
         foreach ($output as $line) {
