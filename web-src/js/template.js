@@ -377,8 +377,8 @@ $(document).ready(function() {
         var param = {};
         param['text'] = parsedText;
         param['deviation'] = $('#input-template-deviation').val();
-        param['removeStopwords'] = $('#input-template-use-stopwords').val();
-        param['useStemmer'] = $('#input-template-use-porter-stemmer').val();
+        param['removeStopwords'] = $('#input-template-use-stopwords').is(":checked");
+        param['useStemmer'] = $('#input-template-use-porter-stemmer').is(":checked");
 
         dialog.modal('show');
         bar.addClass('animate');
@@ -423,8 +423,8 @@ $(document).ready(function() {
 
         param['generateLoop'] = $('#input-template-pregenerated-count').val();
         param['deviation'] = $('#input-template-deviation').val();
-        param['removeStopwords'] = $('#input-template-use-stopwords').val();
-        param['useStemmer'] = $('#input-template-use-porter-stemmer').val();
+        param['removeStopwords'] = $('#input-template-use-stopwords').is(":checked");
+        param['useStemmer'] = $('#input-template-use-porter-stemmer').is(":checked");
 
         dialog.modal('show');
         bar.addClass('animate');
