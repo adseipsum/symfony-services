@@ -39,21 +39,19 @@
             <input id="input-template-drug-name" class="form-control" type="text"/>
 
             <label for="input-template-pregenerated-count">Колличество предгенерированных текстов:</label>
-            <input id="input-template-pregenerated-count" class="form-control" type="number" value="10"/>
+            <input id="input-template-pregenerated-count" class="form-control" type="number" value="50"/>
+
+            <label for="input-template-deviation"><a href="https://en.wikipedia.org/wiki/Standard_deviation">Коэфициент</a> похожести текстов (чем больше число - тем больше похожи тексты):</label>
+            <input id="input-template-deviation" class="form-control" type="number" value="10"/>
 
             <div>
                 <input type="checkbox" name="input-template-use-stopwords" id="input-template-use-stopwords" checked="true"/>
-                <label for="input-template-use-stopwords">Удалять стоп-слова из текста.</label>
+                <label for="input-template-use-stopwords">Перед сравнением текстов удалять из них <a href="http://www.ranks.nl/stopwords">стоп-слова</a>.</label>
             </div>
 
             <div>
-                <label for="input-template-use-stopwords">Алгоритм расчета похожести текстов</label>
-                <select id="input-template-algorithm" size="1" name="input-template-algorithm">
-                    <option selected value="Simhash">Simhash</option>
-                    <option value="DamerauLevenshtein">Damerau-Levenshtein distance</option>
-                    <option value="JaccardIndex">Jaccard Index</option>
-                    <option value="CosineSimilarity">Cosine Similarity</option>
-                </select>
+                <input type="checkbox" name="input-template-use-porter-stemmer" id="input-template-use-porter-stemmer" checked="true"/>
+                <label for="input-template-use-porter-stemmer">Перед сравнением текстов применять к ним <a href="https://en.wikipedia.org/wiki/Stemming">стеммер Портера</a>.</label>
             </div>
 
             <label for="comment">Сгенерированный текст:</label>
@@ -67,8 +65,11 @@
 
                 <input id="button-template-toggle-parenthesis" type="button" class="btn btn-success"  value="Hide (( ))"/>
                 <input id="input-generated-raw" type="hidden"/>
+                <input id="button-template-recalc-similarity" type="button" class="btn btn-default"  value="Пересчитать похожесть"/>
                 <input id="button-template-plus" type="button" class="btn btn-default"  value="Сохранить текст"/>
             </div>
+            <label for="generate_info_text">Дополнительная инфа по генерации:</label>
+            <textarea id="generate_info_text" rows="5" readonly="true" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
         </div>
 
         <div class="tab-pane" id="tab-generated-texts" style="padding-top: 5px">
@@ -102,7 +103,7 @@
                 </div>
                 <div style=" width:48%; float: right; margin-right:15px">
                     <label for="comment">Обработаный:</label>
-                    <textarea id="textarea-ngmc-orig" rows="17" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
+                    <textarea id="textarea-ngmc-replaced" rows="17" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
                 </div>
             </div>
             <div class="button-row">

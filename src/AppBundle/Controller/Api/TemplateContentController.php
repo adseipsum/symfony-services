@@ -43,6 +43,10 @@ class TemplateContentController extends Controller
                 $ret[] = $elem;
             }
 
+            usort($ret, function ($item1, $item2) {
+                return strnatcasecmp($item1['name'], $item2['name']);
+            });
+
             return ApiResponse::resultValues($ret);
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
@@ -52,7 +56,7 @@ class TemplateContentController extends Controller
     /**
      * @Route("/template/content/{templateId}", name="api_template_get", requirements={"template": "[a-zA-Z0-9\-\:]+"})
      *
-     * @method ("GET")
+     * @method("GET")
      */
     public function getTemplateContent(string $templateId)
     {
@@ -83,9 +87,13 @@ class TemplateContentController extends Controller
     }
 
     /**
-     * @Route("/template/save/{templateId}", name="api_template_update", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route(
+     *     "/template/save/{templateId}",
+     *     name="api_template_update",
+     *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
+     * )
      *
-     * @method ("POST")
+     * @method("POST")
      */
     public function updateTemplateContent(Request $request, string $templateId)
     {
@@ -146,9 +154,13 @@ class TemplateContentController extends Controller
     }
 
     /**
-     * @Route("/template/plus/{templateId}", name="api_template_usage_plus", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route(
+     *     "/template/plus/{templateId}",
+     *     name="api_template_usage_plus",
+     *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
+     * )
      *
-     * @method ("POST")
+     * @method("POST")
      */
     public function usagePlusCount(Request $request, $templateId)
     {
@@ -175,9 +187,13 @@ class TemplateContentController extends Controller
     }
 
     /**
-     * @Route("/generated-text/list/{templateId}", name="api_generated_text_list", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route(
+     *     "/generated-text/list/{templateId}",
+     *     name="api_generated_text_list",
+     *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
+     * )
      *
-     * @method ("GET")
+     * @method("GET")
      */
     public function getGeneratedTextList(string $templateId)
     {
@@ -204,10 +220,8 @@ class TemplateContentController extends Controller
                     $ret[] = $elem;
                 }
 
-                usort($ret, function ($a, $b) {
-                    /* @var $a \DateTime[] */
-                    /* @var $b \DateTime[] */
-                    return $a['addDate']->getTimestamp() < $b['addDate']->getTimestamp();
+                usort($ret, function ($item1, $item2) {
+                    return -1 * strnatcasecmp($item1['id'], $item2['id']);
                 });
             }
 
@@ -218,9 +232,13 @@ class TemplateContentController extends Controller
     }
 
     /**
-     * @Route("/generated-text/remove/{generateTextId}", name="api_generated_text_remove", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route(
+     *     "/generated-text/remove/{generateTextId}",
+     *     name="api_generated_text_remove",
+     *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
+     * )
      *
-     * @method ("GET")
+     * @method("GET")
      */
     public function removeGeneratedText(string $generateTextId)
     {
@@ -244,9 +262,13 @@ class TemplateContentController extends Controller
     }
 
     /**
-     * @Route("/template/remove/{templateId}", name="api_generated_text_remove", requirements={"template": "[a-zA-Z0-9\-\:]+"})
+     * @Route(
+     *     "/template/remove/{templateId}",
+     *     name="api_template_remove",
+     *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
+     * )
      *
-     * @method ("GET")
+     * @method("GET")
      */
     public function removeTemplate(string $templateId)
     {

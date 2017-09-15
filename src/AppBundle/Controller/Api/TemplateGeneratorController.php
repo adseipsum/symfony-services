@@ -3,7 +3,7 @@
 namespace AppBundle\Controller\Api;
 
 use AppBundle\Entity\CbTemplate;
-use AppBundle\StrungDistanceUtils;
+use AppBundle\Extension\StringDistanceExtension;
 use AppBundle\Entity\CbGeneratedText;
 use AppBundle\Extension\ApiResponse;
 use AppBundle\Extension\EditorExtension;
@@ -17,10 +17,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TemplateGeneratorController extends Controller
 {
-    const GENERATE_TEXT_COUNT = 10;
+    const GENERATE_TEXT_COUNT = 50;
+    const GENERATE_TEXT_DEVIATION = 10;
 
     /**
-     * @Route("/template/generate/{templateId}", name="api_editor_generate_template", requirements={"template": "[a-zA-Z0-9\-\-]+"})
+     * @Route("/template/generate/{templateId}", name="api_editor_generate_template",
+     *     requirements={"template": "[a-zA-Z0-9\-\-]+"}
+     * )
      *
      * @method ("POST")
      */
@@ -58,14 +61,19 @@ class TemplateGeneratorController extends Controller
                     $removeStopwords = $data['removeStopwords'];
                 }
 
+                $useStemmer = true;
+                if (isset($data['useStemmer'])) {
+                    $useStemmer = $data['useStemmer'];
+                }
+
                 $generateLoop = TemplateGeneratorController::GENERATE_TEXT_COUNT;
                 if (isset($data['generateLoop'])) {
                     $generateLoop = $data['generateLoop'];
                 }
 
-                $algorithm = "Simhash";
-                if (isset($data['algorithm'])) {
-                    $algorithm = $data['algorithm'];
+                $deviation = TemplateGeneratorController::GENERATE_TEXT_DEVIATION;
+                if (isset($data['deviation'])) {
+                    $deviation = $data['deviation'];
                 }
 
                 $extEditor = new EditorExtension(
@@ -83,8 +91,9 @@ class TemplateGeneratorController extends Controller
                     $templateId,
                     $drugName,
                     $removeStopwords,
+                    $useStemmer,
                     $generateLoop,
-                    $algorithm
+                    $deviation
                 );
 
                 if (!$cbTemplate->isValidate() and $result['validation_status']) {
@@ -110,8 +119,9 @@ class TemplateGeneratorController extends Controller
         string $templateId,
         $drugName,
         bool $removeStopwords,
+        bool $useStemmer,
         int $generateLoop,
-        string $algorithm
+        int $deviation
     ) {
         $templateName = $ext->getTemplateName();
 
@@ -187,7 +197,7 @@ class TemplateGeneratorController extends Controller
 
         $params = [
             'generated' => "",
-            'distances' => [],
+            'generate_info' => [],
             'content' => $content,
             'start_line' => $first_line,
             'validation_lines' => $template_lines,
@@ -206,48 +216,53 @@ class TemplateGeneratorController extends Controller
 
             $generated = TemplateGeneratorController::generateText(
                 $command,
-                TemplateGeneratorController::getOldGeneratedTexts($cb, $templateId, $removeStopwords),
+                TemplateGeneratorController::getOldGeneratedTexts($cb, $templateId, $removeStopwords, $useStemmer),
                 $removeStopwords,
+                $useStemmer,
                 $generateLoop,
-                $algorithm
+                $deviation
             );
 
             $params['generated'] = $generated["text"];
-            $params['distances'] = $generated["distances"];
+            $params['generate_info'] = $generated["generate_info"];
         }
 
         return $params;
     }
 
 
-    private static function getOldGeneratedTexts($cb, string $templateId, bool $removeStopwords) : array
-    {
+    private static function getOldGeneratedTexts(
+        $cb,
+        string $templateId,
+        bool $removeStopwords,
+        bool $useStemmer
+    ) : array {
         $generatedTextModel = new GeneratedTextModel($cb);
         /* @var $cbGeneratedTexts CbGeneratedText[] */
         $cbGeneratedTexts = $generatedTextModel->listObjectsByTemplateId($templateId);
 
         $ret = [];
         if (isset($cbGeneratedTexts)) {
-            $preparedTextVersionReal = StrungDistanceUtils::prepareTextForDistanceCalcVersion();
+            $preparedTextParamsHashNew = Utils::md5Multiple(
+                StringDistanceExtension::prepareTextForDistanceCalcVersion(),
+                $removeStopwords,
+                $useStemmer
+            );
 
             foreach ($cbGeneratedTexts as $cbGeneratedText) {
-                $preparedTextVersion = $cbGeneratedText->getPreparedTextVersion();
+                $preparedTextParamsHashOld = $cbGeneratedText->getPreparedTextParamsHash();
 
-                if ($preparedTextVersion < $preparedTextVersionReal) {
-                    $cbGeneratedText->setPreparedTextWithoutStopwords(
-                        StrungDistanceUtils::prepareTextForDistanceCalc($cbGeneratedText->getText(), true)
-                    );
-                    $cbGeneratedText->setPreparedText(
-                        StrungDistanceUtils::prepareTextForDistanceCalc($cbGeneratedText->getText(), false)
-                    );
-                    $cbGeneratedText->setPreparedTextVersion($preparedTextVersionReal);
-                    $generatedTextModel->upsert($cbGeneratedText);
-                }
-
-                if ($removeStopwords) {
-                    $preparedText = $cbGeneratedText->getPreparedTextWithoutStopwords();
-                } else {
+                if ($preparedTextParamsHashOld === $preparedTextParamsHashNew) {
                     $preparedText = $cbGeneratedText->getPreparedText();
+                } else {
+                    $preparedText = StringDistanceExtension::prepareTextForDistanceCalc(
+                        $cbGeneratedText->getText(),
+                        $removeStopwords,
+                        $useStemmer
+                    );
+                    $cbGeneratedText->setPreparedText($preparedText);
+                    $cbGeneratedText->setPreparedTextParamsHash($preparedTextParamsHashNew);
+                    $generatedTextModel->upsert($cbGeneratedText);
                 }
 
                 if (isset($preparedText)) {
@@ -275,44 +290,144 @@ class TemplateGeneratorController extends Controller
         return $generated;
     }
 
-
     private static function generateText(
         string $command,
         array $oldGeneratedTexts,
         bool $removeStopwords,
+        bool $useStemmer,
         int $generateLoop,
-        string $algorithm
+        int $deviation
     ) {
         $ret = [
             "text" => "",
-            "distances" => [],
+            "generate_info" => [],
         ];
 
         if (empty($oldGeneratedTexts)) {
             $ret["text"] = TemplateGeneratorController::generateTextFromCommand($command);
         } else {
-            $current_distance = 0.0;
+            $current_distance = INF;
 
             for ($i = 0; $i < $generateLoop; $i++) {
                 $generatedText = TemplateGeneratorController::generateTextFromCommand($command);
 
-                $preparedText = StrungDistanceUtils::prepareTextForDistanceCalc($generatedText, $removeStopwords);
+                $preparedText = StringDistanceExtension::prepareTextForDistanceCalc(
+                    $generatedText,
+                    $removeStopwords,
+                    $useStemmer
+                );
 
-                $distances = StrungDistanceUtils::calcDistanceMetricForTexts(
+                $generate_info = StringDistanceExtension::calcDistanceMetricForTexts(
                     $preparedText,
                     $oldGeneratedTexts,
-                    $algorithm
+                    $deviation
                 );
-                $distance_temp = min($distances);
-                if ($distance_temp > $current_distance) {
+
+                $distance_temp = array_reduce($generate_info, function($carry = null, $item) {
+                    $val = $item['distance'];
+                    return ($carry == null || $val > $carry) ? $val : $carry;
+                });
+
+                if ($distance_temp < $current_distance) {
                     $current_distance = $distance_temp;
                     $ret["text"] = $generatedText;
-                    $ret["distances"] = $distances;
+                    $ret["generate_info"] = $generate_info;
                 }
             }
         }
+        
+        usort($ret["generate_info"], function ($item1, $item2) {
+            return -1 * strnatcasecmp($item1['id'], $item2['id']);
+        });
 
         return $ret;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @Route(
+     *     "/template/similarity/{templateId}",
+     *     name="api_editor_recalc_similarity",
+     *     requirements={"template": "[a-zA-Z0-9\-\-]+"}
+     * )
+     *
+     * @method ("POST")
+     */
+    public function recalcSimilarity(Request $request, string $templateId)
+    {
+        $username = $this->getUser()->getUsernameCanonical();
+        if ($username == null) {
+            return ApiResponse::resultUnauthorized();
+        }
+
+        try {
+            $cb = $this->get('couchbase.connector');
+            $templateModel = new TemplateModel($cb);
+            /* @var $cbTemplate CbTemplate */
+            $cbTemplate = $templateModel->get($templateId);
+
+            if ($cbTemplate != null) {
+                $data = json_decode($request->getContent(), true);
+
+                $text = "";
+                if (isset($data['text'])) {
+                    $text = $data['text'];
+                }
+
+                $removeStopwords = true;
+                if (isset($data['removeStopwords'])) {
+                    $removeStopwords = $data['removeStopwords'];
+                }
+
+                $useStemmer = true;
+                if (isset($data['useStemmer'])) {
+                    $useStemmer = $data['useStemmer'];
+                }
+
+                $deviation = TemplateGeneratorController::GENERATE_TEXT_DEVIATION;
+                if (isset($data['deviation'])) {
+                    $deviation = $data['deviation'];
+                }
+
+                $oldGeneratedTexts = TemplateGeneratorController::getOldGeneratedTexts(
+                    $cb,
+                    $templateId,
+                    $removeStopwords,
+                    $useStemmer
+                );
+
+                $result = [
+                    'generate_info' => []
+                ];
+
+                if (!empty($oldGeneratedTexts)) {
+                    $preparedText = StringDistanceExtension::prepareTextForDistanceCalc(
+                        $text,
+                        $removeStopwords,
+                        $useStemmer
+                    );
+
+                    $generate_info = StringDistanceExtension::calcDistanceMetricForTexts(
+                        $preparedText,
+                        $oldGeneratedTexts,
+                        $deviation
+                    );
+                    
+                    usort($generate_info, function ($item1, $item2) {
+                        return -1 * strnatcasecmp($item1['id'], $item2['id']);
+                    });
+
+                    $result["generate_info"] = $generate_info;
+                }
+
+                return ApiResponse::resultValue($result);
+            } else {
+                return ApiResponse::resultNotFound();
+            }
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
     }
 
 }

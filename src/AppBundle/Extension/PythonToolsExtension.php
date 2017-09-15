@@ -1,16 +1,41 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: void
- * Date: 9/15/17
- * Time: 12:27 PM
- */
-
 namespace AppBundle\Extension;
 
 
+use AppBundle\Controller\Api\ApiController;
+
 class PythonToolsExtension
 {
+    var $python_bin;
+    var $ngram_mc_bin;
+    var $user_dir;
+    var $username;
 
+    function __construct(ApiController $parent, $username)
+    {
+        $this->python_bin = $parent->getParameter('python_bin');
+        $this->user_dir = $parent->getParameter('generator_user_dir');
+        $this->ngram_mc_bin = $parent->getParameter('ngram_mc_bin');
+        $this->username = $username;
+    }
+
+    function transformTextNGMC($text, $framesize, $prob)
+    {
+        $path = $this->user_dir.'/'.$this->username.'/'.'ngmc.tmp';
+        file_put_contents($path, $text);
+
+        $pPython = $this->python_bin;
+        $pScript = $this->ngram_mc_bin;
+
+        $command = "$pPython $pScript -f $path -FR $framesize -FP $prob";
+        exec($command, $output);
+        $generated = '';
+        foreach ($output as $line) {
+            $generated .= $line . "\n";
+        }
+
+        return $generated;
+
+    }
 
 }
