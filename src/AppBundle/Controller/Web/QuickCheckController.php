@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller\Web;
 
-use AppBundle\Utils;
+use AppBundle\UtilsExtension;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,7 +42,7 @@ class QuickCheckController extends Controller
 
         $base_template_content = file_get_contents($baseTemplate);
 
-        Utils::forceFilePutContents($templateFile, $base_template_content . "\n" . $template);
+        UtilsExtension::forceFilePutContents($templateFile, $base_template_content . "\n" . $template);
 
         $combined_template_content = file_get_contents($templateFile);
 

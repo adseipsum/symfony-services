@@ -2,7 +2,7 @@
 
 namespace AppBundle;
 
-class Utils
+class UtilsExtension
 {
 
     /**

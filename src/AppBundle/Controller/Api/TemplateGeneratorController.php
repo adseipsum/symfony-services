@@ -9,7 +9,7 @@ use AppBundle\Extension\ApiResponse;
 use AppBundle\Extension\EditorExtension;
 use AppBundle\Repository\TemplateModel;
 use AppBundle\Repository\GeneratedTextModel;
-use AppBundle\Utils;
+use AppBundle\UtilsExtension;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -149,7 +149,7 @@ class TemplateGeneratorController extends Controller
         $out_validate_text = '';
 
         if (!file_exists($templateFilePath) or sha1($newContent) != sha1($oldContent)) {
-            Utils::forceFilePutContents($templateFilePath, $newContent);
+            UtilsExtension::forceFilePutContents($templateFilePath, $newContent);
         }
 
         if (!$validate_ok) {
@@ -243,7 +243,7 @@ class TemplateGeneratorController extends Controller
 
         $ret = [];
         if (isset($cbGeneratedTexts)) {
-            $preparedTextParamsHashNew = Utils::md5Multiple(
+            $preparedTextParamsHashNew = UtilsExtension::md5Multiple(
                 StringDistanceExtension::prepareTextForDistanceCalcVersion(),
                 $removeStopwords,
                 $useStemmer

@@ -26,7 +26,7 @@ composer update
 
 yarn upgrade
 
-проинсталить зависимости зависимости nodejs:
+проинсталить зависимости nodejs:
 
 yarn install
 

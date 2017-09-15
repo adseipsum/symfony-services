@@ -2,7 +2,7 @@
 
 namespace AppBundle\Extension;
 
-use AppBundle\Utils;
+use AppBundle\UtilsExtension;
 
 class EditorExtension
 {
@@ -57,7 +57,7 @@ class EditorExtension
     function setGlobalDictonary($value)
     {
         $filename = $this->path . 'globaldict.json';
-        Utils::forceFilePutContents($filename, json_encode($value));
+        UtilsExtension::forceFilePutContents($filename, json_encode($value));
         $this->_genDictonaryTemplate($value);
     }
 
@@ -86,7 +86,7 @@ class EditorExtension
 
             $content .= '}' . PHP_EOL;
         }
-        Utils::forceFilePutContents($filename, $content);
+        UtilsExtension::forceFilePutContents($filename, $content);
     }
 
     // Rawtext
@@ -103,7 +103,7 @@ class EditorExtension
     function setRawtext($value)
     {
         $filename = $this->path . 'rawtext.txt';
-        Utils::forceFilePutContents($filename, $value);
+        UtilsExtension::forceFilePutContents($filename, $value);
     }
 
     // Spinblock
@@ -123,7 +123,7 @@ class EditorExtension
     function setSpinblockData($value)
     {
         $filename = $this->path . 'spinblock.json';
-        Utils::forceFilePutContents($filename, json_encode($value));
+        UtilsExtension::forceFilePutContents($filename, json_encode($value));
     }
 
     function _genBlockDefinition($name, $type, $index, $fixed = false, $readonly = false)
@@ -149,7 +149,7 @@ class EditorExtension
             $content .= self::TEMPLATE_INCLUDE_DICTIONARY . PHP_EOL;
         }
 
-        Utils::forceFilePutContents($filename, $content);
+        UtilsExtension::forceFilePutContents($filename, $content);
     }
 
     function genTemplateForBlock($value)
