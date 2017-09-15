@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle;
+namespace AppBundle\Extension;
 
-class Utils
+class UtilsExtension
 {
 
     /**

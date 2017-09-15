@@ -42,8 +42,8 @@ class SimHashExt extends \Tga\SimHash\SimHash {
 $simhash = new SimHashExt();
 $comparator = new Tga\SimHash\Comparator\GaussianComparator(10);
 
-$tokens1 = AppBundle\StrungDistanceUtils::prepareTextForDistanceCalc($text1, false);
-$tokens2 = AppBundle\StrungDistanceUtils::prepareTextForDistanceCalc($text2, false);
+$tokens1 = AppBundle\StrungDistanceUtils::prepareTextForDistanceCalc($text1, false, false);
+$tokens2 = AppBundle\StrungDistanceUtils::prepareTextForDistanceCalc($text2, false, false);
 
 $fp1 = $simhash->hash($tokens1, SimHashExt::SIMHASH_512);
 $fp2 = $simhash->hash($tokens2, SimHashExt::SIMHASH_512);

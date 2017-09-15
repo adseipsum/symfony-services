@@ -502,6 +502,7 @@ $(document).ready(function() {
                             }
                             else {
                                 $('#generator-error-container').append('<div class="line-error">' + text + '</div>');
+
                             }
                         }
 

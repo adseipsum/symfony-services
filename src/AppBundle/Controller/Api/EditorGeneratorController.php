@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller\Api;
 
-use AppBundle\Utils;
+use AppBundle\Extension\UtilsExtension;
 use AppBundle\Extension\ApiResponse;
 use AppBundle\Extension\EditorExtension;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -93,7 +93,7 @@ class EditorGeneratorController extends Controller
         $templateFilePath = "$userDir/$username/template/default/" . $templateFile;
 
         $base_template_content = file_get_contents($templateBaseFilePath);
-        Utils::forceFilePutContents($templateFilePath, $base_template_content . PHP_EOL . $content);
+        UtilsExtension::forceFilePutContents($templateFilePath, $base_template_content . PHP_EOL . $content);
 
         $command_validate = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -v -t $templateName -f $templateFile";
         exec($command_validate, $output_validate);
