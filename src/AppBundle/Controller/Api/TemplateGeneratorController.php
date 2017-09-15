@@ -299,7 +299,7 @@ class TemplateGeneratorController extends Controller
 
     private const GENERATE_TEXT_COUNT = 50;
 
-    private const GENERATE_TEXT_DEVIATION = 10;
+    private const GENERATE_TEXT_DEVIATION = 100;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
