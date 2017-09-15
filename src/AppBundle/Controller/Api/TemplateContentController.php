@@ -15,8 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 class TemplateContentController extends Controller
 {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * @Route("/template/list", name="api_template_list")
      *
@@ -55,12 +53,10 @@ class TemplateContentController extends Controller
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * @Route("/template/content/{templateId}", name="api_template_get", requirements={"template": "[a-zA-Z0-9\-\:]+"})
      *
-     * @method ("GET")
+     * @method("GET")
      */
     public function getTemplateContent(string $templateId)
     {
@@ -90,8 +86,6 @@ class TemplateContentController extends Controller
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * @Route(
      *     "/template/save/{templateId}",
@@ -99,7 +93,7 @@ class TemplateContentController extends Controller
      *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
      * )
      *
-     * @method ("POST")
+     * @method("POST")
      */
     public function updateTemplateContent(Request $request, string $templateId)
     {
@@ -159,8 +153,6 @@ class TemplateContentController extends Controller
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * @Route(
      *     "/template/plus/{templateId}",
@@ -168,7 +160,7 @@ class TemplateContentController extends Controller
      *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
      * )
      *
-     * @method ("POST")
+     * @method("POST")
      */
     public function usagePlusCount(Request $request, $templateId)
     {
@@ -194,8 +186,6 @@ class TemplateContentController extends Controller
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * @Route(
      *     "/generated-text/list/{templateId}",
@@ -203,7 +193,7 @@ class TemplateContentController extends Controller
      *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
      * )
      *
-     * @method ("GET")
+     * @method("GET")
      */
     public function getGeneratedTextList(string $templateId)
     {
@@ -241,8 +231,6 @@ class TemplateContentController extends Controller
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * @Route(
      *     "/generated-text/remove/{generateTextId}",
@@ -250,7 +238,7 @@ class TemplateContentController extends Controller
      *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
      * )
      *
-     * @method ("GET")
+     * @method("GET")
      */
     public function removeGeneratedText(string $generateTextId)
     {
@@ -280,7 +268,7 @@ class TemplateContentController extends Controller
      *     requirements={"template": "[a-zA-Z0-9\-\:]+"}
      * )
      *
-     * @method ("GET")
+     * @method("GET")
      */
     public function removeTemplate(string $templateId)
     {
@@ -303,5 +291,5 @@ class TemplateContentController extends Controller
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 }

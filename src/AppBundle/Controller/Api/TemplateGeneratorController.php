@@ -3,7 +3,7 @@
 namespace AppBundle\Controller\Api;
 
 use AppBundle\Entity\CbTemplate;
-use AppBundle\StrungDistanceUtils;
+use AppBundle\Extension\StringDistanceExtension;
 use AppBundle\Entity\CbGeneratedText;
 use AppBundle\Extension\ApiResponse;
 use AppBundle\Extension\EditorExtension;
@@ -17,13 +17,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TemplateGeneratorController extends Controller
 {
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const GENERATE_TEXT_COUNT = 50;
+    const GENERATE_TEXT_DEVIATION = 100;
 
     /**
-     * @Route(
-     *     "/template/generate/{templateId}",
-     *     name="api_editor_generate_template",
+     * @Route("/template/generate/{templateId}", name="api_editor_generate_template",
      *     requirements={"template": "[a-zA-Z0-9\-\-]+"}
      * )
      *
@@ -111,8 +109,6 @@ class TemplateGeneratorController extends Controller
             return ApiResponse::resultError(500, $e->getMessage());
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private function generateForTemplate(
         EditorExtension $ext,
@@ -234,7 +230,6 @@ class TemplateGeneratorController extends Controller
         return $params;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private static function getOldGeneratedTexts(
         $cb,
@@ -249,7 +244,7 @@ class TemplateGeneratorController extends Controller
         $ret = [];
         if (isset($cbGeneratedTexts)) {
             $preparedTextParamsHashNew = Utils::md5Multiple(
-                StrungDistanceUtils::prepareTextForDistanceCalcVersion(),
+                StringDistanceExtension::prepareTextForDistanceCalcVersion(),
                 $removeStopwords,
                 $useStemmer
             );
@@ -260,7 +255,7 @@ class TemplateGeneratorController extends Controller
                 if ($preparedTextParamsHashOld === $preparedTextParamsHashNew) {
                     $preparedText = $cbGeneratedText->getPreparedText();
                 } else {
-                    $preparedText = StrungDistanceUtils::prepareTextForDistanceCalc(
+                    $preparedText = StringDistanceExtension::prepareTextForDistanceCalc(
                         $cbGeneratedText->getText(),
                         $removeStopwords,
                         $useStemmer
@@ -279,7 +274,7 @@ class TemplateGeneratorController extends Controller
         return $ret;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     private static function generateTextFromCommand(string $command) : string
     {
@@ -294,14 +289,6 @@ class TemplateGeneratorController extends Controller
 
         return $generated;
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private const GENERATE_TEXT_COUNT = 50;
-
-    private const GENERATE_TEXT_DEVIATION = 100;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private static function generateText(
         string $command,
@@ -324,13 +311,13 @@ class TemplateGeneratorController extends Controller
             for ($i = 0; $i < $generateLoop; $i++) {
                 $generatedText = TemplateGeneratorController::generateTextFromCommand($command);
 
-                $preparedText = StrungDistanceUtils::prepareTextForDistanceCalc(
+                $preparedText = StringDistanceExtension::prepareTextForDistanceCalc(
                     $generatedText,
                     $removeStopwords,
                     $useStemmer
                 );
 
-                $generate_info = StrungDistanceUtils::calcDistanceMetricForTexts(
+                $generate_info = StringDistanceExtension::calcDistanceMetricForTexts(
                     $preparedText,
                     $oldGeneratedTexts,
                     $deviation
@@ -415,13 +402,13 @@ class TemplateGeneratorController extends Controller
                 ];
 
                 if (!empty($oldGeneratedTexts)) {
-                    $preparedText = StrungDistanceUtils::prepareTextForDistanceCalc(
+                    $preparedText = StringDistanceExtension::prepareTextForDistanceCalc(
                         $text,
                         $removeStopwords,
                         $useStemmer
                     );
 
-                    $generate_info = StrungDistanceUtils::calcDistanceMetricForTexts(
+                    $generate_info = StringDistanceExtension::calcDistanceMetricForTexts(
                         $preparedText,
                         $oldGeneratedTexts,
                         $deviation
@@ -443,5 +430,4 @@ class TemplateGeneratorController extends Controller
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

@@ -244,6 +244,7 @@ $(document).ready(function() {
 
                 $('#button-template-generate').removeClass('btn-default');
                 $('#button-template-generate').addClass('btn-info');
+
                 $('#button-template-plus').removeClass('btn-default');
                 $('#button-template-plus').addClass('btn-success');
                 $('#generator-error-container').empty();
@@ -297,6 +298,7 @@ $(document).ready(function() {
 
                 $('#button-template-save').removeClass('btn-default');
                 $('#button-template-save').addClass('btn-success');
+
                 $('#button-template-delete').removeClass('btn-default');
                 $('#button-template-delete').addClass('btn-danger');
                 $('#button-template-delete').removeClass('.disabled');
@@ -304,6 +306,10 @@ $(document).ready(function() {
 
                 $('#button-template-generate').removeClass('btn-default');
                 $('#button-template-generate').addClass('btn-info');
+                $('#button-template-save').removeClass('btn-default');
+                $('#button-template-save').addClass('btn-success');
+
+
                 $('#button-template-plus').removeClass('btn-default');
                 $('#button-template-plus').addClass('btn-success');
 
@@ -400,7 +406,6 @@ $(document).ready(function() {
                 alert('Error (' + errorMsg.status + '): ' + errorMsg.statusText);
             }
         });
-
     });
 
     $('#button-template-generate').on('click',  function(e) {
@@ -448,6 +453,10 @@ $(document).ready(function() {
                         // console.log(generated_template);
                         $.fn.render_generated_template();
                         $.fn.render_generate_info(generate_info);
+
+                        $('#button-template-ngmc').removeClass('btn-default');
+                        $('#button-template-ngmc').addClass('btn-info');
+
                     }
                     else {
                         // Error div content
@@ -523,6 +532,43 @@ $(document).ready(function() {
     $('#button-template-toggle-parenthesis').on('click',  function(e) {
         $.fn.toggle_parenthesiss_state();
     });
+
+    $('#button-template-generate-ngmc').on('click',  function(e) {
+        var parsedText = $('#textarea-ngmc-orig').val();
+        if (parsedText.length === 0 || !parsedText.trim()) {
+            return;
+        }
+        var dialog = $('.dialog-progress-bar');
+        var bar = dialog.find('.progress-bar');
+
+
+        var param = {};
+        param['text'] = parsedText;
+        param['frame_size'] = $('#input-template-ngmc-framesize').val();
+        param['frame_peek_probability'] = $('#frame_peek_probability').val();
+
+        dialog.modal('show');
+        bar.addClass('animate');
+
+        $.ajax({
+                type: "POST",
+                url: "/api/ngram/spin",
+                data: JSON.stringify(param),
+                dataType: "json",
+                success: function(data) {
+                    bar.removeClass('animate');
+                    dialog.modal('hide');
+                    $('#textarea-ngmc-replaced').val(data.result.value);
+                },
+                error: function(errorMsg){
+                    bar.removeClass('animate');
+                    dialog.modal('hide');
+                    alert('Error (' + errorMsg.status + '): ' + errorMsg.statusText);
+                }
+        });
+
+    });
+
 
 
     $('#dialog-dict-confirm-delete').on('click', '.btn-ok', function(e) {

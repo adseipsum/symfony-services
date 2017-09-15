@@ -30,6 +30,7 @@
 		"justinrainbow/json-schema": "^5.2",
 		"nlp-tools/nlp-tools": "1.0.*@dev",
 		"oefenweb/damerau-levenshtein": "2.1.*@dev",
+		"php-amqplib/rabbitmq-bundle": "^1.13",
 		"sensio/distribution-bundle": "^5.0.19",
 		"sensio/framework-extra-bundle": "^3.0.2",
 		"symfony/monolog-bundle": "^3.1.0",

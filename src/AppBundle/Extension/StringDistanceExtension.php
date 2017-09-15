@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle;
+namespace AppBundle\Extension;
 
 use \NlpTools\Utils\Normalizers\Normalizer;
 use \NlpTools\Documents\TokensDocument;
@@ -13,7 +13,7 @@ use \Tga\SimHash\Comparator\GaussianComparator;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class StrungDistanceUtils
+class StringDistanceExtension
 {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +99,8 @@ class StrungDistanceUtils
 
     // https://en.wikipedia.org/wiki/Stop_words
     // http://www.ranks.nl/stopwords
-    public const STOP_WORDS = array(
+
+    const STOP_WORDS = array(
         "a",
         "able",
         "about",
