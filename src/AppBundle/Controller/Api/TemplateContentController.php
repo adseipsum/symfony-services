@@ -15,8 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 class TemplateContentController extends Controller
 {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * @Route("/template/list", name="api_template_list")
      *
@@ -51,8 +49,6 @@ class TemplateContentController extends Controller
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * @Route("/template/content/{templateId}", name="api_template_get", requirements={"template": "[a-zA-Z0-9\-\:]+"})
      *
@@ -85,8 +81,6 @@ class TemplateContentController extends Controller
             return ApiResponse::resultError(500, $e->getMessage());
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @Route("/template/save/{templateId}", name="api_template_update", requirements={"template": "[a-zA-Z0-9\-\:]+"})
@@ -151,8 +145,6 @@ class TemplateContentController extends Controller
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * @Route("/template/plus/{templateId}", name="api_template_usage_plus", requirements={"template": "[a-zA-Z0-9\-\:]+"})
      *
@@ -181,8 +173,6 @@ class TemplateContentController extends Controller
             return ApiResponse::resultError(500, $e->getMessage());
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @Route("/generated-text/list/{templateId}", name="api_generated_text_list", requirements={"template": "[a-zA-Z0-9\-\:]+"})
@@ -226,8 +216,6 @@ class TemplateContentController extends Controller
             return ApiResponse::resultError(500, $e->getMessage());
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @Route("/generated-text/remove/{generateTextId}", name="api_generated_text_remove", requirements={"template": "[a-zA-Z0-9\-\:]+"})
@@ -281,5 +269,5 @@ class TemplateContentController extends Controller
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 }

@@ -239,6 +239,7 @@ $(document).ready(function() {
 
                 $('#button-template-generate').removeClass('btn-default');
                 $('#button-template-generate').addClass('btn-info');
+
                 $('#button-template-plus').removeClass('btn-default');
                 $('#button-template-plus').addClass('btn-success');
                 $('#generator-error-container').empty();
@@ -292,6 +293,7 @@ $(document).ready(function() {
 
                 $('#button-template-save').removeClass('btn-default');
                 $('#button-template-save').addClass('btn-success');
+
                 $('#button-template-delete').removeClass('btn-default');
                 $('#button-template-delete').addClass('btn-danger');
                 $('#button-template-delete').removeClass('.disabled');
@@ -299,6 +301,10 @@ $(document).ready(function() {
 
                 $('#button-template-generate').removeClass('btn-default');
                 $('#button-template-generate').addClass('btn-info');
+                $('#button-template-save').removeClass('btn-default');
+                $('#button-template-save').addClass('btn-success');
+
+
                 $('#button-template-plus').removeClass('btn-default');
                 $('#button-template-plus').addClass('btn-success');
 
@@ -399,6 +405,9 @@ $(document).ready(function() {
 
                         // console.log(generated_template);
                         $.fn.render_generated_template(distances);
+
+                        $('#button-template-ngmc').removeClass('btn-default');
+                        $('#button-template-ngmc').addClass('btn-info');
                     }
                     else {
                         // Error div content
@@ -474,6 +483,14 @@ $(document).ready(function() {
     $('#button-template-toggle-parenthesis').on('click',  function(e) {
         $.fn.toggle_parenthesiss_state();
     });
+
+    $('#button-template-ngmc').on('click',  function(e) {
+        if(generated_template != undefined && generated_template.length > 0)
+        {
+
+        }
+    });
+
 
 
     $('#dialog-dict-confirm-delete').on('click', '.btn-ok', function(e) {

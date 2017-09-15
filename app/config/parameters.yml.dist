@@ -18,11 +18,20 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
 
+    amqp_host:     ~
+    amqp_port:    ~
+    amqp_user:     ~
+    amqp_password: ~
+    amqp_vhost:    ~
+    ampq_environment: prod
+
     couchbase_environment: ~
     couchbase_uri: ~
     couchbase_bucket_password: ~
 
     python_bin: ~
+    ngram_mc_bin: ~
+    generator_home: ~
     generator_home: ~
     generator_demo_tmp_dir: ~
     generator_demo_template_dir: ~

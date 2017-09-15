@@ -17,8 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TemplateGeneratorController extends Controller
 {
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const GENERATE_TEXT_COUNT = 10;
 
     /**
      * @Route("/template/generate/{templateId}", name="api_editor_generate_template", requirements={"template": "[a-zA-Z0-9\-\-]+"})
@@ -101,8 +100,6 @@ class TemplateGeneratorController extends Controller
             return ApiResponse::resultError(500, $e->getMessage());
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private function generateForTemplate(
         EditorExtension $ext,
@@ -222,7 +219,6 @@ class TemplateGeneratorController extends Controller
         return $params;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private static function getOldGeneratedTexts($cb, string $templateId, bool $removeStopwords) : array
     {
@@ -263,7 +259,7 @@ class TemplateGeneratorController extends Controller
         return $ret;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     private static function generateTextFromCommand(string $command) : string
     {
@@ -279,11 +275,6 @@ class TemplateGeneratorController extends Controller
         return $generated;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private const GENERATE_TEXT_COUNT = 10;
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private static function generateText(
         string $command,
@@ -324,5 +315,4 @@ class TemplateGeneratorController extends Controller
         return $ret;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

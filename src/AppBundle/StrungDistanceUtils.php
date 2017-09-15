@@ -110,7 +110,7 @@ class StrungDistanceUtils
 
     // https://en.wikipedia.org/wiki/Stop_words
     // http://www.ranks.nl/stopwords
-    private const STOP_WORDS = array(
+    const STOP_WORDS = array(
         "a",
         "able",
         "about",
