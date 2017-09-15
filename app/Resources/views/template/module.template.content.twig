@@ -86,14 +86,25 @@
                     <option value="4" selected>4</option>
                     <option value="5">5</option>
                     <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+
                 </select>
                 <label for="input-template-ngmc-peekprob">Пиковая вероятность замены слова</label>
                 <select id="input-template-ngmc-peekprob" class="form-control" size="1" name="input-template-ngmc-peekprob">
-                    <option value="0.8" selected>80%</option>
+                    <option value="1">100%</option>
+                    <option value="0.9">90%</option>
+                    <option value="0.8">80%</option>
                     <option value="0.7">70%</option>
-                    <option value="0.6">60%</option>
+                    <option value="0.6" selected>60%</option>
                     <option value="0.5">50%</option>
                     <option value="0.4">40%</option>
+                </select>
+                <label for="input-template-ngmc-mode">Режим работы</label>
+                <select id="input-template-ngmc-mode" class="form-control" size="1" name="input-template-ngmc-mode">
+                    <option value="insert">Вставка</option>
+                    <option value="replace">Замена</option>
                 </select>
             </div>
             <div class="row">
@@ -108,7 +119,7 @@
             </div>
             <div class="button-row">
                 <input id="button-template-generate-ngmc" type="button" class="btn btn-info"  value="Обработать"/>
-                <input id="button-template-toggle-parenthesis2" type="button" class="btn btn-success"  value="Hide [[ ]]"/>
+                <input id="button-template-toggle-parenthesis_ngmc" type="button" class="btn btn-success"  value="Hide [[ ]]"/>
                 <input id="button-template-save-ngmc" type="button" class="btn btn-disabled"  value="Сохранить текст"/>
             </div>
         </div>
