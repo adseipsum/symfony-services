@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller\Api;
 
-use AppBundle\UtilsExtension;
+use AppBundle\Extension\UtilsExtension;
 use AppBundle\Extension\ApiResponse;
 use AppBundle\Extension\EditorExtension;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

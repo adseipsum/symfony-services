@@ -2,7 +2,7 @@
 
 namespace AppBundle\Extension;
 
-use AppBundle\UtilsExtension;
+use AppBundle\Extension\UtilsExtension;
 
 class EditorExtension
 {

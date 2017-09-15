@@ -9,7 +9,7 @@ use AppBundle\Extension\ApiResponse;
 use AppBundle\Extension\EditorExtension;
 use AppBundle\Repository\TemplateModel;
 use AppBundle\Repository\GeneratedTextModel;
-use AppBundle\UtilsExtension;
+use AppBundle\Extension\UtilsExtension;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -17,8 +17,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 class TemplateGeneratorController extends Controller
 {
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     const GENERATE_TEXT_COUNT = 50;
     const GENERATE_TEXT_DEVIATION = 100;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * @Route("/template/generate/{templateId}", name="api_editor_generate_template",
@@ -110,6 +115,8 @@ class TemplateGeneratorController extends Controller
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     private function generateForTemplate(
         EditorExtension $ext,
         $templateFile,
@@ -196,7 +203,7 @@ class TemplateGeneratorController extends Controller
         }
 
         $params = [
-            'generated' => "",
+            'generated' => '',
             'generate_info' => [],
             'content' => $content,
             'start_line' => $first_line,
@@ -223,13 +230,14 @@ class TemplateGeneratorController extends Controller
                 $deviation
             );
 
-            $params['generated'] = $generated["text"];
-            $params['generate_info'] = $generated["generate_info"];
+            $params['generated'] = $generated['text'];
+            $params['generate_info'] = $generated['generate_info'];
         }
 
         return $params;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private static function getOldGeneratedTexts(
         $cb,
@@ -274,7 +282,7 @@ class TemplateGeneratorController extends Controller
         return $ret;
     }
 
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private static function generateTextFromCommand(string $command) : string
     {
@@ -290,6 +298,8 @@ class TemplateGeneratorController extends Controller
         return $generated;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     private static function generateText(
         string $command,
         array $oldGeneratedTexts,
@@ -299,12 +309,12 @@ class TemplateGeneratorController extends Controller
         int $deviation
     ) {
         $ret = [
-            "text" => "",
-            "generate_info" => [],
+            'text' => '',
+            'generate_info' => [],
         ];
 
         if (empty($oldGeneratedTexts)) {
-            $ret["text"] = TemplateGeneratorController::generateTextFromCommand($command);
+            $ret['text'] = TemplateGeneratorController::generateTextFromCommand($command);
         } else {
             $current_distance = INF;
 
@@ -320,23 +330,21 @@ class TemplateGeneratorController extends Controller
                 $generate_info = StringDistanceExtension::calcDistanceMetricForTexts(
                     $preparedText,
                     $oldGeneratedTexts,
-                    $deviation
+                    $deviation,
+                    $current_distance
                 );
 
-                $distance_temp = array_reduce($generate_info, function($carry = null, $item) {
-                    $val = $item['distance'];
-                    return ($carry == null || $val > $carry) ? $val : $carry;
-                });
-
-                if ($distance_temp < $current_distance) {
-                    $current_distance = $distance_temp;
-                    $ret["text"] = $generatedText;
-                    $ret["generate_info"] = $generate_info;
+                if ($generate_info['isSkip']) {
+                    continue;
                 }
+
+                $current_distance = $generate_info['max'];
+                $ret['text'] = $generatedText;
+                $ret['generate_info'] = $generate_info['distances'];
             }
         }
         
-        usort($ret["generate_info"], function ($item1, $item2) {
+        usort($ret['generate_info'], function ($item1, $item2) {
             return -1 * strnatcasecmp($item1['id'], $item2['id']);
         });
 
@@ -370,7 +378,7 @@ class TemplateGeneratorController extends Controller
             if ($cbTemplate != null) {
                 $data = json_decode($request->getContent(), true);
 
-                $text = "";
+                $text = '';
                 if (isset($data['text'])) {
                     $text = $data['text'];
                 }
@@ -413,12 +421,14 @@ class TemplateGeneratorController extends Controller
                         $oldGeneratedTexts,
                         $deviation
                     );
+
+                    $generate_info = $generate_info['distances'];
                     
                     usort($generate_info, function ($item1, $item2) {
                         return -1 * strnatcasecmp($item1['id'], $item2['id']);
                     });
 
-                    $result["generate_info"] = $generate_info;
+                    $result['generate_info'] = $generate_info;
                 }
 
                 return ApiResponse::resultValue($result);
@@ -430,4 +440,5 @@ class TemplateGeneratorController extends Controller
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
