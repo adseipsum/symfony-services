@@ -16,7 +16,7 @@ $(document).ready(function() {
     {
         parenthesis_state_show = !parenthesis_state_show;
 
-        if(parenthesis_state_show == true)
+        if(parenthesis_state_show)
         {
             $('#button-template-toggle-parenthesis').val('Hide (( ))');
         }
@@ -29,7 +29,7 @@ $(document).ready(function() {
 
     $.fn.render_generated_template = function()
     {
-        if(parenthesis_state_show == true)
+        if(parenthesis_state_show)
         {
             $('#textarea-template-generator').val(generated_template);
         }
@@ -44,7 +44,7 @@ $(document).ready(function() {
     {
         parenthesis_state_ngmc = !parenthesis_state_ngmc;
 
-        if(parenthesis_state_ngmc == true)
+        if(parenthesis_state_ngmc)
         {
             $('#button-template-toggle-parenthesis').val('Hide (( ))');
         }
@@ -57,7 +57,7 @@ $(document).ready(function() {
 
     $.fn.render_ngmc_text = function()
     {
-        if(parenthesis_state_ngmc == true)
+        if(parenthesis_state_ngmc)
         {
             $('#textarea-ngmc-replaced').val(generated_marcov_chain);
         }
@@ -99,7 +99,7 @@ $(document).ready(function() {
             success: function(data) {
                 bar.removeClass('animate');
                 dialog.modal('hide');
-                var generated_texts = $('#generated-texts')
+                var generated_texts = $('#generated-texts');
                 generated_texts.empty();
                 for(var i=0;i<data.result.values.length; i++)
                 {
@@ -182,7 +182,7 @@ $(document).ready(function() {
                 }
                 if (!selectedTemplateId) {
                     var tplId = $('#input-template-id').val();
-                    if(!(tplId == 'none' || tplName.length == 0)) {
+                    if(!(tplId === 'none' || tplName.length === 0)) {
                         selectedTemplateId = tplId;
                     }
                 }
@@ -224,6 +224,7 @@ $(document).ready(function() {
         $('#generator-error-container').empty();
         $('#textarea-template-generator').val('');
         generated_template = '';
+        $.fn.template_textarea_highlight_update();
     }
 
 
@@ -237,7 +238,7 @@ $(document).ready(function() {
         var tplId = $('#select-template-name').val();
         var tplIdSelected = $('#input-template-id').val();
 
-        if(tplId == 0 || tplId == tplIdSelected)
+        if(tplId === 0 || tplId === tplIdSelected)
         {
             return; // do nothing
         }
@@ -283,6 +284,7 @@ $(document).ready(function() {
                 $('#textarea-template-generator').val('');
                 generated_template = '';
                 $.fn.load_generated_text_list(tplId);
+                $.fn.template_textarea_highlight_update();
             },
             error: function(errorMsg){
                 bar.removeClass('animate');
@@ -296,7 +298,7 @@ $(document).ready(function() {
     $('#button-template-save').on('click',  function(e){
         var tplId = $('#input-template-id').val();
         var tplName = $('#input-template-name').val().trim();
-        if(tplId == 'none' || tplName.length == 0)
+        if(tplId === 'none' || tplName.length === 0)
         {
             return;
         }
@@ -358,7 +360,7 @@ $(document).ready(function() {
 
     $('#button-template-plus').on('click',  function(e) {
         var tplId = $('#input-template-id').val();
-        if (tplId == 'none' || tplId == 'new') {
+        if (tplId === 'none' || tplId === 'new') {
             return;
         }
 
@@ -398,7 +400,7 @@ $(document).ready(function() {
 
     $('#button-template-recalc-similarity').on('click',  function(e) {
         var tplId = $('#input-template-id').val();
-        if (tplId == 'none' || tplId == 'new') {
+        if (tplId === 'none' || tplId === 'new') {
             return;
         }
 
@@ -442,7 +444,7 @@ $(document).ready(function() {
 
     $('#button-template-generate').on('click',  function(e) {
         var tplId = $('#input-template-id').val();
-        if (tplId == 'none' || tplId == 'new') {
+        if (tplId === 'none' || tplId === 'new') {
             return;
         }
 
@@ -475,8 +477,8 @@ $(document).ready(function() {
                 bar.removeClass('animate');
                 dialog.modal('hide');
 
-                if(data.status.code == 200) {
-                    if (data.result.value.validation_status == true) {
+                if(data.status.code === 200) {
+                    if (data.result.value.validation_status) {
                         $('#generator-error-container').empty();
                         $('#a-tab-generator').trigger('click');
                         generated_template = data.result.value.generated;
@@ -497,7 +499,7 @@ $(document).ready(function() {
                             var line = data.result.value.validation_lines[i];
                             var linenum = line.linenum;
                             var text = '(' + linenum + ') ' + line.text;
-                            if (line.is_valid == true) {
+                            if (line.is_valid) {
                                 $('#generator-error-container').append('<div class="line-ok">' + text + '</div>');
                             }
                             else {
@@ -527,7 +529,7 @@ $(document).ready(function() {
 
     $('#button-template-delete').on('click',  function(e) {
         var tplIdSelected = $('#select-template-name').val();
-        if (tplIdSelected === undefined || tplIdSelected == 0) {
+        if (tplIdSelected === undefined || tplIdSelected === 0) {
             return;
         }
 
@@ -622,8 +624,6 @@ $(document).ready(function() {
         $('#'+id).remove();
         $modalDiv.modal('hide')
     });
-
-
 
     $.fn.load_template_list();
 

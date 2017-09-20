@@ -2107,6 +2107,10 @@ hawk@~3.1.3:
     hoek "2.x.x"
     sntp "1.x.x"
 
+"highlight-within-textarea@git+https://github.com/nicolaichuk/highlight-within-textarea.git":
+  version "2.0.2"
+  resolved "git+https://github.com/nicolaichuk/highlight-within-textarea.git#9e19da3b9ff55a981227d5c1fd558e53c0609eef"
+
 hmac-drbg@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/hmac-drbg/-/hmac-drbg-1.0.1.tgz#d2745701025a6c775a6c545793ed502fc0c649a1"
@@ -4889,5 +4893,5 @@ yargs@~3.10.0:
     window-size "0.1.0"
 
 yarn@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.0.1.tgz#7bcd50a1ff90e182d18f426cbf64918bf902d2fc"
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.0.2.tgz#d1b8f4b6d3b0684e86f63a072ac630995b8b7b0a"

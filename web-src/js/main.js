@@ -2,6 +2,7 @@ var $ = require('jquery');
 // JS is equivalent to the normal "bootstrap" package
 // no need to set this to a variable, just require it
 require('bootstrap-sass');
+require('highlight-within-textarea');
 // require('tabcordion');
 // require('jquery-querybuilder')
 
@@ -59,4 +60,6 @@ $(document).ready(function() {
 require('./spinblock.js');
 require('./dictionary.js');
 require('./info.js');
+require('./textarea_utils.js');
+require('./highlight_template_editor.js');
 require('./template.js');
