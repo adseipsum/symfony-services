@@ -48,7 +48,8 @@ $(document).ready(function() {
 
             if (begin < end && (begin != 0 || end != input.length)) {
                 var begin_end = begin + 1;
-                if (input.charAt(begin - 1) === '$') {
+                var cc = input.charAt(begin - 1)
+                if (cc === '$' || cc === '@') {
                     begin--;
                 }
                 ret = ret.concat([
