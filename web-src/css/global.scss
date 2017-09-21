@@ -299,6 +299,10 @@ body{
     background-color: #B0F99D;
 }
 
+.hwt-content mark.symbols_current_error {
+  background-color: red;
+}
+
 .hwt-content mark.symbols_between_current {
   background-color: #e4f0b3;
 }

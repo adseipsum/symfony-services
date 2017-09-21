@@ -1,23 +1,31 @@
+"use strict";
+
 $(document).ready(function() {
 
-    var template_textarea_cur_cursor_position = -1;
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $.fn.highlight_template_editor = function(input) {
-        var ret = [];
+    let template_textarea_cur_cursor_position = -1;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const highlight_template_editor = function(input) {
+        let ret = [];
 
         if (template_textarea_cur_cursor_position !== -1) {
-            var line = [];
+            const line = [];
 
-            var begin = 0;
+            let begin = 0;
+            let begin_cc = '';
             {
-                var bb = 0;
-                for (var i = template_textarea_cur_cursor_position - 1; i >= 0; i--) {
-                    var cc = input.charAt(i);
+                let bb = 0;
+                for (let i = template_textarea_cur_cursor_position - 1; i >= 0; i--) {
+                    const cc = input.charAt(i);
                     if (cc === '}' || cc === ']') {
                         bb++;
                     } else if (cc === '{' || cc === '[') {
                         if (bb === 0) {
                             begin = i;
+                            begin_cc = cc;
                             break;
                         }
                         bb--;
@@ -27,16 +35,18 @@ $(document).ready(function() {
                 }
             }
 
-            var end = input.length;
+            let end = input.length;
+            let end_cc = '';
             {
-                var bb = 0;
-                for (var i = template_textarea_cur_cursor_position; i < input.length; i++) {
-                    var cc = input.charAt(i);
+                let bb = 0;
+                for (let i = template_textarea_cur_cursor_position; i < input.length; i++) {
+                    const cc = input.charAt(i);
                     if (cc === '{' || cc === '[') {
                         bb++;
                     } else if (cc === '}' || cc === ']') {
                         if (bb === 0) {
                             end = i;
+                            end_cc = cc;
                             break;
                         }
                         bb--;
@@ -46,30 +56,37 @@ $(document).ready(function() {
                 }
             }
 
-            if (begin < end && (begin != 0 || end != input.length)) {
-                var begin_end = begin + 1;
-                var cc = input.charAt(begin - 1)
-                if (cc === '$' || cc === '@') {
+            if (begin < end && (begin !== 0 || end !== input.length)) {
+                const begin_end = begin + 1;
+                const before_begin_cc = input.charAt(begin - 1);
+                if (before_begin_cc === '$' || before_begin_cc === '@') {
                     begin--;
                 }
+                const class_name =
+                    (
+                        (begin_cc === '{' && end_cc === '}') ||
+                        (begin_cc === '[' && end_cc === ']')
+                    ) ? 'symbols_current' : 'symbols_current_error';
                 ret = ret.concat([
                     {
                         highlight: [begin, begin_end],
-                        className: 'symbols_current'
+                        className: class_name
                     },
                     {
                         highlight: [end, end + 1],
-                        className: 'symbols_current'
+                        className: class_name
                     }
                 ]);
 
-                ret.push({
-                    highlight: [begin_end, end],
-                    className: 'symbols_between_current'
-                });
+                if (begin_end < end) {
+                    ret.push({
+                        highlight: [begin_end, end],
+                        className: 'symbols_between_current'
+                    });
+                }
 
-                for (var i = 0; i < line.length; i++) {
-                    var line_index = line[i];
+                for (let i = 0; i < line.length; i++) {
+                    const line_index = line[i];
                     ret.push({
                         highlight: [line_index, line_index + 1],
                         className: 'symbols_current'
@@ -80,11 +97,14 @@ $(document).ready(function() {
             }
         }
 
+        if ($('#edit-template-view-all-specsymols').is(":checked")) {
+            ret.push({
+                highlight: /[{}\[\]$@|]/gi,
+                className: 'symbols'
+            });
+        }
+
         ret = ret.concat([
-//            {
-//                highlight: /[{}\[\]$@|]/gi,
-//                className: 'symbols'
-//            },
             {
                 highlight: /\n%[^\n]*/gi,
                 className: 'code'
@@ -102,13 +122,16 @@ $(document).ready(function() {
         return ret;
     };
 
-    $.fn.template_textarea_check_cursor_changed = function(textarea) {
-        var cursor_position = $.fn.textarea_get_cursor_pos(textarea);
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const template_textarea_check_cursor_changed = function(textarea) {
+        const cursor_position = $.fn.textarea_get_cursor_pos(textarea);
         if (template_textarea_cur_cursor_position !== cursor_position) {
             template_textarea_cur_cursor_position = cursor_position;
-            $.fn.template_textarea_highlight_update(textarea);
         }
     };
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     $.fn.template_textarea_highlight_update = function(textarea) {
         if (!textarea) {
@@ -118,21 +141,26 @@ $(document).ready(function() {
                 textarea = $(textarea);
             }
         }
+        template_textarea_check_cursor_changed(textarea);
         textarea.highlightWithinTextarea('update');
     };
 
-    /*
-    $('#textarea-template-content').select(function() {
-        alert( "Handler for .select() called." );
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    $('#edit-template-view-all-specsymols').change(function() {
+        $.fn.template_textarea_highlight_update();
     });
-    */
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     $("#textarea-template-content")
-        .bind("keyup input mouseup textInput", function() {
-            $.fn.template_textarea_check_cursor_changed(this);
+        .bind("keyup input mouseup textInput focusout focusin", function(textarea) {
+            $.fn.template_textarea_highlight_update(textarea.currentTarget);
         })
         .highlightWithinTextarea({
-            highlight: $.fn.highlight_template_editor
+            highlight: highlight_template_editor
         });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 });

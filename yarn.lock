@@ -2109,7 +2109,7 @@ hawk@~3.1.3:
 
 "highlight-within-textarea@git+https://github.com/nicolaichuk/highlight-within-textarea.git":
   version "2.0.2"
-  resolved "git+https://github.com/nicolaichuk/highlight-within-textarea.git#9e19da3b9ff55a981227d5c1fd558e53c0609eef"
+  resolved "git+https://github.com/nicolaichuk/highlight-within-textarea.git#a2176c0d8e6158a7ee1b351440ec8966077578b1"
 
 hmac-drbg@^1.0.0:
   version "1.0.1"

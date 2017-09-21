@@ -1,4 +1,5 @@
-var $ = require('jquery');
+const $ = require('jquery');
+global.$ = global.jQuery = $;
 // JS is equivalent to the normal "bootstrap" package
 // no need to set this to a variable, just require it
 require('bootstrap-sass');
@@ -21,7 +22,7 @@ global.data = {
 }
 
 String.prototype.replaceAll = function(search, replacement) {
-    var target = this;
+    const target = this;
     return target.split(search).join(replacement);
 };
 
@@ -61,5 +62,6 @@ require('./spinblock.js');
 require('./dictionary.js');
 require('./info.js');
 require('./textarea_utils.js');
+require('./template_editor.js');
 require('./highlight_template_editor.js');
 require('./template.js');

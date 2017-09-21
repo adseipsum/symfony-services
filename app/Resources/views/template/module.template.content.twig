@@ -16,26 +16,34 @@
             <a  id="a-tab-error" href="#tab-errors" data-toggle="tab">Ошибки</a>
         </li>
     </ul>
-    <div class="tab-content ">
+    <div class="tab-content">
         <div class="tab-pane active form-group" id="tab-template" style="padding-top: 5px">
             <label for="input-template-name">Название шаблона</label>
             <input id="input-template-name" class="form-control" type="text">
 
-            <label for="comment">Шаблон:</label>
+            <label for="textarea-template-content">Шаблон:</label>
+            <div>
+                <input type="checkbox" name="edit-template-view-all-specsymols" id="edit-template-view-all-specsymols" />
+                <label for="edit-template-view-all-specsymols">Подсветить все спец. символы (редактирование может притормаживать).</label>
+            </div>
+            <div class="button-row">
+                <input id="button-template-edit-wrap1" type="button" class="btn btn-default"  value="Обернуть выделенное в $[...|]"/>
+                <input id="button-template-edit-wrap2" type="button" class="btn btn-default"  value="Обернуть выделенное в @{...}"/>
+            </div>
             <div style="width: 100%">
                 <textarea id="textarea-template-content" rows="17" class="form-control" style="resize: vertical;width: 100%"></textarea>
             </div>
 
             <div class="button-row">
-                <input id="input-template-id"     type="hidden" value="none" />
-                <input id="button-template-save"   type="button" class="btn btn-default"  value="Сохранить шаблон"/>
+                <input id="input-template-id" type="hidden" value="none" />
+                <input id="button-template-save" type="button" class="btn btn-default"  value="Сохранить шаблон"/>
                 <input id="button-template-delete" type="button" class="btn btn-default"  value="Удалить шаблон"/>
             </div>
         </div>
 
         <div class="tab-pane" id="tab-generator" style="padding-top: 5px">
-            <!--label for="input-template-count">Количество использований</label>
-            <input id="input-template-count" class="form-control" readonly type="text"/-->
+            <label for="input-template-count">Количество использований</label>
+            <input id="input-template-count" class="form-control" readonly="readonly" type="text"/>
 
             <label for="input-template-drug-name">Название препарата:</label>
             <input id="input-template-drug-name" class="form-control" type="text"/>
@@ -47,16 +55,16 @@
             <input id="input-template-deviation" class="form-control" type="number" value="100"/>
 
             <div>
-                <input type="checkbox" name="input-template-use-stopwords" id="input-template-use-stopwords" checked="true"/>
+                <input type="checkbox" name="input-template-use-stopwords" id="input-template-use-stopwords" checked="checked"/>
                 <label for="input-template-use-stopwords">Перед сравнением текстов удалять из них <a href="http://www.ranks.nl/stopwords">стоп-слова</a>.</label>
             </div>
 
             <div>
-                <input type="checkbox" name="input-template-use-porter-stemmer" id="input-template-use-porter-stemmer" checked="true"/>
+                <input type="checkbox" name="input-template-use-porter-stemmer" id="input-template-use-porter-stemmer" checked="checked"/>
                 <label for="input-template-use-porter-stemmer">Перед сравнением текстов применять к ним <a href="https://en.wikipedia.org/wiki/Stemming">стеммер Портера</a>.</label>
             </div>
 
-            <label for="comment">Сгенерированный текст:</label>
+            <label for="textarea-template-generator">Сгенерированный текст:</label>
             <textarea id="textarea-template-generator" rows="13" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
             <div>
                 <pre><code id="generate-distance-out"></code></pre>
@@ -71,7 +79,7 @@
                 <input id="button-template-plus" type="button" class="btn btn-default"  value="Сохранить текст"/>
             </div>
             <label for="generate_info_text">Дополнительная инфа по генерации:</label>
-            <textarea id="generate_info_text" rows="5" readonly="true" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
+            <textarea id="generate_info_text" rows="5" readonly="readonly" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
         </div>
 
         <div class="tab-pane" id="tab-generated-texts" style="padding-top: 5px">
@@ -85,7 +93,7 @@
                 <label for="input-template-ngmc-framesize">Размер кортежа</label>
                 <select id="input-template-ngmc-framesize" class="form-control" size="1" name="input-template-ngmc-framesize">
                     <option value="3">3</option>
-                    <option value="4" selected>4</option>
+                    <option value="4" selected="selected">4</option>
                     <option value="5">5</option>
                     <option value="6">6</option>
                     <option value="7">7</option>
@@ -99,7 +107,7 @@
                     <option value="0.9">90%</option>
                     <option value="0.8">80%</option>
                     <option value="0.7">70%</option>
-                    <option value="0.6" selected>60%</option>
+                    <option value="0.6" selected="selected">60%</option>
                     <option value="0.5">50%</option>
                     <option value="0.4">40%</option>
                 </select>
@@ -111,11 +119,11 @@
             </div>
             <div class="row">
                 <div style="width:48%; float: left; margin-left: 15px">
-                    <label for="comment">Оригинал:</label>
+                    <label for="textarea-ngmc-orig">Оригинал:</label>
                     <textarea id="textarea-ngmc-orig" rows="17" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
                 </div>
                 <div style=" width:48%; float: right; margin-right:15px">
-                    <label for="comment">Обработаный:</label>
+                    <label for="textarea-ngmc-replaced">Обработаный:</label>
                     <textarea id="textarea-ngmc-replaced" rows="17" class="form-control" style="resize: vertical;min-width: 100%"></textarea>
                 </div>
             </div>
@@ -136,7 +144,7 @@
             <label for="textarea-error-console">Консоль:</label>
             <textarea id="textarea-error-console" rows="4" readonly class="form-control" style="resize: vertical;min-width: 100%"></textarea>
             <div class="button-row">
-                <input type="button" id="button-error-reset" class="btn btn-danger"  value="Reset"/>
+                <input type="button" id="button-error-reset" class="btn btn-danger" value="Reset"/>
             </div>
         </div>
     </div>
