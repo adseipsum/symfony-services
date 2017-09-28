@@ -15,10 +15,14 @@ use Symfony\Component\HttpFoundation\Request;
 class TemplateContentController extends Controller
 {
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * @Route("/template/list", name="api_template_list")
      *
      * @method ("GET")
+     *
+     * @return ApiResponse
      */
     public function getTemplateList()
     {
@@ -53,10 +57,15 @@ class TemplateContentController extends Controller
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * @Route("/template/content/{templateId}", name="api_template_get", requirements={"template": "[a-zA-Z0-9\-\:]+"})
      *
      * @method("GET")
+     *
+     * @param string $templateId
+     * @return ApiResponse
      */
     public function getTemplateContent(string $templateId)
     {
@@ -86,6 +95,8 @@ class TemplateContentController extends Controller
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * @Route(
      *     "/template/save/{templateId}",
@@ -94,6 +105,10 @@ class TemplateContentController extends Controller
      * )
      *
      * @method("POST")
+     *
+     * @param Request $request
+     * @param string $templateId
+     * @return ApiResponse
      */
     public function updateTemplateContent(Request $request, string $templateId)
     {
@@ -153,6 +168,8 @@ class TemplateContentController extends Controller
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * @Route(
      *     "/template/plus/{templateId}",
@@ -161,8 +178,12 @@ class TemplateContentController extends Controller
      * )
      *
      * @method("POST")
+     *
+     * @param Request $request
+     * @param string $templateId
+     * @return ApiResponse
      */
-    public function usagePlusCount(Request $request, $templateId)
+    public function usagePlusCount(Request $request, string $templateId)
     {
         $username = $this->getUser()->getUsernameCanonical();
         if ($username == null) {
@@ -186,6 +207,8 @@ class TemplateContentController extends Controller
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * @Route(
      *     "/generated-text/list/{templateId}",
@@ -194,6 +217,9 @@ class TemplateContentController extends Controller
      * )
      *
      * @method("GET")
+     *
+     * @param string $templateId
+     * @return ApiResponse
      */
     public function getGeneratedTextList(string $templateId)
     {
@@ -231,6 +257,8 @@ class TemplateContentController extends Controller
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * @Route(
      *     "/generated-text/remove/{generateTextId}",
@@ -239,6 +267,9 @@ class TemplateContentController extends Controller
      * )
      *
      * @method("GET")
+     *
+     * @param string $generateTextId
+     * @return ApiResponse
      */
     public function removeGeneratedText(string $generateTextId)
     {
@@ -261,6 +292,8 @@ class TemplateContentController extends Controller
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * @Route(
      *     "/template/remove/{templateId}",
@@ -269,6 +302,9 @@ class TemplateContentController extends Controller
      * )
      *
      * @method("GET")
+     *
+     * @param string $templateId
+     * @return ApiResponse
      */
     public function removeTemplate(string $templateId)
     {
@@ -291,5 +327,159 @@ class TemplateContentController extends Controller
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @param string $text
+     * @param string $spin_regexp
+     * @return array
+     */
+    private static function findAllSpinInTempate(string $text, string $spin_regexp) : array
+    {
+        $ret = [];
+
+        preg_match_all($spin_regexp, $text, $matches, PREG_OFFSET_CAPTURE, 0);
+        foreach ($matches[2] as $val) {
+            $finded_val = $val[0];
+
+            $ret_temp = [];
+
+            $balance = 0;
+            $begin_left_spin = $val[1] - 1;
+            if ($text[$begin_left_spin] === '|') {
+                $begin_left_spin--;
+
+                for ($i = $begin_left_spin; $i >= 0; $i--) {
+                    $c = $text[$i];
+                    if ($c === '}' || $c === ']') {
+                        $balance++;
+                        continue;
+                    }
+                    if (($c === '[' || $c === '|') && $balance === 0) {
+                        $str = substr($text, $i + 1, $begin_left_spin - $i - 1);
+                        $str = trim($str);
+                        if (!empty($str)) {
+                            array_push($ret_temp, $str);
+                        }
+                        $begin_left_spin = $i;
+                    }
+                    if ($c === '{' || $c === '[') {
+                        $balance--;
+                        if ($balance < 0) {
+                            break;
+                        }
+                    }
+                }
+
+            }
+
+            $ret_temp = array_reverse($ret_temp);
+            array_push($ret_temp, trim($finded_val));
+
+            $text_len = strlen($text);
+            $end_spin = $val[1] + strlen($finded_val);
+            $balance = 0;
+            if ($end_spin < $text_len && $text[$end_spin] === '|') {
+                $end_spin++;
+
+                for ($i = $end_spin; $i < $text_len; $i++) {
+                    $c = $text[$i];
+                    if ($c === '{' || $c === '[') {
+                        $balance++;
+                        continue;
+                    }
+                    if (($c === ']' || $c === '|') && $balance === 0) {
+                        $str = substr($text, $end_spin, $i - $end_spin);
+                        $str = trim($str);
+                        if (!empty($str)) {
+                            array_push($ret_temp, $str);
+                        }
+                        $end_spin = $i + 1;
+                    }
+                    if ($c === '}' || $c === ']') {
+                        $balance--;
+                        if ($balance < 0) {
+                            break;
+                        }
+                    }
+                }
+
+            }
+
+            array_push($ret, $ret_temp);
+        }
+
+        return $ret;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @Route(
+     *     "/template/find_all_spin",
+     *     name="api_template_find_all_spin"
+     * )
+     *
+     * @method("POST")
+     *
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function findAllSpin(Request $request)
+    {
+        $username = $this->getUser()->getUsernameCanonical();
+        if ($username == null) {
+            return ApiResponse::resultUnauthorized();
+        }
+
+        try {
+            $spin = json_decode($request->getContent(), true);
+            $spin = trim($spin);
+
+            $ret = array(
+                'all' => [],
+                'arrays' => []
+            );
+
+            if (!empty($spin)) {
+                $spin_regexp = '/(\$\[|\|)([\t\n ]*' . preg_quote($spin) . '[\t\n ]*)(\]|\|)/iu';
+                $cb = $this->get('couchbase.connector');
+                $model = new TemplateModel($cb);
+                $model->warmup();
+                /* @var $objects CbTemplate[] */
+                $objects = $model->getAllObjects();
+
+                $all_array = $ret['all'];
+                $arrays = $ret['arrays'];
+
+                foreach ($objects as $object) {
+                    $ret_arrays = self::findAllSpinInTempate($object->getTemplate(), $spin_regexp);
+
+                    foreach ($ret_arrays as $val) {
+                        usort($val, function ($item1, $item2) {
+                            return strnatcasecmp($item1, $item2);
+                        });
+                        $all_array = array_merge($all_array, $val);
+                        array_push($arrays, $val);
+                    }
+                }
+
+                $all_array = array_unique($all_array);
+                usort($all_array, function ($item1, $item2) {
+                    return strnatcasecmp($item1, $item2);
+                });
+                $ret['all'] = $all_array;
+
+                $arrays = array_unique($arrays, SORT_REGULAR);
+                $ret['arrays'] = $arrays;
+            }
+
+            return ApiResponse::resultValue($ret);
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 }

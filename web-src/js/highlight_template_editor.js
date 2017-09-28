@@ -59,8 +59,13 @@ $(document).ready(function() {
             if (begin < end && (begin !== 0 || end !== input.length)) {
                 const begin_end = begin + 1;
                 const before_begin_cc = input.charAt(begin - 1);
-                if (before_begin_cc === '$' || before_begin_cc === '@') {
+                if (before_begin_cc === '$' || before_begin_cc === '@' || (before_begin_cc === '{' && begin_cc === '{')) {
                     begin--;
+                }
+                const after_end_cc = input.charAt(end + 1);
+                let end_end = end + 1;
+                if (after_end_cc === '}' && end_cc === '}') {
+                    end_end++;
                 }
                 const class_name =
                     (
@@ -73,7 +78,7 @@ $(document).ready(function() {
                         className: class_name
                     },
                     {
-                        highlight: [end, end + 1],
+                        highlight: [end, end_end],
                         className: class_name
                     }
                 ]);
@@ -110,12 +115,19 @@ $(document).ready(function() {
                 className: 'code'
             },
             {
-                highlight: '<P/>',
+                highlight: ['<P/>', '<N/>'],
                 className: 'newline'
             },
             {
-                highlight: '<N/>',
-                className: 'newline'
+                highlight: ['drugName', 'alternateName', 'alternateName2', 'sideEffect', 'sideEffect2', 'className',
+                    'className2', 'interactingDisease', 'interactingDisease2', 'pregnancyCategory',
+                    'availabilityCategory', 'wadaCategory', 'csaStatus', 'publication', 'drugInteractionText',
+                    'drugInteractionText2', 'interactingDrug', 'interactingDrug2', 'packager', 'packager2', 'priceUnit',
+                    'priceUnitDescription', 'priceUnitCost', 'treatToDisease', 'treatSymptom', 'riskCondition',
+                    'complicationDesiase', 'remedyAction', 'perventionAction', 'treatToDisease2', 'treatSymptom2',
+                    'riskCondition2', 'complicationDesiase2', 'remedyAction2', 'perventionAction2', 'organization',
+                    'organizationExpertIn'],
+                className: 'variable'
             }
         ]);
 
@@ -135,7 +147,8 @@ $(document).ready(function() {
 
     $.fn.template_textarea_highlight_update = function(textarea) {
         if (!textarea) {
-            textarea = $('#textarea-template-content');
+            alert("template_textarea_highlight_update textarea == null");
+            return;
         } else {
             if (!(textarea instanceof jQuery)) {
                 textarea = $(textarea);
@@ -148,12 +161,23 @@ $(document).ready(function() {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     $('#edit-template-view-all-specsymols').change(function() {
-        $.fn.template_textarea_highlight_update();
+        $.fn.template_textarea_highlight_update($('#textarea-template-content'));
+        $.fn.template_textarea_highlight_update($('#textarea-template-spin-finded'));
     });
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     $("#textarea-template-content")
+        .bind("keyup input mouseup textInput focusout focusin", function(textarea) {
+            $.fn.template_textarea_highlight_update(textarea.currentTarget);
+        })
+        .highlightWithinTextarea({
+            highlight: highlight_template_editor
+        });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    $("#textarea-template-spin-finded")
         .bind("keyup input mouseup textInput focusout focusin", function(textarea) {
             $.fn.template_textarea_highlight_update(textarea.currentTarget);
         })

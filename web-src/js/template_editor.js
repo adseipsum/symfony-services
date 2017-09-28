@@ -31,11 +31,22 @@ $(document).ready(function() {
 
         const insert_text = before + wrap_text + after;
 
-        text = text.substring(0, start) + insert_text + text.substring(end, text.length);
-
-        textarea.val(text);
-
         textarea.focus();
+
+        /* todo undo/redo support
+        if(document.createEventObject) { // http://maythesource.com/2012/06/26/simulating-keypresses-keystrokes-with-javascript-for-use-with-greesemonkey-etc/
+            let event = document.createEvent('TextEvent');
+            event.initTextEvent('textInput', true, true, null, insert_text);
+            textarea[0].setSelectionRange(start, end);
+            textarea[0].dispatchEvent(event);
+        } else if (document.queryCommandSupported("insertText")) {
+            textarea[0].setSelectionRange(start, end);
+            document.execCommand("insertText", false, insert_text);
+        } else*/ {
+            text = text.substring(0, start) + insert_text + text.substring(end, text.length);
+            textarea.val(text);
+        }
+
         let new_position = start + before.length + wrap_text.length;
         $.fn.textarea_set_cursor_pos(textarea, new_position);
         template_textarea_cur_select_position = { start: new_position, end: new_position };

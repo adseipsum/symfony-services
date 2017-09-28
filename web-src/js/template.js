@@ -20,57 +20,92 @@ $(document).ready(function() {
 
     const toggle_parenthesiss_state = function()
     {
+        const textarea = $('#textarea-template-generator');
+        const real_text = textarea.val();
+
+        if (!parenthesis_state_show) {
+            const parsed = generated_template.replaceAll('((', '').replaceAll('))', '');
+            if (real_text.replaceAll('\r', '') !== parsed.replaceAll('\r', '')) {
+                const resultConfirm = confirm("В исходный текст были внесены изменения, при оборачивании в ((...)) эти изменения будут потеряны. Продолжить?");
+                if (!resultConfirm) {
+                    return;
+                }
+            }
+        }
+
         parenthesis_state_show = !parenthesis_state_show;
 
-        if(parenthesis_state_show)
-        {
-            $('#button-template-toggle-parenthesis').val('Hide (( ))');
-        }
-        else {
-            $('#button-template-toggle-parenthesis').val('Show (( ))');
+        const toggle_parenthesis = $('#button-template-toggle-parenthesis');
+        if(parenthesis_state_show) {
+            textarea.val(generated_template);
+            toggle_parenthesis.val('Hide (( ))');
+        } else {
+            const parsed = real_text.replaceAll('((','').replaceAll('))','');
+            textarea.val(parsed);
+            toggle_parenthesis.val('Show (( ))');
         }
 
-        render_generated_template();
+        $.fn.template_textarea_highlight_update(textarea);
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const render_generated_template = function()
     {
+        const textarea = $('#textarea-template-generator');
         if (parenthesis_state_show) {
-            $('#textarea-template-generator').val(generated_template);
+            textarea.val(generated_template);
         } else {
-            const parsed = generated_template.replaceAll('((','').replaceAll('))','');
-            $('#textarea-template-generator').val(parsed);
+            const parsed = generated_template.replaceAll('((', '').replaceAll('))', '');
+            textarea.val(parsed);
         }
+        $.fn.template_textarea_highlight_update(textarea);
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const toggle_ngmc_parenthesiss_state = function()
     {
+        const textarea = $('#textarea-ngmc-replaced');
+        const real_text = textarea.val();
+
+        if (!parenthesis_state_ngmc) {
+            const parsed = generated_marcov_chain.replaceAll('[[', '').replaceAll(']]', '');
+            if (real_text.replaceAll('\r', '') !== parsed.replaceAll('\r', '')) {
+                const resultConfirm = confirm("В исходный текст были внесены изменения, при оборачивании в ((...)) эти изменения будут потеряны. Продолжить?");
+                if (!resultConfirm) {
+                    return;
+                }
+            }
+        }
+
         parenthesis_state_ngmc = !parenthesis_state_ngmc;
 
-        if (parenthesis_state_ngmc) {
-            $('#button-template-toggle-parenthesis').val('Hide (( ))');
-        }
-        else {
-            $('#button-template-toggle-parenthesis').val('Show (( ))');
+        const toggle_parenthesis = $('#button-template-toggle-parenthesis_ngmc');
+        if(parenthesis_state_ngmc) {
+            textarea.val(generated_marcov_chain);
+            toggle_parenthesis.val('Hide [[ ]]');
+        } else {
+            const parsed = real_text.replaceAll('[[','').replaceAll(']]','');
+            textarea.val(parsed);
+            toggle_parenthesis.val('Show ([[ ]]');
         }
 
-        render_ngmc_text();
+        $.fn.template_textarea_highlight_update(textarea);
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const render_ngmc_text = function()
     {
+        const textarea = $('#textarea-ngmc-replaced');
         if (parenthesis_state_ngmc) {
-            $('#textarea-ngmc-replaced').val(generated_marcov_chain);
+            textarea.val(generated_marcov_chain);
         } else {
-            const parsed = generated_marcov_chain.replaceAll('[[','').replaceAll(']]','');
-            $('#textarea-ngmc-replaced').val(parsed);
+            const parsed = generated_marcov_chain.replaceAll('[[', '').replaceAll(']]', '');
+            textarea.val(parsed);
         }
+        $.fn.template_textarea_highlight_update(textarea);
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,7 +247,6 @@ $(document).ready(function() {
 
     const clear_content = function() {
         $('#input-template-name').val('');
-        $('#textarea-template-content').val('');
         $('#input-template-id').val('new');
 
         $('#input-template-count').val(0);
@@ -238,7 +272,10 @@ $(document).ready(function() {
         $('#generator-error-container').empty();
         $('#textarea-template-generator').val('');
         generated_template = '';
-        $.fn.template_textarea_highlight_update();
+
+        let textarea_template_content = $('#textarea-template-content');
+        textarea_template_content.val('');
+        $.fn.template_textarea_highlight_update(textarea_template_content);
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -275,7 +312,6 @@ $(document).ready(function() {
                 clear_content();
 
                 $('#input-template-name').val(obj['name']);
-                $('#textarea-template-content').val(obj['template']);
                 $('#input-template-id').val(obj['id']);
 
                 $('#button-template-save').removeClass('btn-default');
@@ -299,7 +335,10 @@ $(document).ready(function() {
                 $('#textarea-template-generator').val('');
                 generated_template = '';
                 load_generated_text_list(tplId);
-                $.fn.template_textarea_highlight_update();
+
+                let textarea_template_content = $('#textarea-template-content');
+                textarea_template_content.val(obj['template']);
+                $.fn.template_textarea_highlight_update(textarea_template_content);
             },
             error: function(errorMsg){
                 bar.removeClass('animate');
@@ -558,6 +597,62 @@ $(document).ready(function() {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    $('#button-template-spin-find').click(function() {
+        const spin = $('#input-template-spin-find').val().trim();
+
+        if(spin.length === 0) {
+            return;
+        }
+
+        const dialog = $('.dialog-progress-bar');
+        const bar = dialog.find('.progress-bar');
+        dialog.modal('show');
+        bar.addClass('animate');
+
+        $.ajax({
+            type: "POST",
+            url: "/api/template/find_all_spin",
+            data: JSON.stringify(spin),
+            dataType: "json",
+            success: function(data) {
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                if(data.status.code === 200) {
+                    let spins_ret = data.result.value;
+
+                    let all = spins_ret['all'];
+
+                    let text = "NOTHING FOUNED.";
+                    if (all.length > 0) {
+                        let spins_ret_all = all.join(' | ');
+                        text = "${ " + spins_ret_all + " }\n=======================\n";
+
+                        let arrs = spins_ret['arrays'];
+                        for(let i = 0; ; i++) {
+                            let arr = arrs[i];
+                            if (arr === undefined) {
+                                break;
+                            }
+                            let spins_ret_all = arr.join(' | ');
+                            text += "${ " + spins_ret_all + " }\n----------------------\n";
+                        }
+                    }
+
+                    $('#textarea-template-spin-finded').val(text);
+                }
+
+            },
+            error: function(errorMsg){
+                bar.removeClass('animate');
+                dialog.modal('hide');
+                alert('Error (' + errorMsg.status + '): ' + errorMsg.statusText);
+            }
+        });
+
+    });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     $('#button-template-delete').click(function() {
         const tplIdSelected = $('#select-template-name').val();
         if (tplIdSelected === undefined || tplIdSelected === 0) {
@@ -661,6 +756,44 @@ $(document).ready(function() {
         $('#'+id).remove();
         $modalDiv.modal('hide')
     });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    $("#textarea-template-generator")
+        .bind("keyup input mouseup textInput focusout focusin", function(textarea) {
+            $.fn.template_textarea_highlight_update(textarea.currentTarget);
+        })
+        .highlightWithinTextarea({
+            highlight: [
+                {
+                    highlight: '((None))',
+                    className: 'symbols_current_error'
+                },
+                {
+                    highlight: /(\(\().*?(\)\))/gi,
+                    className: 'variable'
+                }
+            ]
+        });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    $("#textarea-ngmc-replaced")
+        .bind("keyup input mouseup textInput focusout focusin", function(textarea) {
+            $.fn.template_textarea_highlight_update(textarea.currentTarget);
+        })
+        .highlightWithinTextarea({
+            highlight: [
+                {
+                    highlight: '((None))',
+                    className: 'symbols_current_error'
+                },
+                {
+                    highlight: /(\[\[).*?(\]\])/gi,
+                    className: 'variable'
+                }
+            ]
+        });
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
