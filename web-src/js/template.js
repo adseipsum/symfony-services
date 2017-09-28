@@ -72,7 +72,7 @@ $(document).ready(function() {
         if (!parenthesis_state_ngmc) {
             const parsed = generated_marcov_chain.replaceAll('[[', '').replaceAll(']]', '');
             if (real_text.replaceAll('\r', '') !== parsed.replaceAll('\r', '')) {
-                const resultConfirm = confirm("В исходный текст были внесены изменения, при оборачивании в ((...)) эти изменения будут потеряны. Продолжить?");
+                const resultConfirm = confirm("В исходный текст были внесены изменения, при оборачивании в [[...]] эти изменения будут потеряны. Продолжить?");
                 if (!resultConfirm) {
                     return;
                 }
