@@ -347,9 +347,7 @@ class TemplateContentController extends Controller
             $balance = 0;
             $begin_left_spin = $val[1] - 1;
             if ($text[$begin_left_spin] === '|') {
-                $begin_left_spin--;
-
-                for ($i = $begin_left_spin; $i >= 0; $i--) {
+                for ($i = $begin_left_spin - 1; $i >= 0; $i--) {
                     $c = $text[$i];
                     if ($c === '}' || $c === ']') {
                         $balance++;
@@ -456,11 +454,23 @@ class TemplateContentController extends Controller
                     $ret_arrays = self::findAllSpinInTempate($object->getTemplate(), $spin_regexp);
 
                     foreach ($ret_arrays as $val) {
+                        $val = array_map('strtolower', $val);
+                        $val = array_unique($val);
                         usort($val, function ($item1, $item2) {
                             return strnatcasecmp($item1, $item2);
                         });
                         $all_array = array_merge($all_array, $val);
-                        array_push($arrays, $val);
+
+                        $key = implode('|', $val);
+                        if (!array_key_exists($key, $arrays)) {
+                            $new_val = array(
+                                'vals' => $val,
+                                'templates' => [$object->getName()]
+                            );
+                            $arrays[$key] = $new_val;
+                        } else {
+                            array_push($arrays[$key]['templates'], $object->getName());
+                        }
                     }
                 }
 
@@ -470,8 +480,13 @@ class TemplateContentController extends Controller
                 });
                 $ret['all'] = $all_array;
 
-                $arrays = array_unique($arrays, SORT_REGULAR);
-                $ret['arrays'] = $arrays;
+                foreach ($arrays as $val) {
+                    $val['templates'] = array_unique($val['templates']);
+                    usort($val['templates'], function ($item1, $item2) {
+                        return strnatcasecmp($item1, $item2);
+                    });
+                    array_push($ret['arrays'], $val);
+                }
             }
 
             return ApiResponse::resultValue($ret);

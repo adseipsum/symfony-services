@@ -270,7 +270,10 @@ $(document).ready(function() {
         $('#button-template-plus').removeClass('btn-success');
 
         $('#generator-error-container').empty();
-        $('#textarea-template-generator').val('');
+
+        let textarea_template_generator = $('#textarea-template-generator');
+        textarea_template_generator.val('');
+        $.fn.template_textarea_highlight_update(textarea_template_generator);
         generated_template = '';
 
         let textarea_template_content = $('#textarea-template-content');
@@ -633,8 +636,10 @@ $(document).ready(function() {
                             if (arr === undefined) {
                                 break;
                             }
-                            let spins_ret_all = arr.join(' | ');
-                            text += "${ " + spins_ret_all + " }\n----------------------\n";
+                            let spins_ret_all = arr['vals'].join(' | ');
+                            text += '${ ' + spins_ret_all + ' }\n';
+                            text += '\t' + arr['templates'].join('\n\t');
+                            text += '\n----------------------\n';
                         }
                     }
 
