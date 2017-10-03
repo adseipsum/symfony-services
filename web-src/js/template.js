@@ -628,7 +628,7 @@ $(document).ready(function() {
                     let text = "NOTHING FOUNED.";
                     if (all.length > 0) {
                         let spins_ret_all = all.join(' | ');
-                        text = "${ " + spins_ret_all + " }\n=======================\n";
+                        text = "$[ " + spins_ret_all + " ]\n=======================\n";
 
                         let arrs = spins_ret['arrays'];
                         for(let i = 0; ; i++) {
@@ -637,7 +637,7 @@ $(document).ready(function() {
                                 break;
                             }
                             let spins_ret_all = arr['vals'].join(' | ');
-                            text += '${ ' + spins_ret_all + ' }\n';
+                            text += '$[ ' + spins_ret_all + ' ]\n';
                             text += '\t' + arr['templates'].join('\n\t');
                             text += '\n----------------------\n';
                         }
