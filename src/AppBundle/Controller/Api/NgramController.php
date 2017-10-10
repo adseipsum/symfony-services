@@ -66,9 +66,11 @@ class NgramController extends ApiController
         $frame_size = $data['frame_size'];
         $frame_ppb = $data['frame_peek_probability'];
         $mode = $data['mode'];
+        $version = $data['version'];
 
 
-        $ret = $ext->transformTextNGMC($text, $frame_size, $frame_ppb, $mode);
+
+        $ret = $ext->transformTextNGMC($text, $frame_size, $frame_ppb, $mode, $version);
 
         return ApiResponse::resultValue($ret);
     }

@@ -715,6 +715,7 @@ $(document).ready(function() {
         param['frame_size'] = $('#input-template-ngmc-framesize').val();
         param['frame_peek_probability'] = $('#input-template-ngmc-peekprob').val();
         param['mode'] = $('#input-template-ngmc-mode').val();
+        param['version'] = $('#input-template-ngmc-ver').val();
 
 
         dialog.modal('show');

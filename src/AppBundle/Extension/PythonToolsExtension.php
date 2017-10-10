@@ -19,13 +19,18 @@ class PythonToolsExtension
         $this->username = $username;
     }
 
-    function transformTextNGMC($text, $framesize, $prob, $mode)
+    function transformTextNGMC($text, $framesize, $prob, $mode, $version)
     {
         $path = $this->user_dir.'/'.$this->username.'/'.'ngmc.tmp';
         file_put_contents($path, $text);
 
         $pPython = $this->python_bin;
         $pScript = $this->ngram_mc_bin;
+
+        if($version == 'cb')
+        {
+            $pScript = str_replace("spinner.py", "spinnercb.py", $pScript);
+        }
 
         $command = "$pPython $pScript -f $path -FR $framesize -FP $prob -m $mode";
         exec($command, $output);
