@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@symfony/webpack-encore@^0.14.0":
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/@symfony/webpack-encore/-/webpack-encore-0.14.0.tgz#6a60fe208295e98b119ff9e2f94778b5ca17c627"
+"@symfony/webpack-encore@^0.15.1":
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/@symfony/webpack-encore/-/webpack-encore-0.15.1.tgz#4097cb94fd831443126c75e97df6691f9e02b275"
   dependencies:
     babel-core "^6.24.0"
     babel-loader "^7.1.0"
@@ -13,6 +13,7 @@
     clean-webpack-plugin "^0.1.16"
     css-loader "^0.26.2"
     extract-text-webpack-plugin "^3.0.0"
+    fast-levenshtein "^2.0.6"
     file-loader "^0.10.1"
     friendly-errors-webpack-plugin "^1.6.1"
     fs-extra "^2.0.0"
@@ -1781,6 +1782,10 @@ extsprintf@1.3.0, extsprintf@^1.2.0:
 fast-deep-equal@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-1.0.0.tgz#96256a3bc975595eb36d82e9929d060d893439ff"
+
+fast-levenshtein@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
 
 fastparse@^1.1.1:
   version "1.1.1"
