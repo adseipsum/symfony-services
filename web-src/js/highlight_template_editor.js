@@ -119,14 +119,14 @@ $(document).ready(function() {
                 className: 'newline'
             },
             {
-                highlight: ['drugName', 'alternateName', 'alternateName2', 'sideEffect', 'sideEffect2', 'className',
-                    'className2', 'interactingDisease', 'interactingDisease2', 'pregnancyCategory',
-                    'availabilityCategory', 'wadaCategory', 'csaStatus', 'publication', 'drugInteractionText',
-                    'drugInteractionText2', 'interactingDrug', 'interactingDrug2', 'packager', 'packager2', 'priceUnit',
-                    'priceUnitDescription', 'priceUnitCost', 'treatToDisease', 'treatSymptom', 'riskCondition',
-                    'complicationDesiase', 'remedyAction', 'perventionAction', 'treatToDisease2', 'treatSymptom2',
-                    'riskCondition2', 'complicationDesiase2', 'remedyAction2', 'perventionAction2', 'organization',
-                    'organizationExpertIn'],
+                highlight: new RegExp(['@({[\t\n ]?)?(',
+					'drugName', '|', 'alternateName[2]?', '|', 'sideEffect[2]?', '|', 'className[2]?', '|',
+					'interactingDisease[2]?', '|', 'pregnancyCategory', '|',
+					'availabilityCategory', '|', 'wadaCategory', '|', 'csaStatus', '|', 'publication', '|', 'drugInteractionText', '|',
+					'drugInteractionText2', '|', 'interactingDrug[2]?', '|', 'packager[2]?', '|',
+					'priceUnit', '|', 'priceUnitDescription', '|', 'priceUnitCost', '|', 'treatToDisease[2]?', '|', 'treatSymptom[2]?', '|', 'riskCondition[2]?', '|',
+					'complicationDesiase[2]?', '|', 'remedyAction[2]?', '|', 'perventionAction[2]?', '|', 'organization', '|',
+					'organizationExpertIn', ')'].join(''), 'g'),
                 className: 'variable'
             }
         ]);
