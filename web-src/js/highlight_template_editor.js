@@ -125,8 +125,7 @@ $(document).ready(function() {
 					'availabilityCategory', '|', 'wadaCategory', '|', 'csaStatus', '|', 'publication', '|', 'drugInteractionText', '|',
 					'drugInteractionText2', '|', 'interactingDrug[2]?', '|', 'packager[2]?', '|',
 					'priceUnit', '|', 'priceUnitDescription', '|', 'priceUnitCost', '|', 'treatToDisease[2]?', '|', 'treatSymptom[2]?', '|', 'riskCondition[2]?', '|',
-					'complicationDesiase[2]?', '|', 'remedyAction[2]?', '|', 'perventionAction[2]?', '|', 'organization', '|',
-					'organizationExpertIn', ')'].join(''), 'g'),
+					'complicationDesiase[2]?', '|', 'remedyAction[2]?', '|', 'perventionAction[2]?', '|', 'activeComponent', '|', 'organization(ExpertIn)?', ')'].join(''), 'g'),
                 className: 'variable'
             }
         ]);
