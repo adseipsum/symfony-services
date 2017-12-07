@@ -132,10 +132,10 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
                 UtilsExtension::forceFilePutContents($outfile, $result_text);
 
 
-                #$cbtext = new CbGeneratedText();
-                #$cbtext->setText($text_to_save);
-                #$cbtext->setTemplateId($templateId);
-                #$mdGeneratedText->upsert($cbtext);
+                $cbtext = new CbGeneratedText();
+                $cbtext->setText($text_to_save);
+                $cbtext->setTemplateId($templateId);
+                $mdGeneratedText->upsert($cbtext);
 
             }
 
