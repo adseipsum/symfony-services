@@ -19,7 +19,7 @@ class PythonToolsExtension
         $this->username = $username;
     }
 
-    function transformTextNGMC($text, $framesize, $prob, $mode, $version='cb')
+    function transformTextNGMC($text, $framesize, $prob, $mode, $version='cb', $genbrackets=true)
     {
         $path = $this->user_dir.'/'.$this->username.'/'.'ngmc.tmp';
         file_put_contents($path, $text);
@@ -32,7 +32,14 @@ class PythonToolsExtension
         $pScript = str_replace("spinner.py", "spinnercb.py", $pScript);
         #}
 
-        $command = "$pPython $pScript -f $path -FR $framesize -FP $prob -m $mode";
+        $command = null;
+        if($genbrackets)
+        {
+            $command = "$pPython $pScript -f $path -FR $framesize -FP $prob -m $mode";
+        }
+        else {
+            $command = "$pPython $pScript -f $path -FR $framesize -FP $prob -m $mode -s False";
+        }
         exec($command, $output);
         $generated = '';
         foreach ($output as $line) {

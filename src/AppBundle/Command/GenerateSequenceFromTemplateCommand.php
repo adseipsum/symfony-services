@@ -114,7 +114,7 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
                 if($doNgram)
                 {
                     $output->write("done..applying Ngramm...");
-                    $text = $extPython->transformTextNGMC($text, $ng_frame_size, $ng_frame_ppb, $ng_mode);
+                    $text = $extPython->transformTextNGMC($text, $ng_frame_size, $ng_frame_ppb, $ng_mode, 'cb', false);
                     $output->writeln("done");
                 }
                 else {
@@ -132,10 +132,10 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
                 UtilsExtension::forceFilePutContents($outfile, $result_text);
 
 
-                $cbtext = new CbGeneratedText();
-                $cbtext->setText($text_to_save);
-                $cbtext->setTemplateId($templateId);
-                $mdGeneratedText->upsert($cbtext);
+                #$cbtext = new CbGeneratedText();
+                #$cbtext->setText($text_to_save);
+                #$cbtext->setTemplateId($templateId);
+                #$mdGeneratedText->upsert($cbtext);
 
             }
 
