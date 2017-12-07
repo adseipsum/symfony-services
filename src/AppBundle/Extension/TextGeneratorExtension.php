@@ -23,7 +23,8 @@ class TextGeneratorExtension {
         bool $removeStopwords,
         bool $useStemmer,
         int $generateLoop,
-        int $deviation
+        int $deviation,
+        bool $useBracket
     ) {
         $templateName = $ext->getTemplateName();
 
@@ -108,8 +109,17 @@ class TextGeneratorExtension {
         ];
 
         if ($validate_ok) {
-            $command = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -t $templateName " .
-                "-f $templateFile -op \"(( \" -os \" ))\"";
+            if($useBracket)
+            {
+                $command = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -t $templateName " .
+                    "-f $templateFile -op \"(( \" -os \" ))\"";
+            }
+            else {
+                $command = "cd $pScript && $pPython $pScript/render.py -DW $tmpDir -DT $templateDir -t $templateName " .
+                    "-f $templateFile ";
+            }
+
+
 
             if ($drugName != null) {
                 $drugName = strtolower($drugName);

@@ -8,9 +8,9 @@ class UtilsExtension
     /**
      * create file with content, and create folder structure if doesn't exist
      * @param String $filepath
-     * @param String $message
+     * @param String $content
      */
-    public static function forceFilePutContents($filepath, $message)
+    public static function forceFilePutContents($filepath, $content)
     {
         try {
             $isInFolder = preg_match("/^(.*)\/([^\/]+)$/", $filepath, $filepathMatches);
@@ -21,9 +21,9 @@ class UtilsExtension
                     mkdir($folderName, 0777, true);
                 }
             }
-            file_put_contents($filepath, $message);
+            file_put_contents($filepath, $content);
         } catch (Exception $e) {
-            echo "ERR: error writing '$message' to '$filepath', ". $e->getMessage();
+            echo "ERR: error writing '$content' to '$filepath', ". $e->getMessage();
         }
     }
 

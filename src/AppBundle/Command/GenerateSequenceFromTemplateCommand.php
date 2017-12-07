@@ -64,6 +64,8 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
             $deviation = 100;
             $username = 'serverside';
             $countainer = $this->getContainer();
+            $separator = '*****';
+
 
             $extEditor = new EditorExtension(
                 $countainer->getParameter('generator_user_dir'),
@@ -72,7 +74,8 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
             );
 
 
-
+            $result_text = '';
+            $first_row = true;
 
             for($i = 0; $i<$amount; $i++)
             {
@@ -92,8 +95,19 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
                     $generateLoop,
                     $deviation
                 );
+                $text = $result['generated'];
+
                 $output->writeln("done");
-                print_r($result);
+
+                if($first_row == true)
+                {
+                    $result_text = $result_text.'\n'.$separator.$text;
+                    $first_row = false;
+                }
+                else {
+                    $result_text = $result_text.'\n'.$separator.$text;
+                }
+                UtilsExtension::forceFilePutContents($outfile, $result_text);
             }
 
 
