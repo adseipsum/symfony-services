@@ -152,6 +152,7 @@ class TextGeneratorExtension {
     ) : array {
         $generatedTextModel = new GeneratedTextModel($cb);
         /* @var $cbGeneratedTexts CbGeneratedText[] */
+        $generatedTextModel->warmup();
         $cbGeneratedTexts = $generatedTextModel->listObjectsByTemplateId($templateId);
 
         $ret = [];

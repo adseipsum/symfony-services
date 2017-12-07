@@ -2,6 +2,7 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Entity\CbGeneratedText;
 use AppBundle\Extension\EditorExtension;
 use AppBundle\Extension\TextGeneratorExtension;
 use AppBundle\Extension\UtilsExtension;
@@ -77,7 +78,7 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
             $result_text = '';
             $first_row = true;
 
-            for($i = 0; $i<$amount; $i++)
+            for($i = 1; $i<$amount+1; $i++)
             {
                 $output->write("Generating text $i...");
                 $result  = TextGeneratorExtension::generateForTemplate(
@@ -108,6 +109,13 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
                     $result_text = $result_text.'\n'.$separator.$text;
                 }
                 UtilsExtension::forceFilePutContents($outfile, $result_text);
+
+
+                $cbtext = new CbGeneratedText();
+                $cbtext->setText($text);
+                $cbtext->setTemplateId($templateId);
+                $mdGeneratedText->upsert($cbtext);
+
             }
 
 
