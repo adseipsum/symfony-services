@@ -94,7 +94,8 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
                     $removeStopwords,
                     $useStemmer,
                     $generateLoop,
-                    $deviation
+                    $deviation,
+                    false
                 );
                 $text = $result['generated'];
 
