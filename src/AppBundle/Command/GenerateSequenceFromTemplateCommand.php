@@ -41,12 +41,14 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
 
 
             $mdGeneratedText = new GeneratedTextModel($cb);
+            $mdGeneratedText->warmup();
             $mdTemplate = new TemplateModel($cb);
 
 
             $cbTemplate = $mdTemplate->get($templateId);
             $templateName = $cbTemplate->getName();
             $currentTextNumber = $mdGeneratedText->getGeneratedTextFromTemplateCount($templateId);
+            $currentTextNumber += 1;
             $finalTextNumber = $currentTextNumber + $amount;
 
 
