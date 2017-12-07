@@ -46,6 +46,19 @@ class GeneratedTextModel extends CbBaseModel
         $objectIds = $this->listObjectIdByView(self::VIEW_BY_TEMPLATE_ID, $templateId);
         return $this->get($objectIds);
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function listObjectIdByTemplateId(string $templateId)
+    {
+        return $this->listObjectIdByView(self::VIEW_BY_TEMPLATE_ID, $templateId);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getGeneratedTextFromTemplateCount(string $templateId)
+    {
+        return count($this->listObjectIdByView(self::VIEW_BY_TEMPLATE_ID, $templateId));
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
