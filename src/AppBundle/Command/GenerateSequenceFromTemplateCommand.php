@@ -4,6 +4,7 @@ namespace AppBundle\Command;
 
 use AppBundle\Entity\CbGeneratedText;
 use AppBundle\Extension\EditorExtension;
+use AppBundle\Extension\PythonToolsExtension;
 use AppBundle\Extension\TextGeneratorExtension;
 use AppBundle\Extension\UtilsExtension;
 use AppBundle\Repository\GeneratedTextModel;
