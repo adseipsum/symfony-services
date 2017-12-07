@@ -13,8 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use UserBundle\Entity\CbUser;
-use UserBundle\Repository\UserModel;
 
 class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
 {
@@ -29,7 +27,12 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
             ->addArgument(
                 'Amount',
                 InputArgument::REQUIRED,
-                'Number of text to generate');
+                'Number of text to generate')
+            ->addArgument(
+                'Ngram',
+                InputArgument::REQUIRED,
+                'Process with NGRAM')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -38,7 +41,7 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
             $cb = $this->getContainer()->get('couchbase.connector');
             $templateId = $input->getArgument('TemplateId');
             $amount =  $input->getArgument('Amount');
-
+            $doNgram = $input->getArgument('Ngram');
 
             $mdGeneratedText = new GeneratedTextModel($cb);
             $mdGeneratedText->warmup();
@@ -68,13 +71,17 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
             $username = 'serverside';
             $countainer = $this->getContainer();
             $separator = '*****';
-
+            $ng_frame_size = 4;
+            $ng_frame_ppb = 0.6;
+            $ng_mode = 'insert';
 
             $extEditor = new EditorExtension(
                 $countainer->getParameter('generator_user_dir'),
                 $username,
                 'globalTemplate'
             );
+
+            $extPython = new PythonToolsExtension($countainer, $username);
 
 
             $result_text = '';
@@ -100,8 +107,18 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
                     false
                 );
                 $text = $result['generated'];
+                $text_to_save = $text;
 
-                $output->writeln("done");
+
+                if($doNgram)
+                {
+                    $output->write("done..applying Ngramm...");
+                    $text = $extPython->transformTextNGMC($text, $ng_frame_size, $ng_frame_ppb, $ng_mode);
+                    $output->writeln("done");
+                }
+                else {
+                    $output->writeln("done");
+                }
 
                 if($first_row == true)
                 {
@@ -115,7 +132,7 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
 
 
                 $cbtext = new CbGeneratedText();
-                $cbtext->setText($text);
+                $cbtext->setText($text_to_save);
                 $cbtext->setTemplateId($templateId);
                 $mdGeneratedText->upsert($cbtext);
 

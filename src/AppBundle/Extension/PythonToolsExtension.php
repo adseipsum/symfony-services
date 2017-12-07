@@ -11,7 +11,7 @@ class PythonToolsExtension
     var $user_dir;
     var $username;
 
-    function __construct(ApiController $parent, $username)
+    function __construct($parent, $username)
     {
         $this->python_bin = $parent->getParameter('python_bin');
         $this->user_dir = $parent->getParameter('generator_user_dir');
@@ -19,7 +19,7 @@ class PythonToolsExtension
         $this->username = $username;
     }
 
-    function transformTextNGMC($text, $framesize, $prob, $mode, $version)
+    function transformTextNGMC($text, $framesize, $prob, $mode, $version='cb')
     {
         $path = $this->user_dir.'/'.$this->username.'/'.'ngmc.tmp';
         file_put_contents($path, $text);
@@ -27,10 +27,10 @@ class PythonToolsExtension
         $pPython = $this->python_bin;
         $pScript = $this->ngram_mc_bin;
 
-        if($version == 'cb')
-        {
-            $pScript = str_replace("spinner.py", "spinnercb.py", $pScript);
-        }
+        #if($version == 'cb')
+        #{
+        $pScript = str_replace("spinner.py", "spinnercb.py", $pScript);
+        #}
 
         $command = "$pPython $pScript -f $path -FR $framesize -FP $prob -m $mode";
         exec($command, $output);
