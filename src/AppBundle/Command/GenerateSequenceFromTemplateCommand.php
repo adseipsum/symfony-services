@@ -52,7 +52,7 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
 
             $appdir = $this->getContainer()->get('kernel')->getRootDir();
             $filename = UtilsExtension::filter_filename($templateName);
-            $outfile = "$appdir/data/generated/$filename-$currentTextNumber-$finalTextNumber.txt";
+            $outfile = "$appdir/../data/generated/$filename-$currentTextNumber-$finalTextNumber.txt";
 
 
             $output->writeln("Working with template $templateName");
@@ -103,11 +103,11 @@ class GenerateSequenceFromTemplateCommand extends ContainerAwareCommand
 
                 if($first_row == true)
                 {
-                    $result_text = $result_text.'\n'.$separator.$text;
+                    $result_text = $text;
                     $first_row = false;
                 }
                 else {
-                    $result_text = $result_text.'\n'.$separator.$text;
+                    $result_text = $result_text."\n".$separator."\n".$text;
                 }
                 UtilsExtension::forceFilePutContents($outfile, $result_text);
 
