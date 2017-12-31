@@ -54,7 +54,7 @@ class CouchbaseService
             }
 
             if ($this->envronment == CouchbaseService::PROD) {
-                $this->bucketGeneral = $this->cluster->openBucket('general', $this->config['password']);
+                $this->bucketGeneral = $this->cluster->openBucket('prod-workinfo', $this->config['password']);
             } else {
                 $this->bucketGeneral = $this->cluster->openBucket('stage-general', $this->config['password']);
             }
