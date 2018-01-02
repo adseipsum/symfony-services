@@ -2,7 +2,7 @@
 
 namespace AppBundle\Repository;
 
-use AppBundle\Entity\CbGeneratedText;
+use AppBundle\Entity\CbTask;
 use CouchbaseBundle\Base\CbBaseModel;
 use CouchbaseBundle\CouchbaseService;
 use CouchbaseBundle\Base\CbBaseObject;
