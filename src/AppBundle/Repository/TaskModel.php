@@ -10,6 +10,8 @@ use CouchbaseBundle\Base\CbBaseObject;
 class TaskModel extends CbBaseModel
 {
 
+    const VIEW_BY_STATUS = 'status';
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Views Section
@@ -36,5 +38,13 @@ class TaskModel extends CbBaseModel
     {
         return self::DISDOC_ID;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getTasksByStatus($status)
+    {
+        return $this->getObjectByView($status, self::VIEW_BY_STATUS, true);
+    }
+
 
 }
