@@ -41,3 +41,7 @@ services:
     user_bundle.couchbase_user_manager:
             class: UserBundle\Service\CbUserManager
             arguments: ["@couchbase.connector",'@security.encoder_factory']
+
+    app_bundle.consumer.task_manager:
+            class: AppBundle\Consumer\TaskManagerConsumer
+            arguments: ['@service_container']

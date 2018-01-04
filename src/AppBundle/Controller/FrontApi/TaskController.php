@@ -17,6 +17,7 @@ class TaskController extends Controller
      * @Route("/task/new", name="frontapi_task_new")
      * @param Request $request
      * @Method("POST")
+     * @return ApiResponse
      */
     public function addNewTask(Request $request)
     {

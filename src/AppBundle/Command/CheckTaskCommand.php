@@ -26,7 +26,9 @@ class CheckTaskCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $cb = $this->getContainer()->get('couchbase.connector');
-        $scheduler = new SchedulerExtension($cb);
+        $amqp = $this->getContainer()->get('old_sound_rabbit_mq.task_manager_producer');
+
+        $scheduler = new SchedulerExtension($cb, $amqp);
 
         try {
             $output->writeln($scheduler->processTasks($input->getArgument('status')));
