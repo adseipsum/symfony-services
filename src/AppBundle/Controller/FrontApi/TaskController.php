@@ -68,6 +68,7 @@ class TaskController extends Controller
                         'id' => $object->getObjectId(),
                         'domainName' => $object->getDomainName(),
                         'enabled' => $object->getEnabled(),
+                        'status' => $object->getStatus(),
                         'needPosts' => $object->getNeedPosts(),
                         'additionalKeysPercentage' => $object->getAdditionalKeysPercentage(),
                         'postPeriodDays' => $object->getPostPeriodDays(),

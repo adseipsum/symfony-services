@@ -8,9 +8,11 @@ class CbTask extends CbBaseObject
 {
 
     const STATUS_NEW = 'new';
+    const STATUS_SCHEDULED_FOR_GENERATION = 'generation';
     const STATUS_GENERATED = 'generated';
+    const STATUS_SCHEDULED_FOR_POSTING = 'posting';
     const STATUS_POSTED = 'posted';
-    const STATUS_COMPLETE = 'complete';
+    const STATUS_COMPLETED = 'completed';
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

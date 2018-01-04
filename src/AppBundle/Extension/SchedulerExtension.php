@@ -1,7 +1,7 @@
 <?php
 namespace AppBundle\Extension;
 
-
+use CouchbaseBundle\CouchbaseService;
 use AppBundle\Controller\Api\ApiController;
 use AppBundle\Entity\CbTask;
 use AppBundle\Repository\TaskModel;
@@ -9,39 +9,58 @@ use AppBundle\Repository\TaskModel;
 class SchedulerExtension
 {
     protected $cb;
+    protected $model;
 
-    protected $modelTask;
+    const SERVICE = 'scheduler';
 
     const MESSAGE_GENERATION = 'generation';
-
     const MESSAGE_POSTING = 'posting';
 
-    public function __construct(CouchbaseService $cb, EncoderFactoryInterface $encoder)
+    public function __construct(CouchbaseService $cb)
     {
         $this->cb = $cb;
-        $this->modelTask = new UserModel($cb);
+        $this->model = new TaskModel($this->cb);
     }
 
     /**
-     * @return TaskModel
+     * @param string $status
      */
-    public function processTasks(){
-        $newTasks = $this->modelTask->getTasksByStatus(CbTask::STATUS_NEW);
+    public function processTasks(string $status){
 
-        foreach($newTasks as $task){
-            // $this->sendMessage($taskId, MESSAGE_GENERATION);
-        }
+        switch($status){
+            case CbTask::STATUS_NEW :
+                $task = $this->model->getTasksByStatus(CbTask::STATUS_NEW);
+                if($task) {
+                    // $this->sendMessage(implode('::' array(SERVICE, $task->getOdjectId())), MESSAGE_GENERATION);
+                    $this->updateTaskStatus($task->getObjectId(), CbTask::STATUS_SCHEDULED_FOR_GENERATION);
+                    return "Task {$task->getObjectId()} status updated";
+                }
+                break;
 
-        $this->modelTask->getTasksByStatus(CbTask::STATUS_GENERATED);
+            case CbTask::STATUS_GENERATED :
+                $task = $this->model->getTasksByStatus(CbTask::STATUS_GENERATED);
+                if($task) {
+                    // $this->sendMessage(implode('::' array(SERVICE, $task->getOdjectId())), MESSAGE_POSTING);
+                    $this->updateTaskStatus($task->getObjectId(), CbTask::STATUS_SCHEDULED_FOR_POSTING);
+                    return "Task {$task->getObjectId()} status updated";
+                }
+                break;
 
-        foreach($newTasks as $task){
-            // $this->sendMessage($taskId, MESSAGE_POSTING);
+            case CbTask::STATUS_POSTED :
+                $task = $this->model->getTasksByStatus(CbTask::STATUS_POSTED);
+                if($task) {
+                    $this->updateTaskStatus($task->getObjectId(), CbTask::STATUS_COMPLETED);
+                    return "Task {$task->getObjectId()} status updated";
+                }
+                break;
+
+            default:
+                throw new \Exception('Wrong status provided');
         }
     }
 
     /**
      * @param string $taskId
-     *
      * @param string $message
      */
     private function sendMessage(string $taskId, string $message){
@@ -59,18 +78,18 @@ class SchedulerExtension
 
     /**
      * @param string $taskId
+     * @param string $status
      */
     private function updateTaskStatus(string $taskId, string $status){
         //update task with status
         try {
-                /* @var $object CbTask */
-                $object = $this->modelTask->get($taskId);
+                $object = $this->model->get($taskId);
 
                 if ($object != null) {
                     $object->setStatus($status);
                 }
 
-                $this->modelTask->upsert($object);
+            $this->model->upsert($object);
 
         } catch (Exception $e) {
             return $e->getMessage();
