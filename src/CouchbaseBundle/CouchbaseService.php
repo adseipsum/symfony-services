@@ -65,7 +65,19 @@ class CouchbaseService
 
     public function getBucketForType($objectType)
     {
+        if($objectType == 'TextGenerationResult'){
+            return $this->getResourcesBucket();
+        }
+
         return $this->getGeneralBucket();
+    }
+
+    public function getResourcesBucket(){
+        if ($this->cluster == null) {
+            $this->connectToCluster();
+        }
+
+        return $this->cluster->openBucket('prod-resources', $this->config['password']);
     }
 
     public function printConfig()

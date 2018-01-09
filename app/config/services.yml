@@ -45,3 +45,7 @@ services:
     app_bundle.consumer.task_manager:
             class: AppBundle\Consumer\TaskManagerConsumer
             arguments: ['@service_container']
+
+    app_bundle.consumer.posting_service:
+                class: AppBundle\Consumer\PostingServiceConsumer
+                arguments: ['@service_container']

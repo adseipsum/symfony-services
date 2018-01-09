@@ -2,12 +2,12 @@
 
 namespace AppBundle\Consumer;
 
-use AppBundle\Extension\SchedulerServiceExtension;
+use AppBundle\Extension\PostingServiceExtension;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
 
-class TaskManagerConsumer implements ConsumerInterface
+class PostingServiceConsumer implements ConsumerInterface
 {
     private $container;
 
@@ -22,10 +22,10 @@ class TaskManagerConsumer implements ConsumerInterface
     public function execute(AMQPMessage $msg)
     {
         $cb = $this->container->get('couchbase.connector');
-        $amqp = $this->container->get('old_sound_rabbit_mq.task_manager_producer');
+        $amqp = $this->container->get('old_sound_rabbit_mq.posting_service_producer');
 
-        $scheduler = new SchedulerServiceExtension($cb, $amqp);
+        $postingService = new PostingServiceExtension($cb, $amqp);
 
-        $scheduler->processMessage($msg);
+        $postingService->processMessage($msg);
     }
 }

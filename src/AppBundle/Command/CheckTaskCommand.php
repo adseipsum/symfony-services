@@ -2,9 +2,7 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Extension\SchedulerExtension;
-use AppBundle\Entity\CbTask;
-use AppBundle\Repository\TaskModel;
+use AppBundle\Extension\SchedulerServiceExtension;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -28,7 +26,7 @@ class CheckTaskCommand extends ContainerAwareCommand
         $cb = $this->getContainer()->get('couchbase.connector');
         $amqp = $this->getContainer()->get('old_sound_rabbit_mq.task_manager_producer');
 
-        $scheduler = new SchedulerExtension($cb, $amqp);
+        $scheduler = new SchedulerServiceExtension($cb, $amqp);
 
         try {
             $output->writeln($scheduler->processTasks($input->getArgument('status')));

@@ -2,29 +2,31 @@
 namespace AppBundle\Extension;
 
 use CouchbaseBundle\CouchbaseService;
-use AppBundle\Controller\Api\ApiController;
 use AppBundle\Entity\CbTask;
 use AppBundle\Repository\TaskModel;
 
-class SchedulerExtension
+class SchedulerServiceExtension
 {
     protected $cb;
     protected $model;
 
-    const THIS_SERVICE = 'scheduler';
+    const THIS_SERVICE_KEY = 'tsk';
 
     const GENERATION_ROUTING_KEY = 'srv.txtgen.v1';
     const POSTING_ROUTING_KEY = 'srv.posting.v1';
     const RESPONCE_ROUTING_KEY = 'srv.taskmanager.v1';
 
-    const MESSAGE_GENERATION = 'generation';
-    const MESSAGE_POSTING = 'posting';
+    const MESSAGE_GENERATION_KEY = 'generation';
 
+    /**
+     * @param object $cb
+     * @param object $amqp
+     * @return void
+     */
     public function __construct(CouchbaseService $cb, $amqp)
     {
         $this->cb = $cb;
         $this->model = new TaskModel($this->cb);
-
         $this->amqp = $amqp;
     }
 
@@ -38,8 +40,8 @@ class SchedulerExtension
             case CbTask::STATUS_NEW :
                 $task = $this->model->getTasksByStatus(CbTask::STATUS_NEW);
                 if($task) {
-                    $this->sendGenerationMessage($task, self::MESSAGE_GENERATION);
-                    $this->updateTaskStatus($task, CbTask::STATUS_SCHEDULED_FOR_GENERATION);
+                    $this->sendGenerationMessage($task);
+                    $this->updateTaskStatus($task->getObjectId(), CbTask::STATUS_SCHEDULED_FOR_GENERATION);
                     return "Task {$task->getObjectId()} status updated: " . CbTask::STATUS_SCHEDULED_FOR_GENERATION;
                 }
                 break;
@@ -47,8 +49,8 @@ class SchedulerExtension
             case CbTask::STATUS_GENERATED :
                 $task = $this->model->getTasksByStatus(CbTask::STATUS_GENERATED);
                 if($task) {
-                    $this->sendPostingMessage($task, self::MESSAGE_POSTING);
-                    $this->updateTaskStatus($task, CbTask::STATUS_SCHEDULED_FOR_POSTING);
+                    $this->sendPostingMessage($task);
+                    $this->updateTaskStatus($task->getObjectId(), CbTask::STATUS_SCHEDULED_FOR_POSTING);
                     return "Task {$task->getObjectId()} status updated: " . CbTask::STATUS_SCHEDULED_FOR_POSTING;
                 }
                 break;
@@ -56,7 +58,7 @@ class SchedulerExtension
             case CbTask::STATUS_POSTED :
                 $task = $this->model->getTasksByStatus(CbTask::STATUS_POSTED);
                 if($task) {
-                    $this->updateTaskStatus($task, CbTask::STATUS_COMPLETED);
+                    $this->updateTaskStatus($task->getObjectId(), CbTask::STATUS_COMPLETED);
                     return "Task {$task->getObjectId()} status updated: " . CbTask::STATUS_COMPLETED;
                 }
                 break;
@@ -66,59 +68,60 @@ class SchedulerExtension
         }
     }
 
+    /**
+     * @param object $msg
+     * @return void
+     */
     public function processMessage($msg){
         $message = json_decode($msg->getBody());
-        var_dump($message->taskId);
-        //check messages and make needed tasks update
-        //generated => change task status to "generated", send "posting" message
-        //posted => change task status to "posted"
+        $idString = explode('::', $message->taskId);
 
-        // $this->updateTaskStatus($taskId, CbTask::STATUS_GENERATED);
-        // $this->updateTaskStatus($taskId, CbTask::STATUS_POSTED);
+        if(strstr($message->resultKey, CbTask::STATUS_SCHEDULED_FOR_GENERATION)){
+            $this->updateTaskStatus($idString[1], CbTask::STATUS_GENERATED);
+        }elseif(strstr($message->resultKey, CbTask::STATUS_POSTED)){
+            $this->updateTaskStatus($idString[1], CbTask::STATUS_POSTED);
+        }
     }
 
     /**
      * @param object $task
-     * @param string $message
      * @return void
      */
-    private function sendGenerationMessage(CbTask $task, string $message){
-        $generatedTaskId = implode('::', array(self::THIS_SERVICE, $task->getObjectId()));
+    private function sendGenerationMessage(CbTask $task){
+        $generatedTaskId = implode('::', array(self::THIS_SERVICE_KEY, $task->getObjectId()));
+        $generatedResultKeyId = implode('::', array(self::THIS_SERVICE_KEY, $task->getObjectId(), self::MESSAGE_GENERATION_KEY));
+        $msg = array(
+            'taskId' => $generatedTaskId,
+            'resultKey' => $generatedResultKeyId,
+            'responceRoutingKey' => self::RESPONCE_ROUTING_KEY
+        );
+        $this->amqp->publish(json_encode($msg), self::GENERATION_ROUTING_KEY);
+    }
+
+    /**
+     * @param object $task
+     * @param string $key
+     * @return void
+     */
+    private function sendPostingMessage(CbTask $task){
+        $generatedTaskId = implode('::', array(self::THIS_SERVICE_KEY, $task->getObjectId()));
 
         $msg = array(
             'taskId' => $generatedTaskId,
-            'resultKey' => $generatedTaskId . '::generated',
             'responceRoutingKey' => self::RESPONCE_ROUTING_KEY
         );
-
-        $this->amqp->publish(serialize($msg), self::GENERATION_ROUTING_KEY);
+        $this->amqp->publish(json_encode($msg), self::POSTING_ROUTING_KEY);
     }
 
     /**
-     * @param object $task
-     * @param string $message
-     * @return void
-     */
-    private function sendPostingMessage(CbTask $task, string $message){
-        $generatedTaskId = implode('::', array(self::THIS_SERVICE, $task->getObjectId()));
-
-        $msg = array(
-            'taskId' => $generatedTaskId,
-            'resultKey' => $generatedTaskId . '::posted',
-            'responceRoutingKey' => self::RESPONCE_ROUTING_KEY
-        );
-
-        $this->amqp->publish(serialize($msg), self::POSTING_ROUTING_KEY);
-    }
-
-    /**
-     * @param object $task
+     * @param string $taskId
      * @param string $status
+     * @return void
      */
-    private function updateTaskStatus(CbTask $task, string $status){
+    private function updateTaskStatus(string $taskId, string $status){
         //update task with status
         try {
-                $object = $this->model->get($task->getObjectId());
+                $object = $this->model->get($taskId);
 
                 if ($object != null) {
                     $object->setStatus($status);
