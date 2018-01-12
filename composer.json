@@ -28,6 +28,8 @@
 		"friendsofsymfony/user-bundle": "~2.0",
 		"incenteev/composer-parameter-handler": "^2.0",
 		"justinrainbow/json-schema": "^5.2",
+		"krombox/oauth2-wordpress": "^0.1.0",
+		"league/oauth2-client": "^1.0",
 		"nlp-tools/nlp-tools": "1.0.*@dev",
 		"oefenweb/damerau-levenshtein": "2.1.*@dev",
 		"php-amqplib/rabbitmq-bundle": "^1.13",

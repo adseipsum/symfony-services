@@ -4,6 +4,9 @@ namespace AppBundle\Extension;
 use CouchbaseBundle\CouchbaseService;
 use AppBundle\Entity\CbTask;
 use AppBundle\Repository\TextGenerationResultModel;
+use League\OAuth2\Client\Provider\GenericProvider as GenericProvider;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException as IdentityProviderException;
+use Krombox\OAuth2\Client\Provider\Wordpress as Wordpress;
 
 class PostingServiceExtension
 {
@@ -15,6 +18,8 @@ class PostingServiceExtension
 
     const RESPONCE_ROUTING_KEY = 'srv.taskmanager.v1';
 
+    const WP_RESOURCE_PATH = 'wp-json/wp/v2/posts/';
+
     public function __construct(CouchbaseService $cb, $amqp)
     {
         $this->cb = $cb;
@@ -24,27 +29,48 @@ class PostingServiceExtension
         $this->amqp = $amqp;
     }
 
-    public function postToBlog($post){
+    public function postToBlog($body){
+
+        //comes from blogs data
+        $temp_clientId = 'lxkV5q0Y8OZWlpcN6ku6MI0oxMX5oE3tDPCmJ4o0';
+        $temp_clientSecret = 'IBNGi39suoTe2fnzimuYuGMgKyGbKFaXUb4RWVOU';
         $username = 'admin';
         $password = 'sd45X4e9';
+        $domain = 'http://188.166.89.15:8181/';
 
-        $url = 'http://188.166.89.15:8181/wp-json/wp/v2/posts/';
+        $provider = new Wordpress([
+            'clientId'                => $temp_clientId,    // The client ID assigned to you by the provider
+            'clientSecret'            => $temp_clientSecret,   // The client password assigned to you by the provider
+            'redirectUri'             => 'oob',
+            'domain'                  => $domain
+        ]);
 
-        $options = array(
-            'http' => array(
-                'header' => array(
-                    'Authorization: Basic ' . base64_encode( $username . ':' . $password ),
-                    'Content-type: application/x-www-form-urlencoded'
-                ),
+        try {
 
-                'method'  => 'POST',
-                'content' => http_build_query($post)
-            )
-        );
-        $context  = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
-        if ($result) {
-            return true;
+            $accessToken = $provider->getAccessToken('password', [
+                'username' => $username,
+                'password' => $password
+            ]);
+
+            $body['action'] = 'write';
+            $options['body'] = json_encode($body);
+            $options['headers']['Content-Type'] = 'application/json;charset=UTF-8';
+            $options['headers']['access_token'] = $accessToken->getToken();
+
+            $request = $provider->getAuthenticatedRequest(
+                'POST',
+                $domain . self::WP_RESOURCE_PATH,
+                $accessToken->getToken(),
+                $options
+            );
+            $response = $provider->getResponse($request);
+
+            if(!isset($response['code'])){
+                return true;
+            }
+
+        } catch (IdentityProviderException $e) {
+            exit($e->getMessage());
         }
 
         return false;
