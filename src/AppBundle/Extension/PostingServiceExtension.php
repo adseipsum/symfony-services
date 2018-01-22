@@ -1,65 +1,79 @@
 <?php
 namespace AppBundle\Extension;
 
+use AppBundle\Entity\CbBlog;
+use AppBundle\Entity\CbTextGenerationResult;
 use CouchbaseBundle\CouchbaseService;
-use AppBundle\Entity\CbTask;
+use AppBundle\Repository\BlogModel;
 use AppBundle\Repository\TextGenerationResultModel;
-use League\OAuth2\Client\Provider\GenericProvider as GenericProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException as IdentityProviderException;
 use Krombox\OAuth2\Client\Provider\Wordpress as Wordpress;
 
 class PostingServiceExtension
 {
     protected $cb;
-    protected $model;
+    protected $blogModel;
+    protected $textModel;
+    protected $blogObject;
+    protected $textObject;
+
+    protected $responceRoutingKey;
 
     const THIS_SERVICE_KEY = 'post';
-    const TASK_SERVICE_KEY = 'tsk';
+    const CAMPAIGN_SERVICE_KEY = 'cmp';
 
-    const RESPONCE_ROUTING_KEY = 'srv.taskmanager.v1';
+    const MESSAGE_GENERATION_KEY = 'generation';
+    const MESSAGE_POSTED_KEY = 'posted';
 
-    const WP_RESOURCE_PATH = 'wp-json/wp/v2/posts/';
+
+    const WP_RESOURCE_PATH = '/wp-json/wp/v2/posts/';
+    const WP_BACKLINK = 'oob';
 
     public function __construct(CouchbaseService $cb, $amqp)
     {
         $this->cb = $cb;
-        $this->model = new TextGenerationResultModel($this->cb);
-        $this->model->setBucket($this->cb->getBucketForType('TextGenerationResult'));
+
+        $this->blogModel = new BlogModel($this->cb);
+
+        $this->textModel = new TextGenerationResultModel($this->cb);
+        $this->textModel->setBucket($this->cb->getBucketForType('TextGenerationResult'));
 
         $this->amqp = $amqp;
     }
 
-    public function postToBlog($body){
-
-        //comes from blogs data
-        $temp_clientId = 'lxkV5q0Y8OZWlpcN6ku6MI0oxMX5oE3tDPCmJ4o0';
-        $temp_clientSecret = 'IBNGi39suoTe2fnzimuYuGMgKyGbKFaXUb4RWVOU';
-        $username = 'admin';
-        $password = 'sd45X4e9';
-        $domain = 'http://188.166.89.15:8181/';
+    /**
+     * @param CbBlog $blogObject
+     * @param CbTextGenerationResult $textObject
+     * @return bool
+     */
+    public function postToBlog($blogObject, $textObject){
+        $WPRequestBody = array(
+            'title' => 'test post',
+            'content' => $textObject->getText(),
+            'status' => 'publish'
+        );
 
         $provider = new Wordpress([
-            'clientId'                => $temp_clientId,    // The client ID assigned to you by the provider
-            'clientSecret'            => $temp_clientSecret,   // The client password assigned to you by the provider
-            'redirectUri'             => 'oob',
-            'domain'                  => $domain
+            'clientId'                => $blogObject->getClientId(),
+            'clientSecret'            => $blogObject->getClientSecret(),
+            'redirectUri'             => self::WP_BACKLINK,
+            'domain'                  => $blogObject->getDomainName()
         ]);
 
         try {
-
             $accessToken = $provider->getAccessToken('password', [
-                'username' => $username,
-                'password' => $password
+                'username' => $blogObject->getPostingUserLogin(),
+                'password' => $blogObject->getPostingUserPassword()
             ]);
 
             $body['action'] = 'write';
-            $options['body'] = json_encode($body);
+            $options['body'] = json_encode($WPRequestBody);
             $options['headers']['Content-Type'] = 'application/json;charset=UTF-8';
             $options['headers']['access_token'] = $accessToken->getToken();
 
             $request = $provider->getAuthenticatedRequest(
                 'POST',
-                $domain . self::WP_RESOURCE_PATH,
+                $blogObject->getDomainName() . self::WP_RESOURCE_PATH,
                 $accessToken->getToken(),
                 $options
             );
@@ -82,37 +96,47 @@ class PostingServiceExtension
      */
     public function processMessage($msg){
         $message = json_decode($msg->getBody());
-        $idString = explode('::', $message->taskId);
+        $this->responceRoutingKey = $message->responceRoutingKey;
 
-        $textId = implode('::', array($idString[1], CbTask::STATUS_SCHEDULED_FOR_GENERATION));
-        $object = $this->model->get($textId);
+        //select available for posting, not locked blog with lowest post value
+        $blogs = (array) $message->blogs;
+        asort($blogs);
+        foreach($blogs as $blogId => $counter){
+            $blogObject = $this->blogModel->get($blogId);
+            if($this->blogModel->lockBlogForPosting($blogObject)){
+                break;
+            }else{
+                continue;
+            }
+        }
 
-        if($object){
-            $data = array(
-                'title' => 'test post',
-                'content' => $object->getText(),
-                'status' => 'publish'
-            );
+        $textId = implode('::', array($message->taskId, self::MESSAGE_GENERATION_KEY));
+        $textObject = $this->textModel->getSingle($textId);
 
-            if($this->postToBlog($data)){
-                $this->sendCompletePostingMessage($idString[1]);
+        if($blogObject && $textObject){
+            if($this->postToBlog($blogObject, $textObject)){
+                $blogObject->setLocked(false);
+                $blogObject->setLastPostDate(new \DateTime);
+                $this->blogModel->upsert($blogObject);
+                $this->sendCompletePostingMessage($blogObject->getObjectId(), $message->taskId);
             }
         }
     }
 
     /**
+     * @param string $blogId
      * @param string $taskId
      * @return void
      */
-    private function sendCompletePostingMessage($taskId){
-        $postedTaskId = implode('::', array(self::THIS_SERVICE_KEY, $taskId, CbTask::STATUS_POSTED));
+    private function sendCompletePostingMessage($blogId, $taskId){
 
         $msg = array(
-            'taskId' => implode( '::', array(self::TASK_SERVICE_KEY, $taskId)),
-            'resultKey' => $postedTaskId
+            'taskId' => implode( '::', array(self::CAMPAIGN_SERVICE_KEY, self::MESSAGE_POSTED_KEY)),
+            'resultKey' => implode( '::', array($taskId, self::MESSAGE_POSTED_KEY)),
+            'blogId' => $blogId
         );
 
-        $this->amqp->publish(json_encode($msg), self::RESPONCE_ROUTING_KEY);
+        $this->amqp->publish(json_encode($msg), $this->responceRoutingKey);
     }
 
 }

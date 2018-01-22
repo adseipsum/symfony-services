@@ -42,8 +42,8 @@ services:
             class: UserBundle\Service\CbUserManager
             arguments: ["@couchbase.connector",'@security.encoder_factory']
 
-    app_bundle.consumer.task_manager:
-            class: AppBundle\Consumer\TaskManagerConsumer
+    app_bundle.consumer.campaign_manager:
+            class: AppBundle\Consumer\CampaignManagerConsumer
             arguments: ['@service_container']
 
     app_bundle.consumer.posting_service:

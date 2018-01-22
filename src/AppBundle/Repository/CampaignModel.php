@@ -1,0 +1,80 @@
+<?php
+
+namespace AppBundle\Repository;
+
+use AppBundle\Entity\CbCampaign;
+use CouchbaseBundle\Base\CbBaseModel;
+use CouchbaseBundle\CouchbaseService;
+use CouchbaseBundle\Base\CbBaseObject;
+use AppBundle\Repository\BlogModel;
+
+class CampaignModel extends CbBaseModel
+{
+
+    const VIEW_BY_STATUS = 'status';
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Views Section
+    const DISDOC_ID = "campaign";
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function __construct(CouchbaseService $service)
+    {
+        parent::__construct('campaign', 'Campaign', $service->getBucketForType('Campaign'));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function factory() : CbBaseObject
+    {
+        $ret = new CbCampaign();
+        return $ret;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getDisdocId() : string
+    {
+        return self::DISDOC_ID;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getCampaignsByStatus($status)
+    {
+        return $this->getObjectByView($status, self::VIEW_BY_STATUS, true);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function needsGeneration(CbCampaign $campaign){
+        $postingTasks = $campaign->getPostingTaskList();
+
+        if($postingTasks && $campaign->getNeedPosts() <= count($postingTasks)){
+            return false;
+        }
+
+        return true;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function calculateNextPostTime(CbCampaign $campaign)
+    {
+        $startDate = new \DateTime();
+        $endDate = $campaign->getCreated()->modify("+{$campaign->getPostPeriodDays()} day");
+
+        $timeLeft = $endDate->getTimestamp() - $startDate->getTimestamp();
+        $postsLeft = $campaign->getNeedPosts() - $campaign->getPosted();
+
+        $postingPeriod = $postsLeft ? ceil($timeLeft / $postsLeft) : 0;
+
+        $nextPostTime = new \DateTime();
+        $nextPostTime->modify("+{$postingPeriod} seconds");
+        return $nextPostTime;
+    }
+
+
+}

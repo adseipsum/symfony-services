@@ -4,14 +4,11 @@ namespace AppBundle\Entity;
 
 use CouchbaseBundle\Base\CbBaseObject;
 
-class CbTask extends CbBaseObject
+class CbCampaign extends CbBaseObject
 {
 
     const STATUS_NEW = 'new';
-    const STATUS_SCHEDULED_FOR_GENERATION = 'generation';
-    const STATUS_GENERATED = 'generated';
-    const STATUS_SCHEDULED_FOR_POSTING = 'posting';
-    const STATUS_POSTED = 'posted';
+    const STATUS_PROCESSING = 'processing';
     const STATUS_COMPLETED = 'completed';
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,37 +86,6 @@ class CbTask extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function setExpired(\DateTime $time = null)
-    {
-        $this->set('expired', $time->getTimestamp());
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public function getExpired() : \DateTime
-    {
-        $ret = new \DateTime();
-        $unixtimestamp = $this->get('expired');
-        $ret->setTimestamp($unixtimestamp);
-        return $ret;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public function setAge(int $age)
-    {
-        $this->set('age', $age);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public function getAge() : int
-    {
-        return $this->get('age');
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public function setNeedPosts(int $needPosts)
     {
         $this->set('needPosts', $needPosts);
@@ -162,17 +128,17 @@ class CbTask extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function setNextPost(\DateTime $time = null)
+    public function setNextPostTime(\DateTime $time = null)
     {
-        $this->set('nextPost', $time->getTimestamp());
+        $this->set('nextPostTime', $time->getTimestamp());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function getNextPost() : \DateTime
+    public function getNextPostTime() : \DateTime
     {
         $ret = new \DateTime();
-        $unixtimestamp = $this->get('nextPost');
+        $unixtimestamp = $this->get('nextPostTime');
         $ret->setTimestamp($unixtimestamp);
         return $ret;
     }
@@ -189,6 +155,82 @@ class CbTask extends CbBaseObject
     public function getPosted() : int
     {
         return $this->get('posted');
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setPostingTask(array $postingTask)
+    {
+        $postingTaskList = $this->getPostingTaskList();
+        $this->set('postingTaskList', array_merge($postingTaskList, $postingTask));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function updatePostingTask(string $postingTask, $status)
+    {
+        $postingTaskList = $this->getPostingTaskList();
+        $postingTaskList[$postingTask] = $status;
+        $this->set('postingTaskList', $postingTaskList);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getNewPostingTasks() : array
+    {
+        $postingTaskList = $this->getPostingTaskList();
+        $newPostingTasks = array();
+
+        if($postingTaskList){
+            foreach($postingTaskList as $task => $status){
+                if($status == 0) {
+                    $newPostingTasks[$task] = $status;
+                }
+            }
+        }
+        return $newPostingTasks;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getPostingTaskList() : array
+    {
+        return $this->get('postingTaskList') ? $this->get('postingTaskList') : array();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setBlogs(array $blogs)
+    {
+        $this->set('blogs', $blogs);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getBlogs() : array
+    {
+        return $this->get('blogs');
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getBlogForPostingId() : string
+    {
+        $blogs = $this->getBlogs();
+
+        $resultArray = array_keys($blogs, min($blogs));
+
+        return array_shift($resultArray);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function incrementPostsForBlog(string $blogId){
+        $blogs = $this->get('blogs');
+        if(isset($blogs[$blogId])) {
+            $blogs[$blogId]++;
+        }
+        $this->setBlogs($blogs);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -14,22 +14,18 @@ class CheckTaskCommand extends ContainerAwareCommand
 
     protected function configure()
     {
-        $this->setName('task:check')->setDescription('Check tasks with provided status')
-            ->addArgument(
-                'status',
-                InputArgument::REQUIRED,
-                'Status of a task to check');
+        $this->setName('task:check')->setDescription('Processed task');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $cb = $this->getContainer()->get('couchbase.connector');
-        $amqp = $this->getContainer()->get('old_sound_rabbit_mq.task_manager_producer');
+        $amqp = $this->getContainer()->get('old_sound_rabbit_mq.campaign_manager_producer');
 
         $scheduler = new SchedulerServiceExtension($cb, $amqp);
 
         try {
-            $output->writeln($scheduler->processTasks($input->getArgument('status')));
+            $output->writeln($scheduler->processTask());
         } catch (Exception $e) {
             $output->writeln($e->getMessage());
         }

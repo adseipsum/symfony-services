@@ -2,42 +2,47 @@
 
 namespace AppBundle\Controller\FrontApi;
 
-use AppBundle\Entity\CbTask;
+use AppBundle\Entity\CbCampaign;
 use AppBundle\Extension\ApiResponse;
-use AppBundle\Repository\TaskModel;
+use AppBundle\Repository\CampaignModel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
-class TaskController extends Controller
+class CampaignController extends Controller
 {
     /**
-     * @Route("/task/new", name="frontapi_task_new")
+     * @Route("/campaign/new", name="frontapi_campaign_new")
      * @param Request $request
      * @Method("POST")
      * @return ApiResponse
      */
-    public function addNewTask(Request $request)
+    public function addNewCampaign(Request $request)
     {
 
         $data = json_decode($request->getContent(), true);
 
         try {
             $cb = $this->get('couchbase.connector');
-            $model = new TaskModel($cb);
+            $model = new CampaignModel($cb);
 
-            $object = new CbTask();
+            $object = new CbCampaign();
             $object->setEnabled(true);
             $object->setDomainName($data['domainName']);
             $object->setNeedPosts($data['needPosts']);
             $object->setAdditionalKeysPercentage($data['additionalKeysPercentage']);
             $object->setPostPeriodDays($data['postPeriodDays']);
+            $object->setBlogs(array('blog-1' => 0, 'blog-2' => 0));
+            $object->setPosted(0);
             $object->setCreated();
 
-            $object->setStatus(CbTask::STATUS_NEW);
-
+            $object->setStatus(CbCampaign::STATUS_PROCESSING);
+            $nextPostTime = new \DateTime();
+            $nextPostTime->modify("+60 seconds");
+            $object->setNextPostTime($nextPostTime);
+            //$object->setNextPostTime($model->calculateNextPostTime($object));
             $model->upsert($object);
 
             return ApiResponse::resultValues(true);
@@ -49,15 +54,15 @@ class TaskController extends Controller
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @Route("/task/list", name="frontapi_task_list")
+     * @Route("/campaign/list", name="frontapi_campaign_list")
      * @Method("GET")
      * @return ApiResponse
      */
-    public function getTasksList()
+    public function getCampaignList()
     {
         try {
             $cb = $this->get('couchbase.connector');
-            $model = new TaskModel($cb);
+            $model = new CampaignModel($cb);
 
             $arrayOfObjects = $model->getAllObjects();
 
@@ -73,6 +78,8 @@ class TaskController extends Controller
                         'needPosts' => $object->getNeedPosts(),
                         'additionalKeysPercentage' => $object->getAdditionalKeysPercentage(),
                         'postPeriodDays' => $object->getPostPeriodDays(),
+                        'nextPostTime' => $object->getNextPostTime()->format('Y-m-d h:m:s'),
+                        'posted' => $object->getPosted(),
                         'created' => $object->getCreated()->format('Y-m-d')
                     );
                 }

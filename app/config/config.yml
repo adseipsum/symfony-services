@@ -98,23 +98,23 @@ old_sound_rabbit_mq:
             vhost:    "%amqp_vhost%"
             lazy:     false
     producers:
-        task_manager:
+        campaign_manager:
             connection:       default
             exchange_options: {name: "prod-satteliter.ex.services", type: topic}
-            service_alias:    task_manager_producer
+            service_alias:    campaign_manager_producer
         posting_service:
             connection:       default
             exchange_options: {name: "prod-satteliter.ex.services", type: topic}
             service_alias:    posting_service_producer
     consumers:
-        task_manager:
+        campaign_manager:
             connection:       default
             exchange_options: {name: "prod-satteliter.ex.services", type: topic}
             queue_options:
-                name: 'prod-satteliter.q.srv-tskmanager.v1'
+                name: 'prod-satteliter.q.srv-cmpmanager.v1'
                 routing_keys:
-                  - 'srv.taskmanager.v1'
-            callback:         app_bundle.consumer.task_manager
+                  - 'srv.cmpmanager.v1'
+            callback:         app_bundle.consumer.campaign_manager
         posting_service:
             connection:       default
             exchange_options: {name: "prod-satteliter.ex.services", type: topic}

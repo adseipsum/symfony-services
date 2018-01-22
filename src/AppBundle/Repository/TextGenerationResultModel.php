@@ -16,7 +16,7 @@ class TextGenerationResultModel extends CbDirectKeyModel
 
     public function __construct(CouchbaseService $service)
     {
-        parent::__construct('tsk', 'TextGenerationResult', $service->getBucketForType('TextGenerationResult'));
+        parent::__construct('cmp', 'TextGenerationResult', $service->getBucketForType('TextGenerationResult'));
     }
 
     public function factory() : CbBaseObject

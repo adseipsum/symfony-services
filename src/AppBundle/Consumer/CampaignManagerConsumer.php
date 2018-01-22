@@ -7,7 +7,7 @@ use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
 
-class TaskManagerConsumer implements ConsumerInterface
+class CampaignManagerConsumer implements ConsumerInterface
 {
     private $container;
 
@@ -22,7 +22,7 @@ class TaskManagerConsumer implements ConsumerInterface
     public function execute(AMQPMessage $msg)
     {
         $cb = $this->container->get('couchbase.connector');
-        $amqp = $this->container->get('old_sound_rabbit_mq.task_manager_producer');
+        $amqp = $this->container->get('old_sound_rabbit_mq.campaign_manager_producer');
 
         $scheduler = new SchedulerServiceExtension($cb, $amqp);
 

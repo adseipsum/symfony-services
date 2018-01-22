@@ -2,12 +2,12 @@
 
 namespace AppBundle\Repository;
 
-use AppBundle\Entity\CbTask;
+use AppBundle\Entity\CbBlog;
 use CouchbaseBundle\Base\CbBaseModel;
 use CouchbaseBundle\CouchbaseService;
 use CouchbaseBundle\Base\CbBaseObject;
 
-class TaskModel extends CbBaseModel
+class BlogModel extends CbBaseModel
 {
 
     const VIEW_BY_STATUS = 'status';
@@ -15,20 +15,20 @@ class TaskModel extends CbBaseModel
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Views Section
-    const DISDOC_ID = "task";
+    const DISDOC_ID = "blog";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public function __construct(CouchbaseService $service)
     {
-        parent::__construct('task', 'Task', $service->getBucketForType('Task'));
+        parent::__construct('blog', 'Blog', $service->getBucketForType('Blog'));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public function factory() : CbBaseObject
     {
-        $ret = new CbTask();
+        $ret = new CbBlog();
         return $ret;
     }
 
@@ -39,12 +39,18 @@ class TaskModel extends CbBaseModel
         return self::DISDOC_ID;
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public function lockBlogForPosting(CbBlog $blogObject){
+        if($blogObject->getLocked()){
+            return false;
+        }
 
-    public function getTasksByStatus($status)
-    {
-        return $this->getObjectByView($status, self::VIEW_BY_STATUS, true);
+        if($blogObject->getLastPostDate()->getTimestamp() + $blogObject->getPostPeriodSeconds() > time()){
+            return false;
+        }
+
+        $blogObject->setLocked(true);
+        $this->upsert($blogObject);
+        return true;
     }
-
 
 }
