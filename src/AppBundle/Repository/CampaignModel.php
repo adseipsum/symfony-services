@@ -12,6 +12,7 @@ class CampaignModel extends CbBaseModel
 {
 
     const VIEW_BY_STATUS = 'status';
+    const PRE_GENERATED = 5;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -50,9 +51,9 @@ class CampaignModel extends CbBaseModel
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public function needsGeneration(CbCampaign $campaign){
-        $postingTasks = $campaign->getPostingTaskList();
+        $postingTasks = $campaign->getNewPostingTasks();
 
-        if($postingTasks && $campaign->getNeedPosts() <= count($postingTasks)){
+        if($postingTasks && count($postingTasks) > self::PRE_GENERATED){
             return false;
         }
 
