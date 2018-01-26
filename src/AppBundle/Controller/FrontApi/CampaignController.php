@@ -63,9 +63,7 @@ class CampaignController extends Controller
         try {
             $cb = $this->get('couchbase.connector');
             $model = new CampaignModel($cb);
-
             $arrayOfObjects = $model->getAllObjects();
-
             if ($arrayOfObjects != null){
 
                 $ret = [];

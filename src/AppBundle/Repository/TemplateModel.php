@@ -3,10 +3,10 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\CbTemplate;
-use CouchbaseBundle\Base\CbBaseObject;
-use Couchbase\Exception as CouchbaseException;
-use CouchbaseBundle\Base\CbBaseModel;
-use CouchbaseBundle\CouchbaseService;
+use Rbl\CouchbaseBundle\Base\CbBaseObject;
+use Rbl\Couchbase\Exception as CouchbaseException;
+use Rbl\CouchbaseBundle\Base\CbBaseModel;
+use Rbl\CouchbaseBundle\CouchbaseService;
 
 class TemplateModel extends CbBaseModel
 {

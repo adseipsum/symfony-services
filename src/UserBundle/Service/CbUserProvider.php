@@ -2,7 +2,7 @@
 
 namespace UserBundle\Service;
 
-use CouchbaseBundle\CouchbaseService;
+use Rbl\CouchbaseBundle\CouchbaseService;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;

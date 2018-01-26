@@ -71,9 +71,11 @@ swiftmailer:
 
 # Couchbase Configuration
 
-couchbase:
+rbl_couchbase:
     host: '%couchbase_uri%'
     password: '%couchbase_bucket_password%'
+    environment: '%couchbase_environment%'
+
 
 # FOS UserBundle Configuration
 

@@ -2,7 +2,7 @@
 
 namespace AppBundle\Entity;
 
-use CouchbaseBundle\Base\CbBaseObject;
+use Rbl\CouchbaseBundle\Base\CbBaseObject;
 
 class CbCampaign extends CbBaseObject
 {

@@ -2,7 +2,7 @@
 
 namespace UserBundle\Entity;
 
-use CouchbaseBundle\Base\CbBaseObject;
+use Rbl\CouchbaseBundle\Base\CbBaseObject;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\UserBundle\Model\GroupInterface;
 use FOS\UserBundle\Model\UserInterface as FOSUserInterface;

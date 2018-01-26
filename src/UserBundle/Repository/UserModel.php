@@ -2,8 +2,8 @@
 
 namespace UserBundle\Repository;
 
-use CouchbaseBundle\Base\CbDirectKeyModel;
-use CouchbaseBundle\CouchbaseService;
+use Rbl\CouchbaseBundle\Base\CbDirectKeyModel;
+use Rbl\CouchbaseBundle\CouchbaseService;
 use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use UserBundle\Entity\CbUser;
 

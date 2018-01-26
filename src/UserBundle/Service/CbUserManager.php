@@ -2,7 +2,7 @@
 
 namespace UserBundle\Service;
 
-use CouchbaseBundle\CouchbaseService;
+use Rbl\CouchbaseBundle\CouchbaseService;
 use FOS\UserBundle\Model\UserInterface;
 use FOS\UserBundle\Model\UserManager;
 use FOS\UserBundle\Util\CanonicalFieldsUpdater;

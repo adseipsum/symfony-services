@@ -1,7 +1,7 @@
 <?php
 namespace AppBundle\Extension;
 
-use CouchbaseBundle\CouchbaseService;
+use Rbl\CouchbaseBundle\CouchbaseService;
 use AppBundle\Entity\CbCampaign;
 use AppBundle\Repository\CampaignModel;
 

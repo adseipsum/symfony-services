@@ -3,9 +3,9 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\CbCampaign;
-use CouchbaseBundle\Base\CbBaseModel;
-use CouchbaseBundle\CouchbaseService;
-use CouchbaseBundle\Base\CbBaseObject;
+use Rbl\CouchbaseBundle\Base\CbBaseModel;
+use Rbl\CouchbaseBundle\CouchbaseService;
+use Rbl\CouchbaseBundle\Base\CbBaseObject;
 use AppBundle\Repository\BlogModel;
 
 class CampaignModel extends CbBaseModel

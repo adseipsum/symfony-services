@@ -3,11 +3,11 @@ namespace AppBundle\Extension;
 
 use AppBundle\Entity\CbBlog;
 use AppBundle\Entity\CbTextGenerationResult;
-use CouchbaseBundle\CouchbaseService;
+use Rbl\CouchbaseBundle\CouchbaseService;
 use AppBundle\Repository\BlogModel;
 use AppBundle\Repository\TextGenerationResultModel;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use Krombox\OAuth2\Client\Provider\Wordpress as Wordpress;
+use Krombox\OAuth2\Client\Provider\Wordpress;
 
 class PostingServiceExtension
 {
@@ -112,7 +112,6 @@ class PostingServiceExtension
         foreach($blogs as $blogId => $counter){
             $this->blogObject = $this->blogModel->get($blogId);
             if($this->blogObject && $this->blogModel->lockBlogForPosting($this->blogObject)){
-                var_dump($this->blogObject->getObjectId());
                 break;
             }else{
                 continue;

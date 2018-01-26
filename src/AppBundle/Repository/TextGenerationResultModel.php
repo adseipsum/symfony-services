@@ -3,10 +3,10 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\CbTextGenerationResult;
-use CouchbaseBundle\Base\CbBaseModel;
-use CouchbaseBundle\Base\CbDirectKeyModel;
-use CouchbaseBundle\CouchbaseService;
-use CouchbaseBundle\Base\CbBaseObject;
+use Rbl\CouchbaseBundle\Base\CbBaseModel;
+use Rbl\CouchbaseBundle\Base\CbDirectKeyModel;
+use Rbl\CouchbaseBundle\CouchbaseService;
+use Rbl\CouchbaseBundle\Base\CbBaseObject;
 
 class TextGenerationResultModel extends CbDirectKeyModel
 {
