@@ -36,7 +36,7 @@ class BlogController extends Controller
             $object->setClientId($data['clientId']);
             $object->setClientSecret($data['clientSecret']);
             $object->setPostPeriodSeconds($data['postPeriodSeconds']);
-            $object->setTags(array($data['tags']));
+            $object->setTags($this->multipleExplode(array(",",".","|",":"), $data['tags']));
             $object->setRecordCreated();
 
             $model->upsert($object);
@@ -122,6 +122,14 @@ class BlogController extends Controller
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
         }
+    }
+
+    private function multipleExplode($delimiters, $string) {
+
+        $ready = str_replace($delimiters, $delimiters[0], $string);
+        $exploded = explode($delimiters[0], $ready);
+        $trimmed = array_map('trim', $exploded);
+        return  $trimmed;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
