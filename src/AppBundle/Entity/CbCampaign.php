@@ -49,16 +49,16 @@ class CbCampaign extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function setDomainName(string $domainName)
+    public function setClientDomain(string $clientDomain)
     {
-        $this->set('domainName', $domainName);
+        $this->set('clientDomain', $clientDomain);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function getDomainName() : string
+    public function getClientDomain() : string
     {
-        return $this->get('domainName');
+        return $this->get('clientDomain');
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

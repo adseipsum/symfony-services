@@ -10,7 +10,7 @@ use Rbl\CouchbaseBundle\Base\CbBaseObject;
 class BlogModel extends CbBaseModel
 {
 
-    const VIEW_BY_STATUS = 'status';
+    const VIEW_BY_TAGS = 'tags';
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,6 +38,29 @@ class BlogModel extends CbBaseModel
     {
         return self::DISDOC_ID;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getBlogListByTags($tags)
+    {
+        $objectIds = $this->listObjectIdByViewKey(self::VIEW_BY_TAGS, $tags);
+        return $this->get(array_unique($objectIds));
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getBlogTags()
+    {
+        $blogObjects = $this->getAllObjects();
+        $tags = array();
+        if($blogObjects) foreach($blogObjects as $blog){
+            $tags = array_merge($tags, $blog->getTags());
+        }
+
+        return array_unique($tags);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public function lockBlogForPosting(CbBlog $blogObject){
         if($blogObject->getLocked()){

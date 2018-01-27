@@ -52,15 +52,23 @@ class BlogController extends Controller
     /**
      * @Route("/blog/list", name="frontapi_blog_list")
      * @Method("GET")
+     * @param Request $request
      * @return ApiResponse
      */
-    public function getBlogList()
+
+    public function getBlogList(Request $request)
     {
+        $tags = $request->query->get('tags');
+
         try {
             $cb = $this->get('couchbase.connector');
             $model = new BlogModel($cb);
 
-            $arrayOfObjects = $model->getAllObjects();
+            if(!$tags){
+                $arrayOfObjects = $model->getAllObjects();
+            }else{
+                $arrayOfObjects = $model->getBlogListByTags($tags);
+            }
 
             if ($arrayOfObjects != null){
 
@@ -82,6 +90,32 @@ class BlogController extends Controller
                 }
 
                 return ApiResponse::resultValue($ret);
+            } else {
+                return ApiResponse::resultNotFound();
+            }
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @Route("/blog/tags", name="frontapi_blog_tags")
+     * @Method("GET")
+     * @return ApiResponse
+     */
+
+    public function getBlogTags()
+    {
+        try {
+            $cb = $this->get('couchbase.connector');
+            $model = new BlogModel($cb);
+
+            $arrayOfObjects = $model->getBlogTags();
+
+            if ($arrayOfObjects != null){
+                return ApiResponse::resultValue($arrayOfObjects);
             } else {
                 return ApiResponse::resultNotFound();
             }

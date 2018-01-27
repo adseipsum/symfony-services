@@ -30,11 +30,11 @@ class CampaignController extends Controller
 
             $object = new CbCampaign();
             $object->setEnabled(true);
-            $object->setDomainName($data['domainName']);
+            $object->setClientDomain($data['clientDomain']);
             $object->setNeedPosts($data['needPosts']);
             $object->setAdditionalKeysPercentage($data['additionalKeysPercentage']);
             $object->setPostPeriodDays($data['postPeriodDays']);
-            $object->setBlogs(array('blog-1' => 0, 'blog-2' => 0));
+            $object->setBlogs($data['selectedBlogs']);
             $object->setPosted(0);
             $object->setCreated();
 
@@ -70,7 +70,7 @@ class CampaignController extends Controller
                 foreach($arrayOfObjects as $object) {
                     $ret[] = array(
                         'id' => $object->getObjectId(),
-                        'domainName' => $object->getDomainName(),
+                        'clientDomain' => $object->getClientDomain(),
                         'enabled' => $object->getEnabled(),
                         'status' => $object->getStatus(),
                         'needPosts' => $object->getNeedPosts(),
