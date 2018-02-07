@@ -7,7 +7,7 @@ use Rbl\CouchbaseBundle\Base\CbBaseObject;
 class CbCampaign extends CbBaseObject
 {
 
-    const STATUS_NEW = 'new';
+    const STATUS_READY = 'ready';
     const STATUS_PROCESSING = 'processing';
     const STATUS_COMPLETED = 'completed';
 
@@ -155,47 +155,6 @@ class CbCampaign extends CbBaseObject
     public function getPosted() : int
     {
         return $this->get('posted');
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public function setPostingTask(array $postingTask)
-    {
-        $postingTaskList = $this->getPostingTaskList();
-        $this->set('postingTaskList', array_merge($postingTaskList, $postingTask));
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public function updatePostingTask(string $postingTask, $status)
-    {
-        $postingTaskList = $this->getPostingTaskList();
-        $postingTaskList[$postingTask] = $status;
-        $this->set('postingTaskList', $postingTaskList);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public function getNewPostingTasks() : array
-    {
-        $postingTaskList = $this->getPostingTaskList();
-        $newPostingTasks = array();
-
-        if($postingTaskList){
-            foreach($postingTaskList as $task => $status){
-                if($status == 0) {
-                    $newPostingTasks[$task] = $status;
-                }
-            }
-        }
-        return $newPostingTasks;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public function getPostingTaskList() : array
-    {
-        return $this->get('postingTaskList') ? $this->get('postingTaskList') : array();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -2,12 +2,12 @@
 
 namespace AppBundle\Consumer;
 
-use AppBundle\Extension\CampaignManagerServiceExtension;
+use AppBundle\Extension\ImagePostingServiceExtension;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
 
-class CampaignManagerConsumer implements ConsumerInterface
+class ImagePostingServiceConsumer implements ConsumerInterface
 {
     private $container;
 
@@ -22,10 +22,10 @@ class CampaignManagerConsumer implements ConsumerInterface
     public function execute(AMQPMessage $msg)
     {
         $cb = $this->container->get('couchbase.connector');
-        $amqp = $this->container->get('old_sound_rabbit_mq.campaign_manager_service_producer');
+        $amqp = $this->container->get('old_sound_rabbit_mq.image_posting_service_producer');
 
-        $campaignManager = new CampaignManagerServiceExtension($cb, $amqp);
+        $imagePostingService = new ImagePostingServiceExtension($cb, $amqp);
 
-        $campaignManager->processMessage($msg);
+        $imagePostingService->processMessage($msg);
     }
 }

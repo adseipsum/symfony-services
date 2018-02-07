@@ -2,34 +2,30 @@
 
 namespace AppBundle\Repository;
 
-use AppBundle\Entity\CbCampaign;
+use AppBundle\Entity\CbTask;
 use Rbl\CouchbaseBundle\Base\CbBaseModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
 use Rbl\CouchbaseBundle\Base\CbBaseObject;
-use AppBundle\Repository\BlogModel;
 
-class CampaignModel extends CbBaseModel
+class TaskModel extends CbBaseModel
 {
-
-    const VIEW_BY_STATUS = 'status';
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Views Section
-    const DISDOC_ID = "campaign";
+    const DISDOC_ID = "task";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public function __construct(CouchbaseService $service)
     {
-        parent::__construct('campaign', 'Campaign', $service->getBucketForType('Campaign'));
+        parent::__construct('task', 'Task', $service->getBucketForType('Task'));
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public function factory() : CbBaseObject
     {
-        $ret = new CbCampaign();
+        $ret = new CbTask();
         return $ret;
     }
 
@@ -42,27 +38,32 @@ class CampaignModel extends CbBaseModel
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function getCampaignsByStatus($status)
-    {
-        return $this->getObjectByView($status, self::VIEW_BY_STATUS);
+    public function createTask($blogId, $campaignId){
+        $task = new CbTask();
+        $task->setBlogId($blogId);
+        $task->setCampaignId($campaignId);
+        $task->setStatus(CbTask::STATUS_NEW);
+        $this->upsert($task);
+
+        return $task->getObjectId();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function calculateNextPostTime(CbCampaign $campaign)
-    {
-        $startDate = new \DateTime();
-        $endDate = $campaign->getCreated()->modify("+{$campaign->getPostPeriodDays()} day");
+    public function updateTask($taskId, $array){
+        $task = $this->get($taskId);
 
-        $timeLeft = $endDate->getTimestamp() - $startDate->getTimestamp();
-        $postsLeft = $campaign->getNeedPosts() - $campaign->getPosted();
+        if($task && $array){
+            foreach($array as $method => $value){
+                if(is_callable(array($task, $method))){
+                    $task->$method($value);
+                }
+            }
 
-        $postingPeriod = $postsLeft ? ceil($timeLeft / $postsLeft) : 0;
+            $this->upsert($task);
+            return true;
+        }
 
-        $nextPostTime = new \DateTime();
-        $nextPostTime->modify("+{$postingPeriod} seconds");
-        return $nextPostTime;
+        return false;
     }
-
-
 }

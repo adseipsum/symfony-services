@@ -100,23 +100,35 @@ old_sound_rabbit_mq:
             vhost:    "%amqp_vhost%"
             lazy:     false
     producers:
-        campaign_manager:
+        campaign_scheduler:
             connection:       default
             exchange_options: {name: "prod-satteliter.ex.services", type: topic}
-            service_alias:    campaign_manager_producer
+            service_alias:    campaign_scheduler_producer
         posting_service:
             connection:       default
             exchange_options: {name: "prod-satteliter.ex.services", type: topic}
             service_alias:    posting_service_producer
+        image_posting_service:
+            connection:       default
+            exchange_options: {name: "prod-satteliter.ex.services", type: topic}
+            service_alias:    image_posting_service_producer
+        post_manager_service:
+            connection:       default
+            exchange_options: {name: "prod-satteliter.ex.services", type: topic}
+            service_alias:    post_manager_service_producer
+        campaign_manager_service:
+            connection:       default
+            exchange_options: {name: "prod-satteliter.ex.services", type: topic}
+            service_alias:    campaign_manager_service_producer
     consumers:
-        campaign_manager:
+        campaign_manager_service:
             connection:       default
             exchange_options: {name: "prod-satteliter.ex.services", type: topic}
             queue_options:
                 name: 'prod-satteliter.q.srv-cmpmanager.v1'
                 routing_keys:
                   - 'srv.cmpmanager.v1'
-            callback:         app_bundle.consumer.campaign_manager
+            callback:         app_bundle.consumer.campaign_manager_service
         posting_service:
             connection:       default
             exchange_options: {name: "prod-satteliter.ex.services", type: topic}
@@ -125,4 +137,20 @@ old_sound_rabbit_mq:
                 routing_keys:
                   - 'srv.posting.v1'
             callback:         app_bundle.consumer.posting_service
+        image_posting_service:
+            connection:       default
+            exchange_options: {name: "prod-satteliter.ex.services", type: topic}
+            queue_options:
+                name: 'prod-satteliter.q.srv-imgposting.v1'
+                routing_keys:
+                  - 'srv.imgposting.v1'
+            callback:         app_bundle.consumer.image_posting_service
+        post_manager_service:
+            connection:       default
+            exchange_options: {name: "prod-satteliter.ex.services", type: topic}
+            queue_options:
+                name: 'prod-satteliter.q.srv-postmanager.v1'
+                routing_keys:
+                  - 'srv.postmanager.v1'
+            callback:         app_bundle.consumer.post_manager_service
 

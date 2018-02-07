@@ -42,10 +42,18 @@ services:
             class: UserBundle\Service\CbUserManager
             arguments: ["@couchbase.connector",'@security.encoder_factory']
 
-    app_bundle.consumer.campaign_manager:
+    app_bundle.consumer.campaign_manager_service:
             class: AppBundle\Consumer\CampaignManagerConsumer
             arguments: ['@service_container']
 
+    app_bundle.consumer.post_manager_service:
+            class: AppBundle\Consumer\PostManagerServiceConsumer
+            arguments: ['@service_container']
+
     app_bundle.consumer.posting_service:
-                class: AppBundle\Consumer\PostingServiceConsumer
+            class: AppBundle\Consumer\PostingServiceConsumer
+            arguments: ['@service_container']
+
+    app_bundle.consumer.image_posting_service:
+                class: AppBundle\Consumer\ImagePostingServiceConsumer
                 arguments: ['@service_container']

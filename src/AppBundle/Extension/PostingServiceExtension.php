@@ -1,30 +1,25 @@
 <?php
 namespace AppBundle\Extension;
 
+use AppBundle\Entity\CbTask;
+use AppBundle\Repository\TaskModel;
 use AppBundle\Entity\CbBlog;
-use AppBundle\Entity\CbTextGenerationResult;
-use Rbl\CouchbaseBundle\CouchbaseService;
 use AppBundle\Repository\BlogModel;
+use AppBundle\Entity\CbTextGenerationResult;
 use AppBundle\Repository\TextGenerationResultModel;
+use Rbl\CouchbaseBundle\CouchbaseService;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Krombox\OAuth2\Client\Provider\Wordpress;
 
 class PostingServiceExtension
 {
     protected $cb;
-    protected $blogModel;
+    protected $taskModel;
+    protected $taskObject;
     protected $textModel;
-    protected $blogObject;
-    protected $textObject;
+    protected $blogModel;
 
-    protected $responceRoutingKey;
-
-    const THIS_SERVICE_KEY = 'post';
-    const CAMPAIGN_SERVICE_KEY = 'cmp';
-
-    const MESSAGE_GENERATION_KEY = 'generation';
-    const MESSAGE_POSTED_KEY = 'posted';
-
+    const THIS_SERVICE_KEY = 'pst';
 
     const WP_RESOURCE_PATH = '/wp-json/wp/v2/posts/';
     const WP_BACKLINK = 'oob';
@@ -32,9 +27,8 @@ class PostingServiceExtension
     public function __construct(CouchbaseService $cb, $amqp)
     {
         $this->cb = $cb;
-
+        $this->taskModel = new TaskModel($this->cb);
         $this->blogModel = new BlogModel($this->cb);
-
         $this->textModel = new TextGenerationResultModel($this->cb);
         $this->textModel->setBucket($this->cb->getBucketForType('TextGenerationResult'));
 
@@ -42,33 +36,38 @@ class PostingServiceExtension
     }
 
     /**
-     * @param CbBlog $blogObject
-     * @param CbTextGenerationResult $textObject
      * @return bool
      */
     public function postToBlog(){
+
+        $blogObject = $this->blogModel->get($this->taskObject->getBlogId());
+        $bodyObject = $this->textModel->getSingle($this->taskObject->getBodyId());
+        $headerObject = $this->textModel->getSingle($this->taskObject->getHeaderId());
+        $seoTitleObject = $this->textModel->getSingle($this->taskObject->getSeoTitleId());
+
         $WPRequestBody = array(
-            'title' => 'test post',
-            'content' => $this->textObject->getText(),
-            'status' => 'draft',
+            'title' => $headerObject->getText(),
+            'content' => $bodyObject->getText(),
+            'status' => 'publish',
             'type' => 'post',
+            //'featured_media' => $this->taskObject->getImageId(),
             'meta' => array(
-                'og:description' => 'test desriptions',
-                'og:title' => 'test title'
+                'description' => 'test descriptions',
+                'title' => $seoTitleObject->getText()
             )
         );
 
         $provider = new Wordpress([
-            'clientId'                => $this->blogObject->getClientId(),
-            'clientSecret'            => $this->blogObject->getClientSecret(),
+            'clientId'                => $blogObject->getClientId(),
+            'clientSecret'            => $blogObject->getClientSecret(),
             'redirectUri'             => self::WP_BACKLINK,
-            'domain'                  => $this->blogObject->getDomainName()
+            'domain'                  => $blogObject->getDomainName()
         ]);
 
         try {
             $accessToken = $provider->getAccessToken('password', [
-                'username' => $this->blogObject->getPostingUserLogin(),
-                'password' => $this->blogObject->getPostingUserPassword()
+                'username' => $blogObject->getPostingUserLogin(),
+                'password' => $blogObject->getPostingUserPassword()
             ]);
 
             $body['action'] = 'write';
@@ -78,21 +77,25 @@ class PostingServiceExtension
 
             $request = $provider->getAuthenticatedRequest(
                 'POST',
-                $this->blogObject->getDomainName() . self::WP_RESOURCE_PATH,
+                $blogObject->getDomainName() . self::WP_RESOURCE_PATH,
                 $accessToken->getToken(),
                 $options
             );
             $response = $provider->getResponse($request);
 
             if(!isset($response['code'])){
-                $this->blogObject->setLastPostDate(new \DateTime);
-                return true;
+                $blogObject->setLastPostDate(new \DateTime);
             }else{
-                $this->blogObject->setLastErrorMessage($response['code']);
+                $blogObject->setLastErrorMessage($response['code']);
             }
 
+            $blogObject->setLocked(false);
+            $this->blogModel->upsert($blogObject);
+
+            return true;
+
         } catch (IdentityProviderException $e) {
-            $this->blogObject->setLastErrorMessage($e->getMessage());
+            echo $e->getMessage();
         }
 
         return false;
@@ -104,46 +107,28 @@ class PostingServiceExtension
      */
     public function processMessage($msg){
         $message = json_decode($msg->getBody());
-        $this->responceRoutingKey = $message->responceRoutingKey;
+        $idString = explode('::', $message->taskId);
+        $taskId = $idString[1];
 
-        //select available for posting, not locked blog with lowest post value
-        $blogs = (array) $message->blogs;
-        asort($blogs);
-        foreach($blogs as $blogId => $counter){
-            $this->blogObject = $this->blogModel->get($blogId);
-            if($this->blogObject && $this->blogModel->lockBlogForPosting($this->blogObject)){
-                break;
-            }else{
-                continue;
+        $this->taskObject = $this->taskModel->get($taskId);
+
+        if($this->taskObject){
+            if($this->postToBlog()) {
+                $this->sendCompletePostingMessage($this->taskObject->getObjectId(), $message->responseRoutingKey);
             }
-        }
-
-        $textId = implode('::', array($message->taskId, self::MESSAGE_GENERATION_KEY));
-        $this->textObject = $this->textModel->getSingle($textId);
-
-        if($this->blogObject && $this->textObject){
-            if($this->postToBlog()){
-                $this->sendCompletePostingMessage($message->taskId);
-            }
-
-            $this->blogObject->setLocked(false);
-            $this->blogModel->upsert($this->blogObject);
         }
     }
 
     /**
-     * @param string $blogId
      * @param string $taskId
      * @return void
      */
-    private function sendCompletePostingMessage($taskId){
-
+    private function sendCompletePostingMessage($taskId, $responseRoutingKey){
         $msg = array(
-            'taskId' => implode( '::', array(self::CAMPAIGN_SERVICE_KEY, self::MESSAGE_POSTED_KEY)),
-            'resultKey' => implode( '::', array($taskId, self::MESSAGE_POSTED_KEY)),
-            'blogId' => $this->blogObject->getObjectId()
+            'taskId' => implode( '::', array(self::THIS_SERVICE_KEY, $taskId, CbTask::STATUS_TEXT_POST)),
         );
-        $this->amqp->publish(json_encode($msg), $this->responceRoutingKey);
+
+        $this->amqp->publish(json_encode($msg), $responseRoutingKey);
     }
 
 }

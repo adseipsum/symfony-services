@@ -2,12 +2,13 @@
 
 namespace AppBundle\Consumer;
 
-use AppBundle\Extension\CampaignManagerServiceExtension;
+use AppBundle\Extension\PostManagerServiceExtension;
+use AppBundle\Extension\SchedulerServiceExtension;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
 
-class CampaignManagerConsumer implements ConsumerInterface
+class PostManagerServiceConsumer implements ConsumerInterface
 {
     private $container;
 
@@ -22,10 +23,10 @@ class CampaignManagerConsumer implements ConsumerInterface
     public function execute(AMQPMessage $msg)
     {
         $cb = $this->container->get('couchbase.connector');
-        $amqp = $this->container->get('old_sound_rabbit_mq.campaign_manager_service_producer');
+        $amqp = $this->container->get('old_sound_rabbit_mq.post_manager_service_producer');
 
-        $campaignManager = new CampaignManagerServiceExtension($cb, $amqp);
+        $postManager = new PostManagerServiceExtension($cb, $amqp);
 
-        $campaignManager->processMessage($msg);
+        $postManager->processMessage($msg);
     }
 }
