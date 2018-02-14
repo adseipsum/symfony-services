@@ -61,6 +61,7 @@ class CampaignModel extends CbBaseModel
 
         $nextPostTime = new \DateTime();
         $nextPostTime->modify("+{$postingPeriod} seconds");
+
         return $nextPostTime;
     }
 

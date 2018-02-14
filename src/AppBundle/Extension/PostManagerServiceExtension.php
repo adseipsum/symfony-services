@@ -16,7 +16,7 @@ class PostManagerServiceExtension
 
     const THIS_SERVICE_KEY = 'pms';
     const TEXT_GENERATION_ROUTING_KEY = 'prod-satteliter.q.srv-txtgen.v2';
-    //const TEXT_DPN_GENERATION_ROUTING_KEY = 'srv.txtgendpn.v1';
+    const TEXT_DPN_GENERATION_ROUTING_KEY = 'prod-satteliter.q.srv-txtderr.v1';
     const IMAGE_POSTING_SERVICE_ROUTING_KEY = 'srv.imgposting.v1';
     const POSTING_SERVICE_ROUTING_KEY = 'srv.posting.v1';
     const CAMPAIGN_MANAGER_SERVICE_ROUTING_KEY = 'srv.cmpmanager.v1';
@@ -45,11 +45,10 @@ class PostManagerServiceExtension
         echo "received message: \n";
         var_dump($message);
 
-//        $this->sendMessage(self::IMAGE_POSTING_SERVICE_ROUTING_KEY, $taskId);
-//        die;
-
         switch($statusKey){
             case CbTask::STATUS_NEW:
+                $textConfig['paragraph'] = 'true';
+                $textConfig['paragraphSize'] = array(150, 200);
                 $textConfig['type'] = 'random';
                 $textConfig['size'] = '1500';
                 //send message to generate text
@@ -72,15 +71,30 @@ class PostManagerServiceExtension
                 break;
             case CbTask::STATUS_SEO_TITLE_GEN:
                 $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_SEO_TITLE_GEN, 'setSeoTitleId' => $message->resultKey));
-                //send message to image posting service
-                $this->sendMessage(self::POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_TEXT_POST);
-                //$this->sendMessage(self::IMAGE_POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_IMAGE_POST);
+                $textConfig['type'] = 'description';
+                $taskObject = $this->taskModel->get($taskId);
+                $textConfig['inputTextId'] = $taskObject->getBodyId();
+                $textConfig['size'] = '160';
+                $this->sendMessage(self::TEXT_DPN_GENERATION_ROUTING_KEY, $taskId,CbTask::STATUS_SEO_DESCRIPTION_GEN, $textConfig);
                 break;
-//            case CbTask::STATUS_IMAGE_POST:
-//                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_IMAGE_POST, 'setImageId' => $message->imageId));
-//                //send message to posting service
-//                $this->sendMessage(self::POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_TEXT_POST);
-//                break;
+            case CbTask::STATUS_SEO_DESCRIPTION_GEN:
+                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_SEO_DESCRIPTION_GEN, 'setSeoDescriptionId' => $message->resultKey));
+                $textConfig['type'] = 'imagealt';
+                $taskObject = $this->taskModel->get($taskId);
+                $textConfig['inputTextId'] = $taskObject->getBodyId();
+                $textConfig['size'] = '160';
+                $this->sendMessage(self::TEXT_DPN_GENERATION_ROUTING_KEY, $taskId,CbTask::STATUS_IMAGE_ALT_GEN, $textConfig);
+                break;
+            case CbTask::STATUS_IMAGE_ALT_GEN:
+                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_IMAGE_ALT_GEN, 'setImageAltId' => $message->resultKey));
+                //send message to image posting service
+                $this->sendMessage(self::IMAGE_POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_IMAGE_POST);
+                break;
+            case CbTask::STATUS_IMAGE_POST:
+                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_IMAGE_POST, 'setImageId' => $message->imageId));
+                //send message to posting service
+                $this->sendMessage(self::POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_TEXT_POST);
+                break;
             case CbTask::STATUS_TEXT_POST:
                 $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_COMPLETED));
                 //send message to Campaign Manager

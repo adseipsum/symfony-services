@@ -161,6 +161,17 @@ class CbCampaign extends CbBaseObject
 
     public function setBlogs(array $blogs)
     {
+        $resultBlogs = array();
+        if($blogs) foreach($blogs as $blog){
+            $resultBlogs[$blog] = 0;
+        }
+        $this->set('blogs', $blogs);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function updateBlogs(array $blogs)
+    {
         $this->set('blogs', $blogs);
     }
 
@@ -189,7 +200,7 @@ class CbCampaign extends CbBaseObject
         if(isset($blogs[$blogId])) {
             $blogs[$blogId]++;
         }
-        $this->setBlogs($blogs);
+        $this->updateBlogs($blogs);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -38,11 +38,9 @@ class CampaignController extends Controller
             $object->setPosted(0);
             $object->setCreated();
 
-            $object->setStatus(CbCampaign::STATUS_PROCESSING);
-            $nextPostTime = new \DateTime();
-            $nextPostTime->modify("+60 seconds");
-            $object->setNextPostTime($nextPostTime);
-            //$object->setNextPostTime($model->calculateNextPostTime($object));
+            $object->setStatus(CbCampaign::STATUS_READY);
+            $object->setNextPostTime($model->calculateNextPostTime($object));
+
             $model->upsert($object);
 
             return ApiResponse::resultValues(true);
@@ -76,7 +74,7 @@ class CampaignController extends Controller
                         'needPosts' => $object->getNeedPosts(),
                         'additionalKeysPercentage' => $object->getAdditionalKeysPercentage(),
                         'postPeriodDays' => $object->getPostPeriodDays(),
-                        'nextPostTime' => $object->getNextPostTime()->format('Y-m-d h:m:s'),
+                        'nextPostTime' => $object->getNextPostTime()->format('Y-m-d h:i:s'),
                         'posted' => $object->getPosted(),
                         'created' => $object->getCreated()->format('Y-m-d')
                     );

@@ -33,8 +33,7 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
         try {
             $cb = $this->getContainer()->get('couchbase.connector');
             $amqp = $this->getContainer()->get('old_sound_rabbit_mq.campaign_scheduler_producer');
-            $model = new BlogModel($cb);
-            var_dump($model); die;
+
             $campaignModel = new CampaignModel($cb);
             $campaignObject = $campaignModel->getCampaignsByStatus(CbCampaign::STATUS_READY);
 
@@ -49,7 +48,6 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
 
                 //make sure we will start from blogs with lesser amount of posts
                 asort($blogs);
-                var_dump($blogs);
                 foreach($blogs as $blogId => $counter){
                     $blogObject = $blogModel->get($blogId);
                     if($blogObject && $blogModel->lockBlogForPosting($blogObject)){
@@ -63,10 +61,9 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
                     $output->writeln('No blogs ready for posting for campaign ' . $campaignObject->getObjectId());
                     return false;
                 }
-                var_dump($blogObject->getObjectId());
+
                 $taskModel = new TaskModel($cb);
                 $taskId = $taskModel->createTask($blogObject->getObjectId(), $campaignObject->getObjectId());
-                //$taskId = $taskModel->createTask('blog-2', $campaignObject->getObjectId());
 
                 $generatedTaskId = implode('::', array(self::THIS_SERVICE_KEY, $taskId, CbTask::STATUS_NEW));
 
@@ -79,6 +76,7 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
                 $amqp->publish(json_encode($msg), self::POST_MANAGER_ROUTING_KEY);
 
                 $campaignObject->setStatus(CbCampaign::STATUS_PROCESSING);
+                $campaignModel->upsert($campaignObject);
             }
 
             $output->writeln($campaignObject->getObjectId() . ' processed');

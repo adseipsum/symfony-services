@@ -73,7 +73,6 @@ class BlogModel extends CbBaseModel
 
         $blogObject->setLocked(true);
         $this->upsert($blogObject);
-
         return true;
     }
 

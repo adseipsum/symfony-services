@@ -8,12 +8,15 @@ class CbTask extends CbBaseObject
 {
 
     const STATUS_NEW = 'new';
-    const STATUS_BODY_GEN = 'bodygen';
-    const STATUS_HEADER_GEN = 'headergen';
-    const STATUS_SEO_TITLE_GEN = 'seotitlegen';
-    const STATUS_IMAGE_POST = 'imgpost';
-    const STATUS_TEXT_POST = 'textpost';
+    const STATUS_BODY_GEN = 'body-gen';
+    const STATUS_HEADER_GEN = 'header-gen';
+    const STATUS_SEO_TITLE_GEN = 'seo-title-gen';
+    const STATUS_SEO_DESCRIPTION_GEN = 'seo-description-gen';
+    const STATUS_IMAGE_ALT_GEN = 'image-alt-gen';
+    const STATUS_IMAGE_POST = 'img-post';
+    const STATUS_TEXT_POST = 'text-post';
     const STATUS_COMPLETED = 'completed';
+    const STATUS_FAILED = 'failed';
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,6 +113,20 @@ class CbTask extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public function setSeoDescriptionId(string $seoDescriptionId)
+    {
+        $this->set('seoDescriptionId', $seoDescriptionId);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getSeoDescriptionId() : string
+    {
+        return $this->get('seoDescriptionId');
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public function setImageId(string $setImageId)
     {
         $this->set('setImageId', $setImageId);
@@ -120,6 +137,20 @@ class CbTask extends CbBaseObject
     public function getImageId() : string
     {
         return $this->get('setImageId');
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setImageAltId(string $imageAltId)
+    {
+        $this->set('imageAltId', $imageAltId);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getImageAltId() : string
+    {
+        return $this->get('imageAltId');
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

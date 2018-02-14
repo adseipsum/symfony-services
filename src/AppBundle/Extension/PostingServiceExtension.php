@@ -3,9 +3,7 @@ namespace AppBundle\Extension;
 
 use AppBundle\Entity\CbTask;
 use AppBundle\Repository\TaskModel;
-use AppBundle\Entity\CbBlog;
 use AppBundle\Repository\BlogModel;
-use AppBundle\Entity\CbTextGenerationResult;
 use AppBundle\Repository\TextGenerationResultModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -20,8 +18,10 @@ class PostingServiceExtension
     protected $blogModel;
 
     const THIS_SERVICE_KEY = 'pst';
+    const CAMPAIGN_MANAGER_ROUTING_KEY = 'srv.cmpmanager.v1';
 
-    const WP_RESOURCE_PATH = '/wp-json/wp/v2/posts/';
+    const WP_POSTS_PATH = '/wp-json/wp/v2/posts/';
+    const WP_MEDIA_PATH = '/wp-json/wp/v2/media/';
     const WP_BACKLINK = 'oob';
 
     public function __construct(CouchbaseService $cb, $amqp)
@@ -44,16 +44,17 @@ class PostingServiceExtension
         $bodyObject = $this->textModel->getSingle($this->taskObject->getBodyId());
         $headerObject = $this->textModel->getSingle($this->taskObject->getHeaderId());
         $seoTitleObject = $this->textModel->getSingle($this->taskObject->getSeoTitleId());
+        $seoDescriptionObject = $this->textModel->getSingle($this->taskObject->getSeoDescriptionId());
 
         $WPRequestBody = array(
             'title' => $headerObject->getText(),
             'content' => $bodyObject->getText(),
-            'status' => 'publish',
+            'status' => 'draft',
             'type' => 'post',
-            //'featured_media' => $this->taskObject->getImageId(),
+            'featured_media' => $this->taskObject->getImageId(),
             'meta' => array(
-                'description' => 'test descriptions',
-                'title' => $seoTitleObject->getText()
+                'og:description' => $seoDescriptionObject->getText(),
+                'og:title' => $seoTitleObject->getText()
             )
         );
 
@@ -70,17 +71,17 @@ class PostingServiceExtension
                 'password' => $blogObject->getPostingUserPassword()
             ]);
 
-            $body['action'] = 'write';
             $options['body'] = json_encode($WPRequestBody);
             $options['headers']['Content-Type'] = 'application/json;charset=UTF-8';
             $options['headers']['access_token'] = $accessToken->getToken();
 
             $request = $provider->getAuthenticatedRequest(
                 'POST',
-                $blogObject->getDomainName() . self::WP_RESOURCE_PATH,
+                $blogObject->getDomainName() . self::WP_POSTS_PATH,
                 $accessToken->getToken(),
                 $options
             );
+
             $response = $provider->getResponse($request);
 
             if(!isset($response['code'])){
@@ -89,10 +90,46 @@ class PostingServiceExtension
                 $blogObject->setLastErrorMessage($response['code']);
             }
 
-            $blogObject->setLocked(false);
-            $this->blogModel->upsert($blogObject);
+            if($this->updateMedia($provider, $accessToken)){
+                return true;
+            }
 
-            return true;
+        } catch (IdentityProviderException $e) {
+            echo $e->getMessage();
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function updateMedia($provider, $accessToken){
+
+        $blogObject = $this->blogModel->get($this->taskObject->getBlogId());
+        $imageAlt = $this->textModel->getSingle($this->taskObject->getImageAltId());
+
+        $WPRequestBody = array(
+            'alt_text' => $imageAlt->getText()
+        );
+
+        try {
+            $options['body'] = json_encode($WPRequestBody);
+            $options['headers']['Content-Type'] = 'application/json;charset=UTF-8';
+            $options['headers']['access_token'] = $accessToken->getToken();
+
+            $request = $provider->getAuthenticatedRequest(
+                'POST',
+                $blogObject->getDomainName() . self::WP_MEDIA_PATH .  $this->taskObject->getImageId(),
+                $accessToken->getToken(),
+                $options
+            );
+
+            $response = $provider->getResponse($request);
+
+            if(isset($response['id'])){
+                return true;
+            }
 
         } catch (IdentityProviderException $e) {
             echo $e->getMessage();
@@ -115,6 +152,9 @@ class PostingServiceExtension
         if($this->taskObject){
             if($this->postToBlog()) {
                 $this->sendCompletePostingMessage($this->taskObject->getObjectId(), $message->responseRoutingKey);
+            }else{
+                $msg = array('taskId' => implode( '::', array(self::THIS_SERVICE_KEY, $this->taskObject->getObjectId(), CbTask::STATUS_FAILED)));
+                $this->amqp->publish(json_encode($msg), self::CAMPAIGN_MANAGER_ROUTING_KEY);
             }
         }
     }

@@ -18,6 +18,7 @@ class ImagePostingServiceExtension
     protected $blogObject;
 
     const THIS_SERVICE_KEY = 'pst';
+    const CAMPAIGN_MANAGER_ROUTING_KEY = 'srv.cmpmanager.v1';
 
     const WP_RESOURCE_PATH = '/wp-json/wp/v2/media/';
     const WP_BACKLINK = 'oob';
@@ -28,65 +29,6 @@ class ImagePostingServiceExtension
         $this->taskModel = new TaskModel($this->cb);
         $this->blogModel = new BlogModel($this->cb);
         $this->amqp = $amqp;
-    }
-
-    /**
-     * @return bool
-     */
-    public function postToBlog(){
-
-        $WPRequestBody = array(
-            'title' => 'test post',
-            'content' => 'test text',
-            'status' => 'draft',
-            'type' => 'post',
-            'meta' => array(
-                'og:description' => 'test descriptions',
-                'og:title' => 'test title'
-            )
-        );
-
-        $provider = new Wordpress([
-            'clientId'                => $this->blogObject->getClientId(),
-            'clientSecret'            => $this->blogObject->getClientSecret(),
-            'redirectUri'             => self::WP_BACKLINK,
-            'domain'                  => $this->blogObject->getDomainName()
-        ]);
-
-        try {
-            $accessToken = $provider->getAccessToken('password', [
-                'username' => $this->blogObject->getPostingUserLogin(),
-                'password' => $this->blogObject->getPostingUserPassword()
-            ]);
-
-            $body['action'] = 'write';
-            $options['body'] = json_encode($WPRequestBody);
-            $options['headers']['Content-Type'] = 'application/json;charset=UTF-8';
-            $options['headers']['access_token'] = $accessToken->getToken();
-
-            $request = $provider->getAuthenticatedRequest(
-                'POST',
-                $this->blogObject->getDomainName() . self::WP_RESOURCE_PATH,
-                $accessToken->getToken(),
-                $options
-            );
-            $response = $provider->getResponse($request);
-
-            if(!isset($response['code'])){
-                $this->blogObject->setLastPostDate(new \DateTime);
-            }else{
-                $this->blogObject->setLastErrorMessage($response['code']);
-            }
-
-            $this->blogModel->upsert($this->blogObject);
-
-            return true;
-
-        } catch (IdentityProviderException $e) {
-            echo $e->getMessage();
-        }
-
-        return false;
     }
 
     /**
@@ -107,19 +49,7 @@ class ImagePostingServiceExtension
                 'password' => $this->blogObject->getPostingUserPassword()
             ]);
 
-            //$file = file_get_contents( getcwd() . '/logo.png' );
-//            $handle                    = fopen(getcwd() . '/logo.png', 'r');
-//            $fdata                     = fread($handle, filesize(getcwd() . '/logo.png'));
-            //$options['body'] = $file;
             $options['body'] = file_get_contents(getcwd() . '/colorful-pills-650.jpg');
-
-//                array(
-//                    'name'     => 'file',
-//                    'contents' => $fdata,
-//                    'filename' => getcwd() . '/logo.png',
-//            );
-            //$options['headers']['cache-control'] = 'no-cache';
-
             $options['headers']['content-type'] = 'image/jpg';
             $options['headers']['content-disposition'] = 'attachment; filename="' . getcwd() . '/colorful-pills-650.jpg"' ;
             $options['headers']['access_token'] = $accessToken->getToken();
@@ -155,16 +85,23 @@ class ImagePostingServiceExtension
      */
     public function processMessage($msg){
         $message = json_decode($msg->getBody());
+
+        echo "received message: \n";
+        var_dump($message);
+
         $idString = explode('::', $message->taskId);
         $taskId = $idString[1];
 
         $this->taskObject = $this->taskModel->get($taskId);
 
         if($this->taskObject){
-            $this->blogObject = $this->blogModel->get('blog-2');
+            $this->blogObject = $this->blogModel->get($this->taskObject->getBlogId());
             $imageId = $this->postImageToBlog();
             if($imageId) {
                 $this->sendCompleteImagePostingMessage($this->taskObject->getObjectId(), $imageId, $message->responseRoutingKey);
+            }else{
+                $msg = array('taskId' => implode( '::', array(self::THIS_SERVICE_KEY, $this->taskObject->getObjectId(), CbTask::STATUS_FAILED)));
+                $this->amqp->publish(json_encode($msg), self::CAMPAIGN_MANAGER_ROUTING_KEY);
             }
         }
     }
@@ -178,6 +115,10 @@ class ImagePostingServiceExtension
             'taskId' => implode( '::', array(self::THIS_SERVICE_KEY, $taskId, CbTask::STATUS_IMAGE_POST)),
             'imageId' => $imageId
         );
+
+        echo "send message: \n";
+        var_dump($responseRoutingKey);
+        var_dump($msg);
 
         $this->amqp->publish(json_encode($msg), $responseRoutingKey);
     }

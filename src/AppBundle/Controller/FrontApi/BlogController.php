@@ -60,9 +60,10 @@ class BlogController extends Controller
     {
         $tags = $request->query->get('tags');
 
+        $cb = $this->get('couchbase.connector');
+        $model = new BlogModel($cb);
+
         try {
-            $cb = $this->get('couchbase.connector');
-            $model = new BlogModel($cb);
 
             if(!$tags){
                 $arrayOfObjects = $model->getAllObjects();
