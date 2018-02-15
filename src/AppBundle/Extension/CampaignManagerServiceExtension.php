@@ -3,6 +3,7 @@ namespace AppBundle\Extension;
 
 use AppBundle\Entity\CbTask;
 use AppBundle\Repository\TaskModel;
+use AppBundle\Repository\BlogModel;
 use AppBundle\Entity\CbCampaign;
 use AppBundle\Repository\CampaignModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
@@ -58,7 +59,7 @@ class CampaignManagerServiceExtension
             $campaignObject->incrementPostsForBlog($taskObject->getBlogId());
         }elseif($status == CbTask::STATUS_FAILED){
 
-            $taskObject->setStatus(Cb::STATUS_FAILED);
+            $taskObject->setStatus(CbTask::STATUS_FAILED);
             $this->taskModel->upsert($taskObject);
 
             $campaignObject->setNextPostTime($this->campaignModel->calculateNextPostTime($campaignObject));
@@ -72,7 +73,7 @@ class CampaignManagerServiceExtension
 
         $this->campaignModel->upsert($campaignObject);
 
-        $blogObject = $this->blogModel($taskObject->getBlogId());
+        $blogObject = $this->blogModel->get($taskObject->getBlogId());
         $blogObject->setLocked(false);
         $this->blogModel->upsert($blogObject);
     }

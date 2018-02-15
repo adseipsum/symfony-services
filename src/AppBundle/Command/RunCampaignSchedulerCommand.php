@@ -32,7 +32,6 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
         //send message to Post Manager with new task
         try {
             $cb = $this->getContainer()->get('couchbase.connector');
-            $amqp = $this->getContainer()->get('old_sound_rabbit_mq.campaign_scheduler_producer');
 
             $campaignModel = new CampaignModel($cb);
             $campaignObject = $campaignModel->getCampaignsByStatus(CbCampaign::STATUS_READY);
@@ -48,6 +47,7 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
 
                 //make sure we will start from blogs with lesser amount of posts
                 asort($blogs);
+                var_dump($blogs);
                 foreach($blogs as $blogId => $counter){
                     $blogObject = $blogModel->get($blogId);
                     if($blogObject && $blogModel->lockBlogForPosting($blogObject)){
@@ -56,7 +56,7 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
                         continue;
                     }
                 }
-
+                var_dump($blogObject->getObjectId());
                 if(!isset($blogObject)){
                     $output->writeln('No blogs ready for posting for campaign ' . $campaignObject->getObjectId());
                     return false;
@@ -73,6 +73,7 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
                 );
 
                 //send message to post manager service
+                $amqp = $this->getContainer()->get('old_sound_rabbit_mq.campaign_scheduler_producer');
                 $amqp->publish(json_encode($msg), self::POST_MANAGER_ROUTING_KEY);
 
                 $campaignObject->setStatus(CbCampaign::STATUS_PROCESSING);

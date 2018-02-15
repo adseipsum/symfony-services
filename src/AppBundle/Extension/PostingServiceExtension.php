@@ -53,8 +53,8 @@ class PostingServiceExtension
             'type' => 'post',
             'featured_media' => $this->taskObject->getImageId(),
             'meta' => array(
-                'og:description' => $seoDescriptionObject->getText(),
-                'og:title' => $seoTitleObject->getText()
+                '_yoast_wpseo_metadesc' => $seoDescriptionObject->getText(),
+                '_yoast_wpseo_title' => $seoTitleObject->getText()
             )
         );
 
