@@ -35,7 +35,6 @@ class CampaignController extends Controller
             $object->setMainKeywords($data['mainKeywords']);
             $object->setSubLinks($data['subLinks']);
             $object->setNeedPosts($data['needPosts']);
-            $object->setMainSubPercentage($data['mainSubPercentage']);
             $object->setAdditionalKeysPercentage($data['additionalKeysPercentage']);
             $object->setPostPeriodDays($data['postPeriodDays']);
             $object->setBlogs($data['selectedBlogs']);
@@ -79,7 +78,6 @@ class CampaignController extends Controller
                         'enabled' => $object->getEnabled(),
                         'status' => $object->getStatus(),
                         'needPosts' => $object->getNeedPosts(),
-                        'mainSubPercentage' => $object->getMainSubPercentage(),
                         'additionalKeysPercentage' => $object->getAdditionalKeysPercentage(),
                         'postPeriodDays' => $object->getPostPeriodDays(),
                         'nextPostTime' => $object->getNextPostTime()->format('d-m-Y h:i:s'),

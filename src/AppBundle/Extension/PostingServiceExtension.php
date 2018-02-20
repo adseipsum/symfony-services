@@ -106,7 +106,7 @@ class PostingServiceExtension
     /**
      * @return bool
      */
-    public function updateMedia($provider, $accessToken){
+    protected function updateMedia($provider, $accessToken){
 
         $blogObject = $this->blogModel->get($this->taskObject->getBlogId());
         $imageAlt = $this->textModel->getSingle($this->taskObject->getImageAltId());
@@ -144,7 +144,7 @@ class PostingServiceExtension
      * @param object $msg
      * @return void
      */
-    public function processMessage($msg){
+    protected function processMessage($msg){
         $message = json_decode($msg->getBody());
         $idString = explode('::', $message->taskId);
         $taskId = $idString[1];
@@ -165,7 +165,7 @@ class PostingServiceExtension
      * @param string $taskId
      * @return void
      */
-    private function sendCompletePostingMessage($taskId, $responseRoutingKey){
+    protected function sendCompletePostingMessage($taskId, $responseRoutingKey){
         $msg = array(
             'taskId' => implode( '::', array(self::THIS_SERVICE_KEY, $taskId, CbTask::STATUS_TEXT_POST)),
         );
@@ -173,7 +173,7 @@ class PostingServiceExtension
         $this->amqp->publish(json_encode($msg), $responseRoutingKey);
     }
 
-    private function setTagMore($bodyText){
+    protected function setTagMore($bodyText){
         $position = strpos($bodyText, '</p>') + 4;
         return substr_replace($bodyText, '<!--more-->', $position, 0);
     }

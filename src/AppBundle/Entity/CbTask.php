@@ -13,6 +13,7 @@ class CbTask extends CbBaseObject
     const STATUS_SEO_TITLE_GEN = 'seo-title-gen';
     const STATUS_SEO_DESCRIPTION_GEN = 'seo-description-gen';
     const STATUS_IMAGE_ALT_GEN = 'image-alt-gen';
+    const STATUS_BACKLINK_INSERT ='backlink-insert';
     const STATUS_IMAGE_POST = 'img-post';
     const STATUS_TEXT_POST = 'text-post';
     const STATUS_COMPLETED = 'completed';
