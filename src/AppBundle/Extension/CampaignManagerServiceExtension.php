@@ -53,18 +53,15 @@ class CampaignManagerServiceExtension
         $campaignObject = $this->campaignModel->get($taskObject->getCampaignId());
 
         if($status == CbTask::STATUS_COMPLETED) {
-            $campaignObject->setNextPostTime($this->campaignModel->calculateNextPostTime($campaignObject));
             $campaignObject->setPosted($campaignObject->getPosted() + 1);
-            $campaignObject->setStatus(CbCampaign::STATUS_READY);
             $campaignObject->incrementPostsForBlog($taskObject->getBlogId());
         }elseif($status == CbTask::STATUS_FAILED){
-
             $taskObject->setStatus(CbTask::STATUS_FAILED);
             $this->taskModel->upsert($taskObject);
-
-            $campaignObject->setNextPostTime($this->campaignModel->calculateNextPostTime($campaignObject));
-            $campaignObject->setStatus(CbCampaign::STATUS_READY);
         }
+
+        $campaignObject->setNextPostTime($this->campaignModel->calculateNextPostTime($campaignObject));
+        $campaignObject->setStatus(CbCampaign::STATUS_READY);
 
         //close campaign if no more tasks to do
         if ($campaignObject->getNeedPosts() <= $campaignObject->getPosted()) {

@@ -86,7 +86,7 @@ class BlogController extends Controller
                         'clientSecret' => $object->getClientSecret(),
                         'postPeriodSeconds' => $object->getPostPeriodSeconds(),
                         'tags' => $object->getTags(),
-                        'lastPostDate' => $object->getLastPostDate()->format('Y-m-d')
+                        'lastPostDate' => $object->getLastPostDate()->format('d-m-Y h:i:s')
                     );
                 }
 

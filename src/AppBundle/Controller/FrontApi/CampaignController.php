@@ -30,8 +30,12 @@ class CampaignController extends Controller
 
             $object = new CbCampaign();
             $object->setEnabled(true);
-            $object->setClientDomain($data['clientDomain']);
+            $object->setMainDomain($data['mainDomain']);
+            $object->setMaxPostsAtMain($data['maxPostsAtMain']);
+            $object->setMainKeywords($data['mainKeywords']);
+            $object->setSubLinks($data['subLinks']);
             $object->setNeedPosts($data['needPosts']);
+            $object->setMainSubPercentage($data['mainSubPercentage']);
             $object->setAdditionalKeysPercentage($data['additionalKeysPercentage']);
             $object->setPostPeriodDays($data['postPeriodDays']);
             $object->setBlogs($data['selectedBlogs']);
@@ -68,15 +72,19 @@ class CampaignController extends Controller
                 foreach($arrayOfObjects as $object) {
                     $ret[] = array(
                         'id' => $object->getObjectId(),
-                        'clientDomain' => $object->getClientDomain(),
+                        'mainDomain' => $object->getMainDomain(),
+                        'maxPostsAtMain' => $object->getMaxPostsAtMain(),
+                        'mainKeywords' => $object->getMainKeywords(),
+                        'subLinks' => $object->getSubLinks(),
                         'enabled' => $object->getEnabled(),
                         'status' => $object->getStatus(),
                         'needPosts' => $object->getNeedPosts(),
+                        'mainSubPercentage' => $object->getMainSubPercentage(),
                         'additionalKeysPercentage' => $object->getAdditionalKeysPercentage(),
                         'postPeriodDays' => $object->getPostPeriodDays(),
-                        'nextPostTime' => $object->getNextPostTime()->format('Y-m-d h:i:s'),
+                        'nextPostTime' => $object->getNextPostTime()->format('d-m-Y h:i:s'),
                         'posted' => $object->getPosted(),
-                        'created' => $object->getCreated()->format('Y-m-d')
+                        'created' => $object->getCreated()->format('d-m-Y')
                     );
                 }
 

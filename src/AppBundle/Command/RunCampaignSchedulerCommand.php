@@ -47,16 +47,17 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
 
                 //make sure we will start from blogs with lesser amount of posts
                 asort($blogs);
-                var_dump($blogs);
+           
                 foreach($blogs as $blogId => $counter){
                     $blogObject = $blogModel->get($blogId);
+
                     if($blogObject && $blogModel->lockBlogForPosting($blogObject)){
                         break;
                     }else{
                         continue;
                     }
                 }
-                var_dump($blogObject->getObjectId());
+
                 if(!isset($blogObject)){
                     $output->writeln('No blogs ready for posting for campaign ' . $campaignObject->getObjectId());
                     return false;

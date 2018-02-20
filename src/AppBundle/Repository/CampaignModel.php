@@ -51,7 +51,7 @@ class CampaignModel extends CbBaseModel
 
     public function calculateNextPostTime(CbCampaign $campaign)
     {
-        $startDate = new \DateTime();
+        $startDate = $campaign->getCreated();
         $endDate = $campaign->getCreated()->modify("+{$campaign->getPostPeriodDays()} day");
 
         $timeLeft = $endDate->getTimestamp() - $startDate->getTimestamp();

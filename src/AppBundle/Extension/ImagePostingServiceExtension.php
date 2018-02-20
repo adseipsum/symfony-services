@@ -21,6 +21,7 @@ class ImagePostingServiceExtension
     const CAMPAIGN_MANAGER_ROUTING_KEY = 'srv.cmpmanager.v1';
 
     const WP_RESOURCE_PATH = '/wp-json/wp/v2/media/';
+    const IMAGE_SOURCE_URL = 'http://88.99.193.160:9879/7v5xr4hCrW36-ypG/?blog_id=';
     const WP_BACKLINK = 'oob';
 
     public function __construct(CouchbaseService $cb, $amqp)
@@ -49,9 +50,14 @@ class ImagePostingServiceExtension
                 'password' => $this->blogObject->getPostingUserPassword()
             ]);
 
-            $options['body'] = file_get_contents(getcwd() . '/colorful-pills-650.jpg');
+            $image = file_get_contents(self::IMAGE_SOURCE_URL . $this->blogObject->getObjectId());
+            $generatedFileName = 'TMP_IMG_' . uniqid();
+
+            file_put_contents(sys_get_temp_dir() . '/' . $generatedFileName . '.jpg', $image);
+
+            $options['body'] = $image;
             $options['headers']['content-type'] = 'image/jpg';
-            $options['headers']['content-disposition'] = 'attachment; filename="' . getcwd() . '/colorful-pills-650.jpg"' ;
+            $options['headers']['content-disposition'] = 'attachment; filename="' . sys_get_temp_dir() . '/' . $generatedFileName . '.jpg';
             $options['headers']['access_token'] = $accessToken->getToken();
 
             $request = $provider->getAuthenticatedRequest(
@@ -67,6 +73,8 @@ class ImagePostingServiceExtension
                 $this->blogObject->setLastErrorMessage($response['code']);
                 $this->blogModel->upsert($this->blogObject);
             }
+
+            unlink(sys_get_temp_dir() . '/' . $generatedFileName . '.jpg');
 
             if(isset($response['id'])) {
                 return $response['id'];

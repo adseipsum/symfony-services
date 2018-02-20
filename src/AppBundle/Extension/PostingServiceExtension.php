@@ -46,9 +46,11 @@ class PostingServiceExtension
         $seoTitleObject = $this->textModel->getSingle($this->taskObject->getSeoTitleId());
         $seoDescriptionObject = $this->textModel->getSingle($this->taskObject->getSeoDescriptionId());
 
+        $bodyText = $this->setTagMore($bodyObject->getText());
+
         $WPRequestBody = array(
             'title' => $headerObject->getText(),
-            'content' => $bodyObject->getText(),
+            'content' => $bodyText,
             'status' => 'draft',
             'type' => 'post',
             'featured_media' => $this->taskObject->getImageId(),
@@ -169,6 +171,11 @@ class PostingServiceExtension
         );
 
         $this->amqp->publish(json_encode($msg), $responseRoutingKey);
+    }
+
+    private function setTagMore($bodyText){
+        $position = strpos($bodyText, '</p>') + 4;
+        return substr_replace($bodyText, '<!--more-->', $position, 0);
     }
 
 }
