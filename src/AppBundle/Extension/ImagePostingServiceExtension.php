@@ -21,7 +21,7 @@ class ImagePostingServiceExtension
     const CAMPAIGN_MANAGER_ROUTING_KEY = 'srv.cmpmanager.v1';
 
     const WP_RESOURCE_PATH = '/wp-json/wp/v2/media/';
-    const IMAGE_SOURCE_URL = 'http://88.99.193.160:9879/7v5xr4hCrW36-ypG/?blog_id=';
+    const IMAGE_SOURCE_URL = 'http://88.99.193.160:9879/7v5xr4hCrW36-ypG/?';
     const WP_BACKLINK = 'oob';
 
     public function __construct(CouchbaseService $cb, $amqp)
@@ -50,7 +50,12 @@ class ImagePostingServiceExtension
                 'password' => $this->blogObject->getPostingUserPassword()
             ]);
 
-            $image = file_get_contents(self::IMAGE_SOURCE_URL . $this->blogObject->getObjectId());
+            $imageRequest = array(
+                'blog_id' => $this->blogObject->getObjectId(),
+                'watermark' => $this->blogObject->getDomainName()
+            );
+
+            $image = file_get_contents(self::IMAGE_SOURCE_URL . http_build_query($imageRequest));
             $generatedFileName = 'TMP_IMG_' . uniqid();
 
             file_put_contents(sys_get_temp_dir() . '/' . $generatedFileName . '.jpg', $image);

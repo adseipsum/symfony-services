@@ -15,7 +15,7 @@ class PostManagerServiceExtension
     protected $textModel;
 
     const THIS_SERVICE_KEY = 'pms';
-    const TEXT_GENERATION_ROUTING_KEY = 'prod-satteliter.q.srv-txtgen.v2';
+    const TEXT_GENERATION_ROUTING_KEY = 'prod-satteliter.q.srv-txtgen.dev';
     const TEXT_DPN_GENERATION_ROUTING_KEY = 'prod-satteliter.q.srv-txtderr.v1';
     const IMAGE_POSTING_SERVICE_ROUTING_KEY = 'srv.imgposting.v1';
     const POSTING_SERVICE_ROUTING_KEY = 'srv.posting.v1';
