@@ -11,6 +11,9 @@ class CbCampaign extends CbBaseObject
     const STATUS_PROCESSING = 'processing';
     const STATUS_COMPLETED = 'completed';
 
+    const TYPE_REGULAR = 'regular';
+    const TYPE_BACKLINKED = 'backlinked';
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public function __construct()
@@ -31,6 +34,24 @@ class CbCampaign extends CbBaseObject
     public function getStatus() : string
     {
         return $this->get('status');
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setType(string $type)
+    {
+        if($type != self::TYPE_REGULAR && $type != self::TYPE_BACKLINKED){
+            return false;
+        }
+
+        $this->set('type', $type);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getType() : string
+    {
+        return $this->get('type');
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,21 +124,6 @@ class CbCampaign extends CbBaseObject
     public function getSubLinks() : array
     {
         return $this->get('subLinks');
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public function setMainSubPercentage(int $mainSubPercentage)
-    {
-        $this->set('mainSubPercentage', $mainSubPercentage);
-
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public function getMainSubPercentage() : int
-    {
-        return $this->get('mainSubPercentage');
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

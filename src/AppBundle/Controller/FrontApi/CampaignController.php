@@ -30,13 +30,17 @@ class CampaignController extends Controller
 
             $object = new CbCampaign();
             $object->setEnabled(true);
-            $object->setMainDomain($data['mainDomain']);
-            $object->setMaxPostsAtMain($data['maxPostsAtMain']);
-            $object->setMainKeywords($data['mainKeywords']);
-            $object->setSubLinks($data['subLinks']);
+            $object->setType($data['type']);
+
+            if($data['type'] == CbCampaign::TYPE_BACKLINKED){
+                $object->setMainDomain($data['mainDomain']);
+                $object->setMaxPostsAtMain($data['maxPostsAtMain']);
+                $object->setMainKeywords($data['mainKeywords']);
+                $object->setSubLinks($data['subLinks']);
+                $object->setAdditionalKeysPercentage($data['additionalKeysPercentage']);
+            }
+
             $object->setNeedPosts($data['needPosts']);
-            $object->setMainSubPercentage($data['mainSubPercentage']);
-            $object->setAdditionalKeysPercentage($data['additionalKeysPercentage']);
             $object->setPostPeriodDays($data['postPeriodDays']);
             $object->setBlogs($data['selectedBlogs']);
             $object->setPosted(0);
@@ -70,22 +74,27 @@ class CampaignController extends Controller
 
                 $ret = [];
                 foreach($arrayOfObjects as $object) {
-                    $ret[] = array(
+                    $campaign = array(
                         'id' => $object->getObjectId(),
-                        'mainDomain' => $object->getMainDomain(),
-                        'maxPostsAtMain' => $object->getMaxPostsAtMain(),
-                        'mainKeywords' => $object->getMainKeywords(),
-                        'subLinks' => $object->getSubLinks(),
                         'enabled' => $object->getEnabled(),
                         'status' => $object->getStatus(),
                         'needPosts' => $object->getNeedPosts(),
-                        'mainSubPercentage' => $object->getMainSubPercentage(),
-                        'additionalKeysPercentage' => $object->getAdditionalKeysPercentage(),
                         'postPeriodDays' => $object->getPostPeriodDays(),
                         'nextPostTime' => $object->getNextPostTime()->format('d-m-Y h:i:s'),
                         'posted' => $object->getPosted(),
-                        'created' => $object->getCreated()->format('d-m-Y')
+                        'created' => $object->getCreated()->format('d-m-Y'),
+                        'type' => $object->getType(),
                     );
+
+                    if($object->getType() == CbCampaign::TYPE_BACKLINKED){
+                        $campaign['mainDomain'] = $object->getMainDomain();
+                        $campaign['maxPostsAtMain'] = $object->getMaxPostsAtMain();
+                        $campaign['mainKeywords'] = $object->getMainKeywords();
+                        $campaign['subLinks'] = $object->getSubLinks();
+                        $campaign['additionalKeysPercentage'] = $object->getAdditionalKeysPercentage();
+                    }
+
+                    $ret[] = $campaign;
                 }
 
                 return ApiResponse::resultValue($ret);
