@@ -50,6 +50,10 @@ services:
             class: AppBundle\Consumer\PostManagerServiceConsumer
             arguments: ['@service_container']
 
+    app_bundle.consumer.backlink_service:
+                class: AppBundle\Consumer\BacklinkServiceConsumer
+                arguments: ['@service_container']
+
     app_bundle.consumer.posting_service:
             class: AppBundle\Consumer\PostingServiceConsumer
             arguments: ['@service_container']

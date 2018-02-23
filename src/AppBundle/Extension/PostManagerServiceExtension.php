@@ -17,6 +17,7 @@ class PostManagerServiceExtension
     const THIS_SERVICE_KEY = 'pms';
     const TEXT_GENERATION_ROUTING_KEY = 'prod-satteliter.q.srv-txtgen.dev';
     const TEXT_DPN_GENERATION_ROUTING_KEY = 'prod-satteliter.q.srv-txtderr.v1';
+    const BACKLINK_INSERT_SERVICE_ROUTING_KEY = 'srv.backlink.v1';
     const IMAGE_POSTING_SERVICE_ROUTING_KEY = 'srv.imgposting.v1';
     const POSTING_SERVICE_ROUTING_KEY = 'srv.posting.v1';
     const CAMPAIGN_MANAGER_SERVICE_ROUTING_KEY = 'srv.cmpmanager.v1';
@@ -87,6 +88,10 @@ class PostManagerServiceExtension
                 break;
             case CbTask::STATUS_IMAGE_ALT_GEN:
                 $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_IMAGE_ALT_GEN, 'setImageAltId' => $message->resultKey));
+                $this->sendMessage(self::BACKLINK_INSERT_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_BACKLINK_INSERT);
+                break;
+            case CbTask::STATUS_BACKLINK_INSERT:
+                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_BACKLINK_INSERT));
                 //send message to image posting service
                 $this->sendMessage(self::IMAGE_POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_IMAGE_POST);
                 break;

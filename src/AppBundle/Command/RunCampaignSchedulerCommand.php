@@ -42,6 +42,9 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
             }
 
             if(time() > $campaignObject->getNextPostTime()->getTimestamp()){
+
+                //TODO: add check on amount of posts
+
                 $blogModel = new BlogModel($cb);
                 $blogs = $campaignObject->getBlogs();
 
