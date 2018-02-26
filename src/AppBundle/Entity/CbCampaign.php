@@ -10,6 +10,7 @@ class CbCampaign extends CbBaseObject
     const STATUS_READY = 'ready';
     const STATUS_PROCESSING = 'processing';
     const STATUS_COMPLETED = 'completed';
+    const STATUS_PAUSED = 'paused';
 
     const TYPE_REGULAR = 'regular';
     const TYPE_BACKLINKED = 'backlinked';
@@ -84,21 +85,6 @@ class CbCampaign extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function setMaxPostsAtMain(int $maxPostsAtMain)
-    {
-        $this->set('maxPostsAtMain', $maxPostsAtMain);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public function getMaxPostsAtMain() : int
-    {
-        return $this->get('maxPostsAtMain');
-    }
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public function setMainKeywords(string $mainKeywords)
     {
         $this->set('mainKeywords', $mainKeywords);
@@ -147,6 +133,63 @@ class CbCampaign extends CbBaseObject
         $unixtimestamp = $this->get('created');
         $ret->setTimestamp($unixtimestamp);
         return $ret;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setPostMainDomainLinks(int $postMainDomainLinks)
+    {
+        $this->set('postMainDomainLinks', $postMainDomainLinks);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getPostMainDomainLinks() : int
+    {
+        return $this->get('postMainDomainLinks');
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setPostSubLinks(int $postSubLinks)
+    {
+        $this->set('postSubLinks', $postSubLinks);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getPostSubLinks() : int
+    {
+        return $this->get('postSubLinks');
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setMainLinksPosted(int $mainLinksPosted)
+    {
+        $this->setNeedPosts($mainLinksPosted + $this->get('subLinksPosted'));
+        $this->set('mainLinksPosted', $mainLinksPosted);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getMainLinksPosted() : int
+    {
+        return $this->get('mainLinksPosted');
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setSubLinksPosted(int $subLinksPosted)
+    {
+        $this->setNeedPosts($subLinksPosted + $this->get('mainLinksPosted'));
+        $this->set('subLinksPosted', $subLinksPosted);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getSubLinksPosted() : int
+    {
+        return $this->get('subLinksPosted');
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +303,7 @@ class CbCampaign extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function incrementPostsForBlog(string $blogId){
+    public function updatePostsForBlog(string $blogId){
         $blogs = $this->get('blogs');
         if(isset($blogs[$blogId])) {
             $blogs[$blogId]++;

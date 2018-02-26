@@ -34,15 +34,19 @@ class CampaignController extends Controller
 
             if($data['type'] == CbCampaign::TYPE_BACKLINKED){
                 $object->setMainDomain($data['mainDomain']);
-                $object->setMaxPostsAtMain($data['maxPostsAtMain']);
                 $object->setMainKeywords($data['mainKeywords']);
                 $object->setSubLinks($data['subLinks']);
                 $object->setAdditionalKeysPercentage($data['additionalKeysPercentage']);
+                $object->setPostMainDomainLinks($data['postMainDomainLinks']);
+                $object->setPostSubLinks($data['postSubLinks']);
+                $object->setPostMainDomainLinks(0);
+                $object->setPostSubLinks(0);
+            }else{
+                $object->setNeedPosts($data['needPosts']);
             }
 
-            $object->setNeedPosts($data['needPosts']);
             $object->setPostPeriodDays($data['postPeriodDays']);
-            $object->setBlogs($data['selectedBlogs']);
+            $object->setBlogs(array_fill_keys($data['selectedBlogs'], 0));
             $object->setPosted(0);
             $object->setCreated();
 
@@ -88,7 +92,6 @@ class CampaignController extends Controller
 
                     if($object->getType() == CbCampaign::TYPE_BACKLINKED){
                         $campaign['mainDomain'] = $object->getMainDomain();
-                        $campaign['maxPostsAtMain'] = $object->getMaxPostsAtMain();
                         $campaign['mainKeywords'] = $object->getMainKeywords();
                         $campaign['subLinks'] = $object->getSubLinks();
                         $campaign['additionalKeysPercentage'] = $object->getAdditionalKeysPercentage();

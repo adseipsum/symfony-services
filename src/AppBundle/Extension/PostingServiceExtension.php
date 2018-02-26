@@ -1,9 +1,11 @@
 <?php
 namespace AppBundle\Extension;
 
+use AppBundle\Entity\CbCampaign;
 use AppBundle\Entity\CbTask;
 use AppBundle\Repository\TaskModel;
 use AppBundle\Repository\BlogModel;
+use AppBundle\Repository\CampaignModel;
 use AppBundle\Repository\TextGenerationResultModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -27,6 +29,7 @@ class PostingServiceExtension
     public function __construct(CouchbaseService $cb, $amqp)
     {
         $this->cb = $cb;
+        $this->campaignModel = new CampaignModel($this->cb);
         $this->taskModel = new TaskModel($this->cb);
         $this->blogModel = new BlogModel($this->cb);
         $this->textModel = new TextGenerationResultModel($this->cb);
@@ -40,18 +43,24 @@ class PostingServiceExtension
      */
     public function postToBlog(){
 
-        $blogObject = $this->blogModel->get($this->taskObject->getBlogId());
+        $campaignObject = $this->campaignModel->get($this->taskObject->getCampaignId());
+
         $bodyObject = $this->textModel->getSingle($this->taskObject->getBodyId());
+        $blogObject = $this->blogModel->get($this->taskObject->getBlogId());
         $headerObject = $this->textModel->getSingle($this->taskObject->getHeaderId());
         $seoTitleObject = $this->textModel->getSingle($this->taskObject->getSeoTitleId());
         $seoDescriptionObject = $this->textModel->getSingle($this->taskObject->getSeoDescriptionId());
 
-        $bodyText = $this->setTagMore($bodyObject->getText());
+        if($campaignObject->getType() == CbCampaign::TYPE_BACKLINKED) {
+            $bodyText = $this->setTagMore($bodyObject->getBacklinkedText());
+        }else{
+            $bodyText = $this->setTagMore($bodyObject->getText());
+        }
 
         $WPRequestBody = array(
             'title' => $headerObject->getText(),
             'content' => $bodyText,
-            'status' => 'draft',
+            'status' => 'publish',
             'type' => 'post',
             'featured_media' => $this->taskObject->getImageId(),
             'meta' => array(
@@ -144,7 +153,7 @@ class PostingServiceExtension
      * @param object $msg
      * @return void
      */
-    protected function processMessage($msg){
+    public function processMessage($msg){
         $message = json_decode($msg->getBody());
         $idString = explode('::', $message->taskId);
         $taskId = $idString[1];

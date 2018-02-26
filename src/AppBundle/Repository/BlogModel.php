@@ -67,13 +67,24 @@ class BlogModel extends CbBaseModel
             return false;
         }
 
-        if($blogObject->getLastPostDate()->getTimestamp() + $blogObject->getPostPeriodSeconds() > time()){
-            return false;
-        }
-
         $blogObject->setLocked(true);
         $this->upsert($blogObject);
         return true;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function updateMainDomainLinksPosted(CbBlog $blogObject, string $mainDomainLinkPosted, $remove = false)
+    {
+        $mainDomainLinksPostedArray = $blogObject->getMainDomainLinksPosted();
+        if($remove){
+            $domainNameKey = array_search($mainDomainLinkPosted, $mainDomainLinksPostedArray);
+            unset($mainDomainLinksPostedArray[$domainNameKey]);
+        }else{
+            $mainDomainLinksPostedArray[] = $mainDomainLinkPosted;
+        }
+
+        $blogObject->setMainDomainLinksPosted($mainDomainLinksPostedArray);
     }
 
 }

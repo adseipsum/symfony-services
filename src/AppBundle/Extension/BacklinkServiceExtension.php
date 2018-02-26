@@ -3,6 +3,7 @@ namespace AppBundle\Extension;
 
 use AppBundle\Entity\CbTask;
 use AppBundle\Repository\TaskModel;
+use AppBundle\Repository\BlogModel;
 use AppBundle\Repository\CampaignModel;
 use AppBundle\Repository\TextGenerationResultModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
@@ -15,8 +16,15 @@ class BacklinkServiceExtension
     protected $taskModel;
     protected $taskObject;
     protected $textModel;
+    protected $blogModel;
     protected $campaignModel;
     protected $campaignObject;
+    protected $link = array();
+    protected $additionalKeywords = array(
+        'check this link',
+        'information',
+        'try'
+    );
 
     const THIS_SERVICE_KEY = 'bln';
     const POST_MANAGER_ROUTING_KEY = 'srv.postmanager.v1';
@@ -27,6 +35,7 @@ class BacklinkServiceExtension
         $this->cb = $cb;
         $this->campaignModel = new CampaignModel($this->cb);
         $this->taskModel = new TaskModel($this->cb);
+        $this->blogModel = new BlogModel($this->cb);
         $this->textModel = new TextGenerationResultModel($this->cb);
         $this->textModel->setBucket($this->cb->getBucketForType('TextGenerationResult'));
 
@@ -36,45 +45,78 @@ class BacklinkServiceExtension
     /**
      * @return bool
      */
-    public function insertBacklink(){
-        $bodyObject = $this->textModel->getSingle($this->taskObject->getBodyId());
+    private function generateBacklink(){
+        $blogObject = $this->blogModel->get($this->taskObject->getBlogId());
 
-        if($this->campaignObject->getMaxPostsAtMain() > $this->campaignObject->getPostedAtMain()){
-                //main backlink
-            $mainPostedPercentage = $this->campaignObject->getPostedAtMain() * 100 / $this->campaignObject->getMaxPostsAtMain();
-            if(100 - $mainPostedPercentage > $this->campaignObject->getAdditionalKeysPercentage()){
-                //can be additional
-                '<a href="' . $this->campaignObject->getMainDomain() . '">random addittional</a>';
-            }else{
-                //only main
-                $keyword = $this->campaignObject->getMainKeywords();
-                '<a href="' . $this->campaignObject->getMainDomain() . '">' . $keyword . '</a>';
+        $mainDomain = $this->campaignObject->getMainDomain();
+        $postMainDomainLinks = $this->campaignObject->getPostMainDomainLinks();
+        $mainLinksPosted = $this->campaignObject->getMainLinksPosted();
+        $postSubLinks = $this->campaignObject->getPostSubLinks();
+        $subLinksPosted = $this->campaignObject->getSubLinksPosted();
+
+
+        $subLinks = $this->campaignObject->getSubLinks();
+
+        //Great random occurrence 1
+        if($this->getRandomBoolean() && $postMainDomainLinks > $mainLinksPosted && !in_array($mainDomain, $blogObject->getMainDomainLinksPosted())){
+            /* --- MAIN LINK --- */
+
+            $mainPostedPercentage = $mainLinksPosted * 100 / $postMainDomainLinks;
+
+            $keywords = explode(',', $this->campaignObject->getMainKeywords());
+            $this->link = array('href' =>  $mainDomain, 'name' =>  $keywords[array_rand($keywords)]);
+
+            //Great random occurrence 2
+            if($this->getRandomBoolean() && 100 - $mainPostedPercentage > intval($this->campaignObject->getAdditionalKeysPercentage())){
+                $this->link = array('href' =>  $mainDomain, 'name' =>  $this->additionalKeywords[array_rand($this->additionalKeywords)]);
             }
 
-            $this->campaignObject->incrementPostedAtMain();
-        }else{
-                //sub backlink
-            $sublinks = $this->campaignObject->getSubLinks();
+            $this->campaignObject->getMainLinksPosted($this->campaignObject->getMainLinksPosted() + 1);
 
-            foreach($sublinks as $sublink => $keywords){
+            //save domain in the list of posted main domain links for a blog
+            $this->blogModel->updateMainDomainLinksPosted($blogObject, $this->campaignObject->getMainDomain());
+            $this->blogModel->upsert($blogObject);
 
+            return true;
+        }elseif($subLinks && $postSubLinks > $subLinksPosted){
+            /* --- SUB LINK --- */
+
+            $randomSubLink = $subLinks[array_rand($subLinks)];
+            $subLinksPostedPercentage = $subLinksPosted * 100 / $postSubLinks;
+
+            $keywords = explode(',', $randomSubLink['subLinkKeywords']);
+            $this->link = array('href' =>  $randomSubLink['subLink'], 'name' =>  $keywords[array_rand($keywords)]);
+
+            //Great random occurrence 2
+            if($this->getRandomBoolean() && 100 - $subLinksPostedPercentage > intval($randomSubLink['subAdditionalKeywordsPercentage'])){
+                $this->link = array('href' =>  $randomSubLink['subLink'], 'name' =>  $this->additionalKeywords[array_rand($this->additionalKeywords)]);
             }
 
-            $this->campaignObject->incrementPostedAtSublinks();
+            $this->campaignObject->setSubLinksPosted($this->campaignObject->getSubLinksPosted() + 1);
+
+            return true;
         }
 
-        $test = array(
-            $this->campaignObject->getAdditionalKeysPercentage(),
-            $this->campaignObject->getMainKeywords(),
-            $this->campaignObject->getSubLinks(),
-            $this->campaignObject->getMainDomain(),
-            $this->campaignObject->getMaxPostsAtMain()
-        );
+        $this->campaignModel->upsert($this->campaignObject);
 
-
-        var_dump($test); die;
+        return false;
     }
 
+    /**
+     * @return bool
+     */
+    public function insertBacklink(){
+        $bodyObject = $this->textModel->getSingle($this->taskObject->getBodyId());
+        $link = ' <a href="http://' . $this->link['href'] . '" target="_blank">' . $this->link['name'] . '</a> ';
+        $text = $bodyObject->getText();
+        $offset = rand(strlen($text) * 0.2, strlen($text) * 0.8);
+        $position = strpos($text, ' ', $offset);
+        $text = substr_replace($text, $link, $position, 0);
+        $bodyObject->setBacklinkedText($text);
+        $this->textModel->upsert($bodyObject);
+
+        return true;
+    }
     /**
      * @param object $msg
      * @return void
@@ -88,11 +130,14 @@ class BacklinkServiceExtension
 
         if($this->taskObject){
             $this->campaignObject = $this->campaignModel->get($this->taskObject->getCampaignId());
-            if($this->insertBacklink()) {
+
+
+            if($this->generateBacklink()) {
+                $this->insertBacklink();
                 $this->sendCompletePostingMessage($this->taskObject->getObjectId(), $message->responseRoutingKey);
             }else{
                 $msg = array('taskId' => implode( '::', array(self::THIS_SERVICE_KEY, $this->taskObject->getObjectId(), CbTask::STATUS_FAILED)));
-                $this->amqp->publish(json_encode($msg), self::CAMPAIGN_MANAGER_ROUTING_KEY);
+                $this->amqp->publish(json_encode($msg), self::CAMPAIGN_MANAGER_SERVICE_ROUTING_KEY);
             }
         }
     }
@@ -107,6 +152,10 @@ class BacklinkServiceExtension
         );
 
         $this->amqp->publish(json_encode($msg), $responseRoutingKey);
+    }
+
+    protected function getRandomBoolean(){
+        return rand(0,1) == 1;
     }
 
 

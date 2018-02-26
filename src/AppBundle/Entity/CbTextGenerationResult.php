@@ -22,4 +22,15 @@ class CbTextGenerationResult extends CbBaseObject
         return $this->get('text');
     }
 
+    public function setBacklinkedText(string $backlinkedText)
+    {
+        $this->set('backlinkedText', $backlinkedText);
+    }
+
+    public function getBacklinkedText() : string
+    {
+        return $this->get('backlinkedText');
+    }
+
+
 }

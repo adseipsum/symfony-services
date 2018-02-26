@@ -38,13 +38,16 @@ class CampaignManagerServiceExtension
      */
     public function processMessage($msg){
         $message = json_decode($msg->getBody());
+
         echo "recieved message: \n";
         var_dump($message);
+
         $idString = explode('::', $message->taskId);
         $taskId = $idString[1];
         $status = $idString[2];
 
         $taskObject = $this->taskModel->get($taskId);
+        $blogObject = $this->blogModel->get($taskObject->getBlogId());
 
         if(!$taskObject){
             return false;
@@ -54,10 +57,12 @@ class CampaignManagerServiceExtension
 
         if($status == CbTask::STATUS_COMPLETED) {
             $campaignObject->setPosted($campaignObject->getPosted() + 1);
-            $campaignObject->incrementPostsForBlog($taskObject->getBlogId());
+            $campaignObject->updatePostsForBlog($taskObject->getBlogId());
         }elseif($status == CbTask::STATUS_FAILED){
             $taskObject->setStatus(CbTask::STATUS_FAILED);
             $this->taskModel->upsert($taskObject);
+
+            $this->blogModel->updateMainDomainLinksPosted($blogObject, $this->campaignObject->getMainDomain(), true);
         }
 
         $campaignObject->setNextPostTime($this->campaignModel->calculateNextPostTime($campaignObject));
@@ -70,8 +75,8 @@ class CampaignManagerServiceExtension
 
         $this->campaignModel->upsert($campaignObject);
 
-        $blogObject = $this->blogModel->get($taskObject->getBlogId());
         $blogObject->setLocked(false);
+        $blogObject->setLastTypePosted($campaignObject->getType());
         $this->blogModel->upsert($blogObject);
     }
 }

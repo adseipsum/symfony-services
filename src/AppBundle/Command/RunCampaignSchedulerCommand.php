@@ -37,12 +37,13 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
             $campaignObject = $campaignModel->getCampaignsByStatus(CbCampaign::STATUS_READY);
 
             //stop if none of campaigns ready for posting
-            if(!$campaignObject){
+            if(!$campaignObject || $campaignObject->getType() == CbCampaign::TYPE_BACKLINKED){
+            //if(!$campaignObject || $campaignObject->getType() == CbCampaign::TYPE_REGULAR){
+                $output->writeln('No ready campaigns to processed.');
                 return false;
             }
 
             if(time() > $campaignObject->getNextPostTime()->getTimestamp()){
-
                 //TODO: add check on amount of posts
 
                 $blogModel = new BlogModel($cb);
@@ -54,7 +55,10 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
                 foreach($blogs as $blogId => $counter){
                     $blogObject = $blogModel->get($blogId);
 
-                    if($blogObject && $blogObject->getEnabled() && $blogModel->lockBlogForPosting($blogObject)){
+                    if($blogObject && $blogObject->getEnabled() && $blogObject->isBlogReadyForPosting() && $blogModel->lockBlogForPosting($blogObject)){
+                        if($campaignObject->getType() == CbCampaign::TYPE_BACKLINKED && in_array($campaignObject->getMainDomain(), $blogObject->getMainDomainLinksPosted())){
+                            continue;
+                        }
                         break;
                     }else{
                         continue;
@@ -82,9 +86,12 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
 
                 $campaignObject->setStatus(CbCampaign::STATUS_PROCESSING);
                 $campaignModel->upsert($campaignObject);
+
+                $output->writeln($campaignObject->getObjectId() . ' processed');
+            }else{
+                $output->writeln('No scheduled campaigns to processed.');
             }
 
-            $output->writeln($campaignObject->getObjectId() . ' processed');
         } catch (Exception $e) {
             $output->writeln($e->getMessage());
         }

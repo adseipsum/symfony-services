@@ -255,4 +255,45 @@ class CbBlog extends CbBaseObject
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setLastTypePosted(string $lastTypePosted)
+    {
+        $this->set('lastTypePosted', $lastTypePosted);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getLastTypePosted() : string
+    {
+        return $this->get('lastTypePosted');
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setMainDomainLinksPosted(array $mainDomainLinkPosted)
+    {
+        $this->set('mainDomainLinksPosted', $mainDomainLinkPosted);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getMainDomainLinksPosted() : array
+    {
+        if($this->get('mainDomainLinksPosted')){
+            return $this->get('mainDomainLinksPosted');
+        }
+        return array();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function isBlogReadyForPosting(){
+        if($this->getLastPostDate()->getTimestamp() + $this->getPostPeriodSeconds() > time()){
+            return false;
+        }
+        return true;
+    }
+
+
+
 }

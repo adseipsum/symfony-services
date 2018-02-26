@@ -56,13 +56,13 @@ class ImagePostingServiceExtension
             );
 
             $image = file_get_contents(self::IMAGE_SOURCE_URL . http_build_query($imageRequest));
-            $generatedFileName = 'TMP_IMG_' . uniqid();
+            $tempFileName = 'TMP_IMG';
 
-            file_put_contents(sys_get_temp_dir() . '/' . $generatedFileName . '.jpg', $image);
+            file_put_contents(sys_get_temp_dir() . '/' . $tempFileName . '.jpg', $image);
 
             $options['body'] = $image;
             $options['headers']['content-type'] = 'image/jpg';
-            $options['headers']['content-disposition'] = 'attachment; filename="' . sys_get_temp_dir() . '/' . $generatedFileName . '.jpg';
+            $options['headers']['content-disposition'] = 'attachment; filename="' . sys_get_temp_dir() . '/' . $tempFileName . '.jpg';
             $options['headers']['access_token'] = $accessToken->getToken();
 
             $request = $provider->getAuthenticatedRequest(
@@ -79,7 +79,7 @@ class ImagePostingServiceExtension
                 $this->blogModel->upsert($this->blogObject);
             }
 
-            unlink(sys_get_temp_dir() . '/' . $generatedFileName . '.jpg');
+            unlink(sys_get_temp_dir() . '/' . $tempFileName . '.jpg');
 
             if(isset($response['id'])) {
                 return $response['id'];
