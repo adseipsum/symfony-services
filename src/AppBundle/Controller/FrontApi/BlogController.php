@@ -80,10 +80,6 @@ class BlogController extends Controller
                         'id' => $object->getObjectId(),
                         'enabled' => $object->getEnabled(),
                         'domainName' => $object->getDomainName(),
-                        'postingUserLogin' => $object->getPostingUserLogin(),
-                        'postingUserPassword' => $object->getPostingUserPassword(),
-                        'clientId' => $object->getClientId(),
-                        'clientSecret' => $object->getClientSecret(),
                         'postPeriodSeconds' => $object->getPostPeriodSeconds(),
                         'tags' => $object->getTags(),
                         'lastPostDate' => $object->getLastPostDate()->format('d-m-Y h:i:s')

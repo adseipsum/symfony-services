@@ -121,7 +121,10 @@ class PostingServiceExtension
         $imageAlt = $this->textModel->getSingle($this->taskObject->getImageAltId());
 
         $WPRequestBody = array(
-            'alt_text' => $imageAlt->getText()
+            'alt_text' => $imageAlt->getText(),
+            'description' => $imageAlt->getText(),
+            'title' => $imageAlt->getText(),
+            'caption' => $imageAlt->getText()
         );
 
         try {

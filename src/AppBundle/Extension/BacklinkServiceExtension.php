@@ -21,9 +21,9 @@ class BacklinkServiceExtension
     protected $campaignObject;
     protected $link = array();
     protected $additionalKeywords = array(
-        'check this link',
-        'information',
-        'try'
+        'Click here',
+        'Read more',
+        'More information'
     );
 
     const THIS_SERVICE_KEY = 'bln';
@@ -91,7 +91,6 @@ class BacklinkServiceExtension
             if($this->getRandomBoolean() && 100 - $subLinksPostedPercentage > intval($randomSubLink['subAdditionalKeywordsPercentage'])){
                 $this->link = array('href' =>  $randomSubLink['subLink'], 'name' =>  $this->additionalKeywords[array_rand($this->additionalKeywords)]);
             }
-
             $this->campaignObject->setSubLinksPosted($this->campaignObject->getSubLinksPosted() + 1);
 
             return true;
