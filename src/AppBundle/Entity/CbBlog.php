@@ -138,7 +138,7 @@ class CbBlog extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public function setLastPostDate(\DateTime $time = null)
+    public function setLastPostDate(\DateTime $time)
     {
         $this->set('lastPostDate', $time->getTimestamp());
     }

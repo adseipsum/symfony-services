@@ -96,10 +96,11 @@ class PostingServiceExtension
             $response = $provider->getResponse($request);
 
             if(!isset($response['code'])){
-                $blogObject->setLastPostDate(new \DateTime);
+                $blogObject->setLastPostDate(new \DateTime());
             }else{
                 $blogObject->setLastErrorMessage($response['code']);
             }
+            $this->blogModel->upsert($blogObject);
 
             if($this->updateMedia($provider, $accessToken)){
                 return true;
