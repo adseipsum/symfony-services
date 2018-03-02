@@ -27,7 +27,8 @@ parameters:
 
     couchbase_environment: ~
     couchbase_uri: ~
-    couchbase_bucket_password: ~
+    couchbase_user: ~
+    couchbase_password: ~
 
     python_bin: ~
     ngram_mc_bin: ~

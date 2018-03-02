@@ -40,7 +40,6 @@
 		"symfony/polyfill-apcu": "^1.0",
 		"symfony/swiftmailer-bundle": "^2.3.10",
 		"symfony/symfony": "3.3.*",
-		"tga/simhash-php": "dev-master",
 		"twig/twig": "^1.0||^2.0"
 	},
 	"require-dev": {
@@ -48,10 +47,6 @@
 		"symfony/phpunit-bridge": "^3.0"
 	},
 	"repositories":[
-        {
-            "type":"git",
-            "url":"https://github.com/nicolaichuk/SimHashPhp.git"
-        },
 		{
 			"type":"git",
 			"url":"git@gitlab.com:robobloglab/couchbase-bundle.git"

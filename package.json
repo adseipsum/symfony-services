@@ -11,7 +11,6 @@
 		"jquery": "^3.2.1"
 	},
 	"dependencies": {
-		"highlight-within-textarea": "git+https://github.com/nicolaichuk/highlight-within-textarea.git",
 		"install": "^0.10.1",
 		"jQuery-QueryBuilder": "^2.4.4",
 		"mustache": "^2.3.0",
