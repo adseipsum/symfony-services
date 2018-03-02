@@ -3,8 +3,11 @@
 namespace AppBundle\Controller\FrontApi;
 
 use AppBundle\Entity\CbBlog;
+use AppBundle\Entity\CbSeoBlog;
 use AppBundle\Extension\ApiResponse;
 use AppBundle\Repository\BlogModel;
+use AppBundle\Repository\SeoBlogModel;
+use Rbl\CouchbaseBundle\CouchbaseService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -60,11 +63,15 @@ class BlogController extends Controller
     {
         $tags = $request->query->get('tags');
 
+        /* @var $cb CouchbaseService */
         $cb = $this->get('couchbase.connector');
         $model = new BlogModel($cb);
 
+        $seoModel = new SeoBlogModel($cb);
+
         try {
 
+            /* @var $arrayOfObjects CbBlog[] */
             if(!$tags){
                 $arrayOfObjects = $model->getAllObjects();
             }else{
@@ -76,13 +83,24 @@ class BlogController extends Controller
                 $ret = [];
                 foreach($arrayOfObjects as $object) {
 
+                    $id = $object->getObjectId();
+
+                    /* @var $seo CbSeoBlog */
+                    $seo = $seoModel->get('seo-' . $id);
+
                     $ret[] = array(
-                        'id' => $object->getObjectId(),
+                        'id' => $id,
                         'enabled' => $object->getEnabled(),
                         'domainName' => $object->getDomainName(),
                         'postPeriodSeconds' => $object->getPostPeriodSeconds(),
                         'tags' => $object->getTags(),
-                        'lastPostDate' => $object->getLastPostDate()->format('d-m-Y h:i:s')
+                        'lastPostDate' => $object->getLastPostDate()->format('d-m-Y h:i:s'),
+                        'isGoogleCheck' => $seo->isGoogleCheck(),
+                        'pings' => $seo->getPings(),
+                        'availabilities' => $seo->getAvailabilities(),
+                        'domainExpirationDate' => $seo->getDomainExpirationDate(),
+                        'url' => $seo->getUrl(),
+                        'seo' => $seo->getSeo()
                     );
                 }
 
@@ -106,6 +124,7 @@ class BlogController extends Controller
     public function getBlogTags()
     {
         try {
+            /* @var $cb CouchbaseService */
             $cb = $this->get('couchbase.connector');
             $model = new BlogModel($cb);
 
@@ -121,8 +140,9 @@ class BlogController extends Controller
         }
     }
 
-    private function multipleExplode($delimiters, $string) {
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    private function multipleExplode($delimiters, $string) {
         $ready = str_replace($delimiters, $delimiters[0], $string);
         $exploded = explode($delimiters[0], $ready);
         $trimmed = array_map('trim', $exploded);

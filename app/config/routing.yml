@@ -1,11 +1,11 @@
-web:
-    resource: '@AppBundle/Controller/Web'
-    type: annotation
-    prefix: '/'
-api:
-    resource: '@AppBundle/Controller/Api'
-    type: annotation
-    prefix: '/api/'
+#web:
+#    resource: '@AppBundle/Controller/Web'
+#    type: annotation
+#    prefix: '/'
+#api:
+#    resource: '@AppBundle/Controller/Api'
+#    type: annotation
+#    prefix: '/api/'
 front-api:
     resource: '@AppBundle/Controller/FrontApi'
     type: annotation
