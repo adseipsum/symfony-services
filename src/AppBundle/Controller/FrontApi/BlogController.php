@@ -27,6 +27,7 @@ class BlogController extends Controller
         $data = json_decode($request->getContent(), true);
 
         try {
+            /* @var $cb CouchbaseService */
             $cb = $this->get('couchbase.connector');
             $model = new BlogModel($cb);
 
