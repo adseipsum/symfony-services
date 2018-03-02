@@ -87,23 +87,31 @@ class BlogController extends Controller
 
                     $id = $object->getObjectId();
 
-                    /* @var $seo CbSeoBlog */
-                    $seo = $seoModel->get('seo-' . $id);
-
-                    $ret[] = array(
+                    $blog = array(
                         'id' => $id,
                         'enabled' => $object->getEnabled(),
                         'domainName' => $object->getDomainName(),
                         'postPeriodSeconds' => $object->getPostPeriodSeconds(),
                         'tags' => $object->getTags(),
-                        'lastPostDate' => $object->getLastPostDate()->format('d-m-Y h:i:s'),
-                        'isGoogleCheck' => $seo->isGoogleCheck(),
-                        'pings' => $seo->getPings(),
-                        'availabilities' => $seo->getAvailabilities(),
-                        'domainExpirationDate' => $seo->getDomainExpirationDate(),
-                        'url' => $seo->getUrl(),
-                        'seo' => $seo->getSeo()
+                        'lastPostDate' => $object->getLastPostDate()? $object->getLastPostDate()->format('d-m-Y h:i:s') : '',
                     );
+
+                    /* @var $seo CbSeoBlog */
+                    $seoBlogDataObject = $seoModel->get('seo-' . $id);
+
+                    if($seoBlogDataObject){
+                        $seoData = array(
+                            'isGoogleCheck' => $seoBlogDataObject->isGoogleCheck(),
+                            'pings' => $seoBlogDataObject->getPings(),
+                            'availabilities' => $seoBlogDataObject->getAvailabilities(),
+                            'domainExpirationDate' => $seoBlogDataObject->getDomainExpirationDate(),
+                            'url' => $seoBlogDataObject->getUrl(),
+                            'seo' => $seoBlogDataObject->getSeo()
+                        );
+                        array_merge($blog, $seoData);
+                    }
+
+                    $ret[] = $blog;
                 }
 
                 return ApiResponse::resultValue($ret);
