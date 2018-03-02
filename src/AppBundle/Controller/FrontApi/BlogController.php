@@ -58,6 +58,7 @@ class BlogController extends Controller
 
     public function getBlogList(Request $request)
     {
+
         $tags = $request->query->get('tags');
 
         $cb = $this->get('couchbase.connector');

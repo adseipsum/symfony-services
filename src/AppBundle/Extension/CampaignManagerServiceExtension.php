@@ -58,12 +58,14 @@ class CampaignManagerServiceExtension
         if($status == CbTask::STATUS_COMPLETED) {
             $campaignObject->setPosted($campaignObject->getPosted() + 1);
             $campaignObject->updatePostsForBlog($taskObject->getBlogId());
+            $taskObject->setStatus(CbTask::STATUS_COMPLETED);
         }elseif($status == CbTask::STATUS_FAILED){
-            $taskObject->setStatus(CbTask::STATUS_FAILED);
-            $this->taskModel->upsert($taskObject);
-
+            //try to remove domain from posted on blog list
             $this->blogModel->updateMainDomainLinksPosted($blogObject, $this->campaignObject->getMainDomain(), true);
+            $taskObject->setStatus(CbTask::STATUS_FAILED);
         }
+
+        $this->taskModel->upsert($taskObject);
 
         $campaignObject->setNextPostTime($this->campaignModel->calculateNextPostTime($campaignObject));
         $campaignObject->setStatus(CbCampaign::STATUS_READY);

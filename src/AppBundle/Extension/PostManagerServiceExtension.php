@@ -51,7 +51,7 @@ class PostManagerServiceExtension
         switch($statusKey){
             case CbTask::STATUS_NEW:
                 $textConfig['paragraph'] = true;
-                $textConfig['paragraphSize'] = array(150, 200);
+                $textConfig['paragraphSize'] = array(200, 250);
                 $textConfig['type'] = 'random';
                 $textConfig['size'] = 1500;
 
@@ -122,7 +122,7 @@ class PostManagerServiceExtension
                 $this->sendMessage(self::POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_TEXT_POST);
                 break;
             case CbTask::STATUS_TEXT_POST:
-                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_COMPLETED));
+                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_TEXT_POST));
                 //send message to Campaign Manager
                 $this->sendMessage(self::CAMPAIGN_MANAGER_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_COMPLETED);
                 break;
