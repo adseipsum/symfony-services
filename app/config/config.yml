@@ -73,8 +73,8 @@ swiftmailer:
 
 rbl_couchbase:
     host: '%couchbase_uri%'
-    user: '%couchbase_bucket_user%'
-    password: '%couchbase_bucket_password%'
+    user: '%couchbase_user%'
+    password: '%couchbase_password%'
     environment: '%couchbase_environment%'
 
 
