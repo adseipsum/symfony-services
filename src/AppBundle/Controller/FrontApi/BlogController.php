@@ -96,7 +96,7 @@ class BlogController extends Controller
                         'lastPostDate' => $object->getLastPostDate()? $object->getLastPostDate()->format('d-m-Y h:i:s') : '',
                     );
 
-                    /* @var $seo CbSeoBlog */
+                    /* @var $seoBlogDataObject CbSeoBlog */
                     $seoBlogDataObject = $seoModel->get('seo-' . $id);
 
                     if($seoBlogDataObject){
@@ -106,9 +106,11 @@ class BlogController extends Controller
                             'availabilities' => $seoBlogDataObject->getAvailabilities(),
                             'domainExpirationDate' => $seoBlogDataObject->getDomainExpirationDate(),
                             'url' => $seoBlogDataObject->getUrl(),
+                            'googleFirstUrl' => $seoBlogDataObject->getGoogleFirstUrl(),
+                            'isCheckGoogle' => $seoBlogDataObject->isCheckGoogle(),
                             'seo' => $seoBlogDataObject->getSeo()
                         );
-                        array_merge($blog, $seoData);
+                        $blog = array_merge($blog, $seoData);
                     }
 
                     $ret[] = $blog;
