@@ -4,13 +4,11 @@ namespace AppBundle\Command;
 
 use AppBundle\Entity\CbTask;
 use AppBundle\Repository\TaskModel;
-use AppBundle\Extension\SchedulerServiceExtension;
 use AppBundle\Repository\CampaignModel;
 use AppBundle\Entity\CbCampaign;
 use AppBundle\Repository\BlogModel;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 

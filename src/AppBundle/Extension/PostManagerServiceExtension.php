@@ -6,8 +6,8 @@ use AppBundle\Entity\CbTask;
 use AppBundle\Repository\TaskModel;
 use AppBundle\Repository\CampaignModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use Krombox\OAuth2\Client\Provider\Wordpress;
+//use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+//use Krombox\OAuth2\Client\Provider\Wordpress;
 
 class PostManagerServiceExtension
 {
@@ -71,6 +71,7 @@ class PostManagerServiceExtension
                 $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_HEADER_GEN, 'setHeaderId' => $message->resultKey));
 
                 $textConfig['templateId'] = 'tpl-58';
+                /* @var  $taskObject CbTask */
                 $taskObject = $this->taskModel->get($taskId);
                 $textConfig['inputTextId'] = $taskObject->getBodyId();
                 $textConfig['mainSubject'] = 'Subject2';
@@ -81,6 +82,7 @@ class PostManagerServiceExtension
                 $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_SEO_TITLE_GEN, 'setSeoTitleId' => $message->resultKey));
 
                 $textConfig['type'] = 'description';
+                /* @var  $taskObject CbTask */
                 $taskObject = $this->taskModel->get($taskId);
                 $textConfig['inputTextId'] = $taskObject->getBodyId();
                 $textConfig['size'] = 160;
@@ -91,6 +93,7 @@ class PostManagerServiceExtension
                 $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_SEO_DESCRIPTION_GEN, 'setSeoDescriptionId' => $message->resultKey));
 
                 $textConfig['type'] = 'imagealt';
+                /* @var  $taskObject CbTask */
                 $taskObject = $this->taskModel->get($taskId);
                 $textConfig['inputTextId'] = $taskObject->getBodyId();
                 $textConfig['size'] = 160;
@@ -100,8 +103,10 @@ class PostManagerServiceExtension
             case CbTask::STATUS_IMAGE_ALT_GEN:
                 $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_IMAGE_ALT_GEN, 'setImageAltId' => $message->resultKey));
 
+                /* @var  $taskObject CbTask */
                 $taskObject = $this->taskModel->get($taskId);
                 $campaignModel = new CampaignModel($this->cb);
+                /* @var  $campaignObject CbCampaign */
                 $campaignObject = $campaignModel->get($taskObject->getCampaignId());
 
                 if($campaignObject->getType() == CbCampaign::TYPE_REGULAR){

@@ -3,6 +3,7 @@ namespace AppBundle\Extension;
 
 use AppBundle\Entity\CbCampaign;
 use AppBundle\Entity\CbTask;
+use AppBundle\Entity\CbBlog;
 use AppBundle\Repository\TaskModel;
 use AppBundle\Repository\BlogModel;
 use AppBundle\Repository\CampaignModel;
@@ -10,12 +11,16 @@ use AppBundle\Repository\TextGenerationResultModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Krombox\OAuth2\Client\Provider\Wordpress;
+use AppBundle\Entity\CbTextGenerationResult;
 
 class PostingServiceExtension
 {
     protected $cb;
     protected $taskModel;
+
+    /* @var  $taskObject CbTask */
     protected $taskObject;
+
     protected $textModel;
     protected $blogModel;
 
@@ -43,12 +48,22 @@ class PostingServiceExtension
      */
     public function postToBlog(){
 
+        /* @var  $campaignObject CbCampaign */
         $campaignObject = $this->campaignModel->get($this->taskObject->getCampaignId());
 
+        /* @var  $bodyObject CbTextGenerationResult */
         $bodyObject = $this->textModel->getSingle($this->taskObject->getBodyId());
+
+        /* @var  $blogObject CbBlog */
         $blogObject = $this->blogModel->get($this->taskObject->getBlogId());
+
+        /* @var  $headerObject CbTextGenerationResult */
         $headerObject = $this->textModel->getSingle($this->taskObject->getHeaderId());
+
+        /* @var  $seoTitleObject CbTextGenerationResult */
         $seoTitleObject = $this->textModel->getSingle($this->taskObject->getSeoTitleId());
+
+        /* @var  $seoDescriptionObject CbTextGenerationResult */
         $seoDescriptionObject = $this->textModel->getSingle($this->taskObject->getSeoDescriptionId());
 
         if($campaignObject->getType() == CbCampaign::TYPE_BACKLINKED) {
@@ -118,7 +133,10 @@ class PostingServiceExtension
      */
     protected function updateMedia($provider, $accessToken){
 
+        /* @var  $blogObject CbBlog */
         $blogObject = $this->blogModel->get($this->taskObject->getBlogId());
+
+        /* @var  $imageAlt CbTextGenerationResult */
         $imageAlt = $this->textModel->getSingle($this->taskObject->getImageAltId());
 
         $WPRequestBody = array(

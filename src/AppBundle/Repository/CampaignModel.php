@@ -6,7 +6,6 @@ use AppBundle\Entity\CbCampaign;
 use Rbl\CouchbaseBundle\Base\CbBaseModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
 use Rbl\CouchbaseBundle\Base\CbBaseObject;
-use AppBundle\Repository\BlogModel;
 
 class CampaignModel extends CbBaseModel
 {

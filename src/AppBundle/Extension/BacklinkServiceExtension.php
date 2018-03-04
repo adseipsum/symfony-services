@@ -7,8 +7,8 @@ use AppBundle\Repository\BlogModel;
 use AppBundle\Repository\CampaignModel;
 use AppBundle\Repository\TextGenerationResultModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use Krombox\OAuth2\Client\Provider\Wordpress;
+//use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+//use Krombox\OAuth2\Client\Provider\Wordpress;
 
 class BacklinkServiceExtension
 {

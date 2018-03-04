@@ -1,44 +1,26 @@
-web-admin-backend
-=================
+sattelitor-web-backend
+======================
 
 
 Процесс установки:
 
-su dev -l
-
-cd /home/dev/www/admin/
-git pull
-
-composer install
-bin/console cache:clear --env prod --no-warmup
-bin/console cache:clear --env dev --no-warmup
-
-cd /home/dev/www/admin/python_generator/text-generator/
-git pull 
+TODO
 
 ------------------------------------------------------------------------------------------------------------------------
+
+установить зависимости компоузера
+
+composer install
 
 обновить зависимости компоузера
 
 composer update
 
-обновить зависимости nodejs:
 
-yarn upgrade
+почистить кэш
 
-проинсталить зависимости nodejs:
-
-yarn install
-
-Сборка ассетов веба:
-
-yarn run assets:dev
-
-Также доступны команды
-
-yarn run assets:watch
-
-yarn run assets:build
+php bin/console cache:clear --env prod --no-warmup
+php bin/console cache:clear --env dev --no-warmup
 
 ------------------------------------------------------------------------------------------------------------------------
 

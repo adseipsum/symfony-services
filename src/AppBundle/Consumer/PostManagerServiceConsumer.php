@@ -3,7 +3,6 @@
 namespace AppBundle\Consumer;
 
 use AppBundle\Extension\PostManagerServiceExtension;
-use AppBundle\Extension\SchedulerServiceExtension;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 

@@ -3,7 +3,6 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\CbTextGenerationResult;
-use Rbl\CouchbaseBundle\Base\CbBaseModel;
 use Rbl\CouchbaseBundle\Base\CbDirectKeyModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
 use Rbl\CouchbaseBundle\Base\CbBaseObject;

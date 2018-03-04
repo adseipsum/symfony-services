@@ -13,8 +13,13 @@ class ImagePostingServiceExtension
 {
     protected $cb;
     protected $taskModel;
+
+    /** @var  $taskObject CbTask */
     protected $taskObject;
+
     protected $blogModel;
+
+    /** @var  $blogObject CbBlog */
     protected $blogObject;
 
     const THIS_SERVICE_KEY = 'pst';

@@ -100,15 +100,40 @@ class BlogController extends Controller
                     $seoBlogDataObject = $seoModel->get('seo-' . $id);
 
                     if($seoBlogDataObject){
+                        $pings = $seoBlogDataObject->getPings();
+                        $pingsCountAll = 0;
+                        $pingsCountValid = 0;
+                        foreach($pings as $ping) {
+                            $pingsCountAll++;
+                            $status = $ping['status'];
+                            if ($status == 1) {
+                                $pingsCountValid++;
+                            }
+                        }
+
+                        $availabilities = $seoBlogDataObject->getAvailabilities();
+                        $availabilitiesCountAll = 0;
+                        $availabilitiesCountValid = 0;
+                        foreach($availabilities as $availabilitie) {
+                            $availabilitiesCountAll++;
+                            $status = $availabilitie['status'];
+                            if ($status == 1) {
+                                $availabilitiesCountValid++;
+                            }
+                        }
+
                         $seoData = array(
                             'isGoogleCheck' => $seoBlogDataObject->isGoogleCheck(),
-                            'pings' => $seoBlogDataObject->getPings(),
-                            'availabilities' => $seoBlogDataObject->getAvailabilities(),
+                            'pingsCountAll' => $pingsCountAll,
+                            'pingsCountValid' => $pingsCountValid,
+                            'availabilitiesCountAll' => $availabilitiesCountAll,
+                            'availabilitiesCountValid' => $availabilitiesCountValid,
                             'domainExpirationDate' => $seoBlogDataObject->getDomainExpirationDate(),
                             'url' => $seoBlogDataObject->getUrl(),
                             'googleFirstUrl' => $seoBlogDataObject->getGoogleFirstUrl(),
                             'isCheckGoogle' => $seoBlogDataObject->isCheckGoogle(),
-                            'seo' => $seoBlogDataObject->getSeo()
+                            'seo' => $seoBlogDataObject->getSeo(),
+                            'checkTimestamp' => $seoBlogDataObject->getCheckTimestamp()
                         );
                         $blog = array_merge($blog, $seoData);
                     }
@@ -116,6 +141,64 @@ class BlogController extends Controller
                     $ret[] = $blog;
                 }
 
+                return ApiResponse::resultValue($ret);
+            } else {
+                return ApiResponse::resultNotFound();
+            }
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @Route("blog/seo/pings/{blogId}", name="frontapi_blog_seo_pings", requirements={"template": "[a-zA-Z0-9_\-]+"})
+     * @method ("GET")
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function getBlogSeoPings(Request $request, string $blogId)
+    {
+        /* @var $cb CouchbaseService */
+        $cb = $this->get('couchbase.connector');
+        $seoModel = new SeoBlogModel($cb);
+
+        try {
+            /* @var $seoBlogDataObject CbSeoBlog */
+            $seoBlogDataObject = $seoModel->get('seo-' . $blogId);
+
+            if($seoBlogDataObject){
+                $ret = $seoBlogDataObject->getPings();
+                return ApiResponse::resultValue($ret);
+            } else {
+                return ApiResponse::resultNotFound();
+            }
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @Route("blog/seo/availabilities/{blogId}", name="frontapi_blog_seo_availabilities", requirements={"template": "[a-zA-Z0-9_\-]+"})
+     * @method ("GET")
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function getBlogSeoAvailabilities(Request $request, string $blogId)
+    {
+        /* @var $cb CouchbaseService */
+        $cb = $this->get('couchbase.connector');
+        $seoModel = new SeoBlogModel($cb);
+
+        try {
+            /* @var $seoBlogDataObject CbSeoBlog */
+            $seoBlogDataObject = $seoModel->get('seo-' . $blogId);
+
+            if($seoBlogDataObject){
+                $ret = $seoBlogDataObject->getAvailabilities();
                 return ApiResponse::resultValue($ret);
             } else {
                 return ApiResponse::resultNotFound();

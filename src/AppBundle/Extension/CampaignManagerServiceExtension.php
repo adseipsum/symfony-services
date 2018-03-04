@@ -2,6 +2,7 @@
 namespace AppBundle\Extension;
 
 use AppBundle\Entity\CbTask;
+use AppBundle\Entity\CbBlog;
 use AppBundle\Repository\TaskModel;
 use AppBundle\Repository\BlogModel;
 use AppBundle\Entity\CbCampaign;
@@ -46,13 +47,17 @@ class CampaignManagerServiceExtension
         $taskId = $idString[1];
         $status = $idString[2];
 
+        /* @var  $taskObject CbTask */
         $taskObject = $this->taskModel->get($taskId);
+
+        /* @var  $blogObject CbBlog */
         $blogObject = $this->blogModel->get($taskObject->getBlogId());
 
         if(!$taskObject){
             return false;
         }
 
+        /* @var  $campaignObject CbCampaign */
         $campaignObject = $this->campaignModel->get($taskObject->getCampaignId());
 
         if($status == CbTask::STATUS_COMPLETED) {
