@@ -2095,10 +2095,10 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:robobloglab/couchbase-bundle.git",
-                "reference": "36e99bd7ea4a50c5ab4227e7e26ea40ea8ca1847"
+                "reference": "2d7f37d18587ed7f74add438c8a1a910d51a65ee"
             },
             "require": {
-                "ext-couchbase": "^2.4.4",
+                "ext-couchbase": "^2.4.0",
                 "php": "^7.1.0"
             },
             "type": "symfony-bundle",
@@ -2121,7 +2121,7 @@
                 "couchbase",
                 "odm"
             ],
-            "time": "2018-03-02T02:37:56+00:00"
+            "time": "2018-03-03T13:41:54+00:00"
         },
         {
             "name": "sensio/distribution-bundle",
@@ -2965,16 +2965,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.4.5",
+            "version": "v2.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "43b23931c606aa6d6a91ca47d9f7570633351a6c"
+                "reference": "d2117ec118c1ff3d28ccddca8212d82787a4809f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/43b23931c606aa6d6a91ca47d9f7570633351a6c",
-                "reference": "43b23931c606aa6d6a91ca47d9f7570633351a6c",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/d2117ec118c1ff3d28ccddca8212d82787a4809f",
+                "reference": "d2117ec118c1ff3d28ccddca8212d82787a4809f",
                 "shasum": ""
             },
             "require": {
@@ -3027,7 +3027,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2018-03-03T01:41:58+00:00"
+            "time": "2018-03-03T16:23:01+00:00"
         }
     ],
     "packages-dev": [
