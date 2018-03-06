@@ -82,6 +82,17 @@ class CbSeoBlog extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public function getSeoCheckTimestamp() : int
+    {
+        $ret = $this->get('seo_timestamp');
+        if ($ret == null) {
+            $ret = -1;
+        }
+        return $ret;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public function isCheckGoogle()
     {
         return $this->get('check_google_first');
