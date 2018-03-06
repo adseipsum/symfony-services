@@ -93,7 +93,7 @@ class BlogController extends Controller
                         'domainName' => $object->getDomainName(),
                         'postPeriodSeconds' => $object->getPostPeriodSeconds(),
                         'tags' => $object->getTags(),
-                        'lastPostDate' => $object->getLastPostDate()? $object->getLastPostDate()->format('d-m-Y h:i:s') : '',
+                        'lastPostDate' => $object->getLastPostDate()? $object->getLastPostDate()->getTimestamp() : -1,
                     );
 
                     /* @var $seoBlogDataObject CbSeoBlog */
@@ -122,18 +122,24 @@ class BlogController extends Controller
                             }
                         }
 
+                        $expirationDate = strtotime($seoBlogDataObject->getDomainExpirationDate());
+                        if (!$expirationDate) {
+                            $expirationDate = -1;
+                        }
+
                         $seoData = array(
                             'isGoogleCheck' => $seoBlogDataObject->isGoogleCheck(),
                             'pingsCountAll' => $pingsCountAll,
                             'pingsCountValid' => $pingsCountValid,
                             'availabilitiesCountAll' => $availabilitiesCountAll,
                             'availabilitiesCountValid' => $availabilitiesCountValid,
-                            'domainExpirationDate' => $seoBlogDataObject->getDomainExpirationDate(),
+                            'domainExpirationDate' => $expirationDate,
                             'url' => $seoBlogDataObject->getUrl(),
                             'googleFirstUrl' => $seoBlogDataObject->getGoogleFirstUrl(),
                             'isCheckGoogle' => $seoBlogDataObject->isCheckGoogle(),
                             'seo' => $seoBlogDataObject->getSeo(),
-                            'checkTimestamp' => $seoBlogDataObject->getCheckTimestamp()
+                            'checkTimestamp' => $seoBlogDataObject->getCheckTimestamp(),
+                            'seoCheckTimestamp' => $seoBlogDataObject->getSeoCheckTimestamp(),
                         );
                         $blog = array_merge($blog, $seoData);
                     }
