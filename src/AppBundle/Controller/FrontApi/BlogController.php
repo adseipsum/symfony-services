@@ -90,6 +90,7 @@ class BlogController extends Controller
                     $blog = array(
                         'id' => $id,
                         'enabled' => $object->getEnabled(),
+                        'locked' => $object->getLocked(),
                         'domainName' => $object->getDomainName(),
                         'postPeriodSeconds' => $object->getPostPeriodSeconds(),
                         'tags' => $object->getTags(),
