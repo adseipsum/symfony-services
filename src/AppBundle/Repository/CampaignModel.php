@@ -43,7 +43,7 @@ class CampaignModel extends CbBaseModel
 
     public function getCampaignsByStatus($status)
     {
-        return $this->getObjectByView($status, self::VIEW_BY_STATUS);
+        return $this->getObjectsByView(self::VIEW_BY_STATUS, $status);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -11,6 +11,7 @@ class CbCampaign extends CbBaseObject
     const STATUS_PROCESSING = 'processing';
     const STATUS_COMPLETED = 'completed';
     const STATUS_PAUSED = 'paused';
+    const STATUS_DELETED = 'deleted';
 
     const TYPE_REGULAR = 'regular';
     const TYPE_BACKLINKED = 'backlinked';
@@ -263,6 +264,20 @@ class CbCampaign extends CbBaseObject
     public function getPosted() : int
     {
         return $this->get('posted');
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function setBlogTags(array $blogTags)
+    {
+        $this->set('blogTags', $blogTags);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public function getBlogTags()
+    {
+        return $this->get('blogTags');
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

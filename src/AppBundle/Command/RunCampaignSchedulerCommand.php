@@ -33,7 +33,7 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
 
             $campaignModel = new CampaignModel($cb);
             $campaignObject = $campaignModel->getCampaignsByStatus(CbCampaign::STATUS_READY);
-
+            $campaignObject = $campaignObject[0];
             //stop if none of campaigns ready for posting
             if(!$campaignObject || $campaignObject->getType() == CbCampaign::TYPE_BACKLINKED){
             //if(!$campaignObject || $campaignObject->getType() == CbCampaign::TYPE_REGULAR){
