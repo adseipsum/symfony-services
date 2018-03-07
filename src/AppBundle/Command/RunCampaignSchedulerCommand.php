@@ -32,8 +32,8 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
             $cb = $this->getContainer()->get('couchbase.connector');
 
             $campaignModel = new CampaignModel($cb);
-            $campaignObject = $campaignModel->getCampaignsByStatus(CbCampaign::STATUS_READY);
-            $campaignObject = $campaignObject[0];
+            $campaignObject = $campaignModel->getCampaignForPosting(CbCampaign::TYPE_REGULAR);
+
             //stop if none of campaigns ready for posting
             if(!$campaignObject || $campaignObject->getType() == CbCampaign::TYPE_BACKLINKED){
             //if(!$campaignObject || $campaignObject->getType() == CbCampaign::TYPE_REGULAR){

@@ -94,6 +94,10 @@ class CampaignController extends Controller
 
                 $ret = [];
                 foreach($arrayOfObjects as $object) {
+                    if($object->getType() != CbCampaign::TYPE_BACKLINKED){
+                        continue;
+                    }
+
                     $campaign = array(
                         'id' => $object->getObjectId(),
                         'enabled' => $object->getEnabled(),
