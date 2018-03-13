@@ -137,6 +137,7 @@ class BlogController extends Controller
                             'domainExpirationDate' => $expirationDate,
                             'url' => $seoBlogDataObject->getUrl(),
                             'googleFirstUrl' => $seoBlogDataObject->getGoogleFirstUrl(),
+                            'urlIndex' => $seoBlogDataObject->getUrlIndex(),
                             'isCheckGoogle' => $seoBlogDataObject->isCheckGoogle(),
                             'seo' => $seoBlogDataObject->getSeo(),
                             'checkTimestamp' => $seoBlogDataObject->getCheckTimestamp(),

@@ -60,6 +60,17 @@ class CbSeoBlog extends CbBaseObject
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public function getUrlIndex() : int
+    {
+        $ret = $this->get('url_index');
+        if ($ret == null) {
+            $ret = -1;
+        }
+        return $ret;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public function getGoogleFirstUrl() : string
     {
         $ret = $this->get('google_first_url');
