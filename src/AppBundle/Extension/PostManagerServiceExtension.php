@@ -18,6 +18,8 @@ class PostManagerServiceExtension
     protected $textModel;
 
     const THIS_SERVICE_KEY = 'pms';
+    const TEXT_GENERATION_RESULT_KEY = 'tgrst';
+
     const TEXT_GENERATION_ROUTING_KEY = 'prod-satteliter.q.srv-txtgen.v2';
     const TEXT_DPN_GENERATION_ROUTING_KEY = 'prod-satteliter.q.srv-txtderr.v1';
     const BACKLINK_INSERT_SERVICE_ROUTING_KEY = 'srv.backlink.v1';
@@ -161,7 +163,7 @@ class PostManagerServiceExtension
         //if something needs to be saved in CB
         if($textConfig){
             $msg['textconfig'] = $textConfig;
-            $generatedResultKeyId = implode('::', array(self::THIS_SERVICE_KEY, $taskId, $statusKey));
+            $generatedResultKeyId = implode('::', array(self::TEXT_GENERATION_RESULT_KEY, $taskId, $statusKey));
             $msg['resultKey'] = $generatedResultKeyId;
         }
 
