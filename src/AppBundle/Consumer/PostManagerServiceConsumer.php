@@ -11,7 +11,7 @@ class PostManagerServiceConsumer implements ConsumerInterface
 {
     private $container;
 
-    public function __construct(\appDevDebugProjectContainer $container) {
+    public function __construct($container) {
         $this->container = $container;
     }
 

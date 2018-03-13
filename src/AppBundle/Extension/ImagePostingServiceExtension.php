@@ -90,8 +90,9 @@ class ImagePostingServiceExtension
                 return $response['id'];
             }
 
-        } catch (IdentityProviderException $e) {
-            echo $e->getMessage();
+        } catch (\Exception $e) {
+            $this->blogObject->setLastErrorMessage($e->getMessage());
+            $this->blogModel->upsert($this->blogObject);
         }
 
         return false;

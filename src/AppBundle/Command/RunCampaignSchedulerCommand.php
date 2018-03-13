@@ -54,6 +54,7 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
                     $blogObject = $blogModel->get($blogId);
 
                     if($blogObject && $blogObject->getEnabled() && $blogObject->isBlogReadyForPosting() && $blogModel->lockBlogForPosting($blogObject)){
+                        echo $blogObject->getObjectId() . ' locked';
                         if($campaignObject->getType() == CbCampaign::TYPE_BACKLINKED && in_array($campaignObject->getMainDomain(), $blogObject->getMainDomainLinksPosted())){
                             continue;
                         }

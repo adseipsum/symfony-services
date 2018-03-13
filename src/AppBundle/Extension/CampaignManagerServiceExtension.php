@@ -64,9 +64,12 @@ class CampaignManagerServiceExtension
             $campaignObject->setPosted($campaignObject->getPosted() + 1);
             $campaignObject->updatePostsForBlog($taskObject->getBlogId());
             $taskObject->setStatus(CbTask::STATUS_COMPLETED);
+            $blogObject->setLastTypePosted($campaignObject->getType());
         }elseif($status == CbTask::STATUS_FAILED){
-            //try to remove domain from posted on blog list
-            $this->blogModel->updateMainDomainLinksPosted($blogObject, $this->campaignObject->getMainDomain(), true);
+            if($campaignObject->getType() == CbCampaign::TYPE_BACKLINKED){
+                //try to remove domain from posted on blog list
+                $this->blogModel->updateMainDomainLinksPosted($blogObject, $campaignObject->getMainDomain(), true);
+            }
             $taskObject->setStatus(CbTask::STATUS_FAILED);
         }
 
@@ -82,8 +85,9 @@ class CampaignManagerServiceExtension
 
         $this->campaignModel->upsert($campaignObject);
 
+        //unlock the blog
         $blogObject->setLocked(false);
-        $blogObject->setLastTypePosted($campaignObject->getType());
         $this->blogModel->upsert($blogObject);
+        echo $blogObject->getObjectId() . ' unlocked';
     }
 }

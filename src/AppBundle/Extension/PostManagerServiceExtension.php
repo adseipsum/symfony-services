@@ -58,6 +58,12 @@ class PostManagerServiceExtension
                 $textConfig['paragraphSize'] = array(200, 250);
                 $textConfig['type'] = 'random';
                 $textConfig['size'] = 1500;
+                $textConfig['ngram'] = array(
+                    'apply' => true,
+                    'mode' => 'insert',
+                    'framesize' => 4,
+                    'probability' => 0.6
+                );
 
                 //send message to generate text
                 $this->sendMessage(self::TEXT_GENERATION_ROUTING_KEY, $taskId,CbTask::STATUS_BODY_GEN, $textConfig);
