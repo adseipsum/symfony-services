@@ -2,11 +2,11 @@
 
 namespace AppBundle\Controller\FrontApi;
 
-use AppBundle\Entity\CbBlog;
-use AppBundle\Entity\CbSeoBlog;
+use Rbl\CouchbaseBundle\Entity\CbBlog;
+use Rbl\CouchbaseBundle\Entity\CbSeoBlog;
 use AppBundle\Extension\ApiResponse;
-use AppBundle\Repository\BlogModel;
-use AppBundle\Repository\SeoBlogModel;
+use Rbl\CouchbaseBundle\Model\BlogModel;
+use Rbl\CouchbaseBundle\Model\SeoBlogModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

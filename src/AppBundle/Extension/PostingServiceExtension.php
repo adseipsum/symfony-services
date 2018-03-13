@@ -1,12 +1,12 @@
 <?php
 namespace AppBundle\Extension;
 
-use AppBundle\Entity\CbCampaign;
-use AppBundle\Entity\CbTask;
-use AppBundle\Repository\TaskModel;
-use AppBundle\Repository\BlogModel;
-use AppBundle\Repository\CampaignModel;
-use AppBundle\Repository\TextGenerationResultModel;
+use Rbl\CouchbaseBundle\Entity\CbCampaign;
+use Rbl\CouchbaseBundle\Entity\CbTask;
+use Rbl\CouchbaseBundle\Model\TaskModel;
+use Rbl\CouchbaseBundle\Model\BlogModel;
+use Rbl\CouchbaseBundle\Model\CampaignModel;
+use Rbl\CouchbaseBundle\Model\TextGenerationResultModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Krombox\OAuth2\Client\Provider\Wordpress;

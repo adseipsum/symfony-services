@@ -1,12 +1,12 @@
 <?php
 namespace AppBundle\Extension;
 
-use AppBundle\Entity\CbTask;
-use AppBundle\Entity\CbBlog;
-use AppBundle\Repository\TaskModel;
-use AppBundle\Repository\BlogModel;
-use AppBundle\Entity\CbCampaign;
-use AppBundle\Repository\CampaignModel;
+use Rbl\CouchbaseBundle\Entity\CbTask;
+use Rbl\CouchbaseBundle\Entity\CbBlog;
+use Rbl\CouchbaseBundle\Model\TaskModel;
+use Rbl\CouchbaseBundle\Model\BlogModel;
+use Rbl\CouchbaseBundle\Entity\CbCampaign;
+use Rbl\CouchbaseBundle\Model\CampaignModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
 
 class CampaignManagerServiceExtension

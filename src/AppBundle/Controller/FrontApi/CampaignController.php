@@ -2,9 +2,9 @@
 
 namespace AppBundle\Controller\FrontApi;
 
-use AppBundle\Entity\CbCampaign;
+use Rbl\CouchbaseBundle\Entity\CbCampaign;
 use AppBundle\Extension\ApiResponse;
-use AppBundle\Repository\CampaignModel;
+use Rbl\CouchbaseBundle\Model\CampaignModel;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
