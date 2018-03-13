@@ -2,11 +2,11 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Entity\CbTask;
-use AppBundle\Repository\TaskModel;
-use AppBundle\Repository\CampaignModel;
-use AppBundle\Entity\CbCampaign;
-use AppBundle\Repository\BlogModel;
+use Rbl\CouchbaseBundle\Entity\CbTask;
+use Rbl\CouchbaseBundle\Model\TaskModel;
+use Rbl\CouchbaseBundle\Model\CampaignModel;
+use Rbl\CouchbaseBundle\Entity\CbCampaign;
+use Rbl\CouchbaseBundle\Model\BlogModel;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
