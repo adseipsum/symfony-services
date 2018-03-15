@@ -7,8 +7,6 @@ use Rbl\CouchbaseBundle\Model\BlogModel;
 use Rbl\CouchbaseBundle\Model\CampaignModel;
 use Rbl\CouchbaseBundle\Model\TextGenerationResultModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
-//use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-//use Krombox\OAuth2\Client\Provider\Wordpress;
 
 class BacklinkServiceExtension
 {
@@ -19,6 +17,7 @@ class BacklinkServiceExtension
     protected $blogModel;
     protected $campaignModel;
     protected $campaignObject;
+    protected $endOfText = false;
     protected $link = array();
     protected $additionalKeywords = array(
         'Click here',
@@ -68,6 +67,7 @@ class BacklinkServiceExtension
 
             //Great random occurrence 2
             if($this->getRandomBoolean() && 100 - $mainPostedPercentage > intval($this->campaignObject->getAdditionalKeysPercentage())){
+                $this->endOfText = true;
                 $this->link = array('href' =>  $mainDomain, 'name' =>  $this->additionalKeywords[array_rand($this->additionalKeywords)]);
             }
 
@@ -89,6 +89,7 @@ class BacklinkServiceExtension
 
             //Great random occurrence 2
             if($this->getRandomBoolean() && 100 - $subLinksPostedPercentage > intval($randomSubLink['subAdditionalKeywordsPercentage'])){
+                $this->endOfText = true;
                 $this->link = array('href' =>  $randomSubLink['subLink'], 'name' =>  $this->additionalKeywords[array_rand($this->additionalKeywords)]);
             }
             $this->campaignObject->setSubLinksPosted($this->campaignObject->getSubLinksPosted() + 1);
@@ -108,9 +109,15 @@ class BacklinkServiceExtension
         $bodyObject = $this->textModel->getSingle($this->taskObject->getBodyId());
         $link = ' <a href="http://' . $this->link['href'] . '" target="_blank">' . $this->link['name'] . '</a> ';
         $text = $bodyObject->getText();
-        $offset = rand(strlen($text) * 0.2, strlen($text) * 0.8);
-        $position = strpos($text, ' ', $offset);
-        $text = substr_replace($text, $link, $position, 0);
+
+        if($this->endOfText){
+            $text = $text . $link;
+        }else{
+            $offset = rand(strlen($text) * 0.2, strlen($text) * 0.8);
+            $position = strpos($text, ' ', $offset);
+            $text = substr_replace($text, $link, $position, 0);
+        }
+
         $bodyObject->setBacklinkedText($text);
         $this->textModel->upsert($bodyObject);
 

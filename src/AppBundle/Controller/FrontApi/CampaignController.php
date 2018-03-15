@@ -10,9 +10,26 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Rbl\CouchbaseBundle\CouchbaseService;
+
+/**
+ * @Route(service="app_bundle.campaign.controller")
+ */
 
 class CampaignController extends Controller
 {
+
+    private $cb;
+    private $campaignModel;
+
+    const HTTP_STRING = 'http://';
+
+    public function __construct(CouchbaseService $cb)
+    {
+        $this->cb = $cb;
+        $this->campaignModel = new CampaignModel($this->cb);
+    }
+
     /**
      * @Route("/campaign/upsert", name="frontapi_campaign_upsert")
      * @param Request $request
@@ -21,15 +38,12 @@ class CampaignController extends Controller
      */
     public function upsertCampaign(Request $request)
     {
-
         $data = json_decode($request->getContent(), true);
+        $this->checkCampaignId($data);
 
         try {
-            $cb = $this->get('couchbase.connector');
-            $model = new CampaignModel($cb);
-
-            if(isset($data['campaignId']) && is_string($data['campaignId']) && strpos($data['campaignId'], 'campaign') === 0) {
-                $object = $model->get($data['campaignId']);
+            if(isset($data['campaignId'])) {
+                $object = $this->campaignModel->get($data['campaignId']);
                 $object->setPostMainDomainLinks(0);
                 $object->setPostSubLinks(0);
             }else{
@@ -43,12 +57,18 @@ class CampaignController extends Controller
             }
 
             if($data['type'] == CbCampaign::TYPE_BACKLINKED){
-                $object->setMainDomain($data['mainDomain']);
+                $object->setMainDomain(str_replace(self::HTTP_STRING, '', $data['mainDomain']));
                 $object->setAdditionalKeysPercentage($data['additionalKeysPercentage']);
                 $object->setPostMainDomainLinks($data['postMainDomainLinks']);
                 $object->setPostSubLinks($data['postSubLinks']);
                 $object->setMainKeywords($data['mainKeywords']);
+
+                if(isset($data['subLinks'])) foreach($data['subLinks'] as $key => $subLink){
+                    $data['subLinks'][$key]['subLink'] = str_replace(self::HTTP_STRING, '', $subLink['subLink']);
+                }
                 $object->setSubLinks($data['subLinks']);
+
+
                 $object->setNeedPosts($data['postSubLinks'] + $data['postMainDomainLinks']);
             }else{
                 $object->setPostMainDomainLinks(0);
@@ -60,7 +80,7 @@ class CampaignController extends Controller
             $object->setBlogs(array_fill_keys($data['selectedBlogs'], 0));
             $object->setBlogTags(array_map('trim', explode(',', $data['blogTags'])));
 
-            $model->upsert($object);
+            $this->campaignModel->upsert($object);
 
             return ApiResponse::resultValues(true);
         } catch (Exception $e) {
@@ -78,9 +98,6 @@ class CampaignController extends Controller
     public function getCampaignList()
     {
         try {
-            $cb = $this->get('couchbase.connector');
-            $model = new CampaignModel($cb);
-
             $status = array(
                 CbCampaign::STATUS_READY,
                 CbCampaign::STATUS_PROCESSING,
@@ -88,7 +105,7 @@ class CampaignController extends Controller
                 CbCampaign::STATUS_PAUSED
             );
 
-            $arrayOfObjects = $model->getCampaignsByStatus($status);
+            $arrayOfObjects = $this->campaignModel->getCampaignsByStatus($status);
 
             if ($arrayOfObjects != null){
 
@@ -144,23 +161,61 @@ class CampaignController extends Controller
     public function removeCampaign(Request $request){
 
         $data = json_decode($request->getContent(), true);
-        if(!isset($data['campaignId']) || !is_string($data['campaignId']) || strpos($data['campaignId'], 'campaign') === false) {
-            return ApiResponse::resultNotFound();
-        }
+        $this->checkCampaignId($data);
 
         try {
-            $cb = $this->get('couchbase.connector');
-            $model = new CampaignModel($cb);
-            $campaignObject = $model->get($data['campaignId']);
+            $campaignObject = $this->campaignModel->get($data['campaignId']);
             if ($campaignObject != null){
                 $campaignObject->setStatus(CbCampaign::STATUS_DELETED);
-                $model->upsert($campaignObject);
+                $this->campaignModel->upsert($campaignObject);
                 return ApiResponse::resultValue(true);
             } else {
                 return ApiResponse::resultNotFound();
             }
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @Route("/campaign/toggle", name="frontapi_campaign_toggle")
+     * @param Request $request
+     * @Method("GET")
+     * @return ApiResponse
+     */
+    public function toggleCampaign(Request $request)
+    {
+        $data = json_decode($request->getContent(), true);
+        $this->checkCampaignId($data);
+
+        if(!isset($data['enabled'])){
+            return ApiResponse::resultNotFound();
+        }
+
+        try {
+            $campaignObject = $this->campaignModel->get($data['campaignId']);
+            $campaignObject->setEnabled($data['enabled'] ? true : false);
+            $this->campaignModel->upsert($campaignObject);
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
+
+        return ApiResponse::resultValue(true);
+
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @param array $data
+     * @Method("GET")
+     * @return ApiResponse
+     */
+    protected function checkCampaignId($data){
+        if(!isset($data['campaignId']) || !is_string($data['campaignId']) || strpos($data['campaignId'], 'campaign') === false) {
+            return ApiResponse::resultNotFound();
         }
     }
 

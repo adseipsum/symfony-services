@@ -61,3 +61,8 @@ services:
     app_bundle.consumer.image_posting_service:
                 class: AppBundle\Consumer\ImagePostingServiceConsumer
                 arguments: ['@service_container']
+
+    app_bundle.campaign.controller:
+            class: AppBundle\Controller\FrontApi\CampaignController
+            arguments: ["@couchbase.connector"]
+            tags: ['controller.service_arguments']

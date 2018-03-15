@@ -32,11 +32,11 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
             $cb = $this->getContainer()->get('couchbase.connector');
 
             $campaignModel = new CampaignModel($cb);
-            $campaignObject = $campaignModel->getCampaignForPosting(CbCampaign::TYPE_REGULAR);
+            $regularCampaign = $campaignModel->getCampaignForPosting(CbCampaign::TYPE_REGULAR);
+            $campaignObject =  $regularCampaign ? $regularCampaign : $campaignModel->getCampaignForPosting(CbCampaign::TYPE_BACKLINKED);
 
             //stop if none of campaigns ready for posting
-            if(!$campaignObject || $campaignObject->getType() == CbCampaign::TYPE_BACKLINKED){
-            //if(!$campaignObject || $campaignObject->getType() == CbCampaign::TYPE_REGULAR){
+            if(!$campaignObject){
                 $output->writeln('No ready campaigns to processed.');
                 return false;
             }
@@ -53,11 +53,19 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
                 foreach($blogs as $blogId => $counter){
                     $blogObject = $blogModel->get($blogId);
 
-                    if($blogObject && $blogObject->getEnabled() && $blogObject->isBlogReadyForPosting() && $blogModel->lockBlogForPosting($blogObject)){
-                        echo $blogObject->getObjectId() . ' locked';
-                        if($campaignObject->getType() == CbCampaign::TYPE_BACKLINKED && in_array($campaignObject->getMainDomain(), $blogObject->getMainDomainLinksPosted())){
+                    if($blogObject && $blogObject->getEnabled() && $blogObject->isBlogReadyForPosting()){
+
+                        if($campaignObject->getType() == CbCampaign::TYPE_BACKLINKED
+                            && (in_array($campaignObject->getMainDomain(), $blogObject->getMainDomainLinksPosted()) || $blogObject->getLastTypePosted() == CbCampaign::TYPE_BACKLINKED)){
                             continue;
                         }
+
+                        if(!$blogModel->lockBlogForPosting($blogObject)){
+                            $blogObject->setLocked(false);
+                            $blogModel->upsert($blogObject);
+                            continue;
+                        }
+                        echo $blogObject->getObjectId() . ' locked';
                         break;
                     }else{
                         continue;
