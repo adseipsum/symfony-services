@@ -32,8 +32,11 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
             $cb = $this->getContainer()->get('couchbase.connector');
 
             $campaignModel = new CampaignModel($cb);
-            $regularCampaign = $campaignModel->getCampaignForPosting(CbCampaign::TYPE_REGULAR);
-            $campaignObject =  $regularCampaign ? $regularCampaign : $campaignModel->getCampaignForPosting(CbCampaign::TYPE_BACKLINKED);
+            $campaignObject = $campaignModel->getCampaignForPosting(CbCampaign::TYPE_REGULAR);
+
+            if(!$campaignObject || $campaignObject->getNextPostTime()->getTimestamp() > time()) {
+                $campaignObject = $campaignModel->getCampaignForPosting(CbCampaign::TYPE_BACKLINKED);
+            }
 
             //stop if none of campaigns ready for posting
             if(!$campaignObject){
@@ -41,63 +44,63 @@ class RunCampaignSchedulerCommand extends ContainerAwareCommand
                 return false;
             }
 
-            if(time() > $campaignObject->getNextPostTime()->getTimestamp()){
-                //TODO: add check on amount of posts
+            //or time hasn't came
+            if($campaignObject->getNextPostTime()->getTimestamp() > time()){
+                $output->writeln('No scheduled campaigns to processed.');
+                return false;
+            }
 
-                $blogModel = new BlogModel($cb);
-                $blogs = $campaignObject->getBlogs();
+            $blogModel = new BlogModel($cb);
+            $blogs = $campaignObject->getBlogs();
 
-                //make sure we will start from blogs with lesser amount of posts
-                asort($blogs);
+            //make sure we will start from blogs with lesser amount of posts
+            asort($blogs);
 
-                foreach($blogs as $blogId => $counter){
-                    $blogObject = $blogModel->get($blogId);
+            foreach($blogs as $blogId => $counter){
+                $blogObject = $blogModel->get($blogId);
 
-                    if($blogObject && $blogObject->getEnabled() && $blogObject->isBlogReadyForPosting()){
+                if($blogObject && $blogObject->getEnabled() && $blogObject->isBlogReadyForPosting()){
 
-                        if($campaignObject->getType() == CbCampaign::TYPE_BACKLINKED
-                            && (in_array($campaignObject->getMainDomain(), $blogObject->getMainDomainLinksPosted()) || $blogObject->getLastTypePosted() == CbCampaign::TYPE_BACKLINKED)){
-                            continue;
-                        }
-
-                        if(!$blogModel->lockBlogForPosting($blogObject)){
-                            $blogObject->setLocked(false);
-                            $blogModel->upsert($blogObject);
-                            continue;
-                        }
-                        echo $blogObject->getObjectId() . ' locked';
-                        break;
-                    }else{
+                    if($campaignObject->getType() == CbCampaign::TYPE_BACKLINKED
+                        && (in_array($campaignObject->getMainDomain(), $blogObject->getMainDomainLinksPosted()) || $blogObject->getLastTypePosted() == CbCampaign::TYPE_BACKLINKED)){
                         continue;
                     }
+
+                    if(!$blogModel->lockBlogForPosting($blogObject)){
+                        $blogObject->setLocked(false);
+                        $blogModel->upsert($blogObject);
+                        continue;
+                    }
+                    echo $blogObject->getObjectId() . ' locked';
+                    break;
+                }else{
+                    continue;
                 }
-
-                if(!isset($blogObject)){
-                    $output->writeln('No blogs ready for posting for campaign ' . $campaignObject->getObjectId());
-                    return false;
-                }
-
-                $taskModel = new TaskModel($cb);
-                $taskId = $taskModel->createTask($blogObject->getObjectId(), $campaignObject->getObjectId());
-
-                $generatedTaskId = implode('::', array(self::THIS_SERVICE_KEY, $taskId, CbTask::STATUS_NEW));
-
-                $msg = array(
-                    'taskId' => $generatedTaskId,
-                    'responseRoutingKey' => self::RESPONCE_ROUTING_KEY
-                );
-
-                //send message to post manager service
-                $amqp = $this->getContainer()->get('old_sound_rabbit_mq.campaign_scheduler_producer');
-                $amqp->publish(json_encode($msg), self::POST_MANAGER_ROUTING_KEY);
-
-                $campaignObject->setStatus(CbCampaign::STATUS_PROCESSING);
-                $campaignModel->upsert($campaignObject);
-
-                $output->writeln($campaignObject->getObjectId() . ' processed');
-            }else{
-                $output->writeln('No scheduled campaigns to processed.');
             }
+
+            if(!isset($blogObject)){
+                $output->writeln('No blogs ready for posting for campaign ' . $campaignObject->getObjectId());
+                return false;
+            }
+
+            $taskModel = new TaskModel($cb);
+            $taskId = $taskModel->createTask($blogObject->getObjectId(), $campaignObject->getObjectId());
+
+            $generatedTaskId = implode('::', array(self::THIS_SERVICE_KEY, $taskId, CbTask::STATUS_NEW));
+
+            $msg = array(
+                'taskId' => $generatedTaskId,
+                'responseRoutingKey' => self::RESPONCE_ROUTING_KEY
+            );
+
+            //send message to post manager service
+            $amqp = $this->getContainer()->get('old_sound_rabbit_mq.campaign_scheduler_producer');
+            $amqp->publish(json_encode($msg), self::POST_MANAGER_ROUTING_KEY);
+
+            $campaignObject->setStatus(CbCampaign::STATUS_PROCESSING);
+            $campaignModel->upsert($campaignObject);
+
+            $output->writeln($campaignObject->getObjectId() . ' processed');
 
         } catch (Exception $e) {
             $output->writeln($e->getMessage());

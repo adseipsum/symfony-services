@@ -70,6 +70,7 @@ class CampaignManagerServiceExtension
                 //try to remove domain from posted on blog list
                 $this->blogModel->updateMainDomainLinksPosted($blogObject, $campaignObject->getMainDomain(), true);
             }
+            $campaignObject->setErrors($campaignObject->getErrors() + 1);
             $taskObject->setStatus(CbTask::STATUS_FAILED);
         }
 

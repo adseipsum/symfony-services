@@ -42,7 +42,7 @@ class CampaignController extends Controller
         $this->checkCampaignId($data);
 
         try {
-            if(isset($data['campaignId'])) {
+            if(isset($data['campaignId']) && $data['campaignId']) {
                 $object = $this->campaignModel->get($data['campaignId']);
                 $object->setPostMainDomainLinks(0);
                 $object->setPostSubLinks(0);
