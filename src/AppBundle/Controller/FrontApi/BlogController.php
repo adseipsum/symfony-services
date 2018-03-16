@@ -35,6 +35,7 @@ class BlogController extends Controller
             $object->setEnabled(true);
             $object->setLocked(false);
             $object->setDomainName($data['domainName']);
+            $object->setRealIp($data['realIp']);
             $object->setPostingUserLogin($data['postingUserLogin']);
             $object->setPostingUserPassword($data['postingUserPassword']);
             $object->setClientId($data['clientId']);
@@ -92,6 +93,7 @@ class BlogController extends Controller
                         'enabled' => $object->getEnabled(),
                         'locked' => $object->getLocked(),
                         'domainName' => $object->getDomainName(),
+                        'realIp' => $object->getRealIp(),
                         'postPeriodSeconds' => $object->getPostPeriodSeconds(),
                         'tags' => $object->getTags(),
                         'lastPostDate' => $object->getLastPostDate()? $object->getLastPostDate()->getTimestamp() : -1,
