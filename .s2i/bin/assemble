@@ -1,5 +1,5 @@
 echo "Installing repo"
-yum install libcouchbase-devel libcouchbase2-bin
+yum install libcouchbase-devel libcouchbase2-bin php-devel
 wget http://packages.couchbase.com/releases/couchbase-release/couchbase-release-1.0-4-x86_64.rpm
 sudo rpm -iv couchbase-release-1.0-4-x86_64.rpm
 echo "Installing extra extensions"
