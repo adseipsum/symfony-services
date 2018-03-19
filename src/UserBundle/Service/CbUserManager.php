@@ -1,7 +1,14 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: void
+ * Date: 7/19/17
+ * Time: 6:04 PM
+ */
 
 namespace UserBundle\Service;
 
+use Doctrine\Common\Proxy\Exception\InvalidArgumentException;
 use Rbl\CouchbaseBundle\CouchbaseService;
 use FOS\UserBundle\Model\UserInterface;
 use FOS\UserBundle\Model\UserManager;
@@ -14,15 +21,15 @@ use UserBundle\Repository\UserModel;
 
 class CbUserManager extends UserManager
 {
-
     protected $cb;
+    protected $mdUserAuth;
+    protected $unknownuserdomain;
 
-    protected $mdUser;
-
-    public function __construct(CouchbaseService $cb, EncoderFactoryInterface $encoder)
+    public function __construct(CouchbaseService $cb,
+                                EncoderFactoryInterface $encoder)
     {
         $this->cb = $cb;
-        $this->mdUser = new UserModel($cb);
+        $this->mdUserAuth = new UserModel($cb);
 
         $passwordUpdater = new PasswordUpdater($encoder);
         $canonicalizer = new Canonicalizer();
@@ -38,9 +45,19 @@ class CbUserManager extends UserManager
      */
     public function deleteUser(UserInterface $user)
     {
-        $this->mdUser->remove($user->getUsername());
+        #todo: delete profile also
+
+        $this->mdUserAuth->remove($user->getUsername());
     }
 
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findUserByUsername($username)
+    {
+        return $this->findUserBy(array('username' => $username));
+    }
     /**
      * Finds one user by the given criteria.
      *
@@ -50,10 +67,22 @@ class CbUserManager extends UserManager
      */
     public function findUserBy(array $criteria)
     {
-        if (isset($criteria['username'])) {
-            return $this->mdUser->getUserByUsername($criteria['username']);
-        } else if (isset($criteria['usernameCanonical'])) {
-            return $this->mdUser->getUserByUsername($criteria['usernameCanonical']);
+
+        if(isset($criteria['username']))
+        {
+            return $this->mdUserAuth->getUserByUsername($criteria['username']);
+        }
+        else if(isset($criteria['usernameCanonical']))
+        {
+            return $this->mdUserAuth->getUserByUsername($criteria['usernameCanonical']);
+        }
+        else if(isset($criteria['email']))
+        {
+            return $this->mdUserAuth->getUserByEmail($criteria['email']);
+        }
+        else if(isset($criteria['emailCanonical']))
+        {
+            return $this->mdUserAuth->getUserByEmail($criteria['emailCanonical']);
         }
 
         return null;
@@ -66,7 +95,7 @@ class CbUserManager extends UserManager
      */
     public function findUsers()
     {
-        return $this->mdUser->getAllObjects();
+        return $this->mdUserAuth->getAllObjects();
     }
 
     /**
@@ -86,7 +115,7 @@ class CbUserManager extends UserManager
      */
     public function reloadUser(UserInterface $user)
     {
-        $this->mdUser->getUserByUsername($user->getUsername());
+        $this->mdUserAuth->getUserByUsername($user->getUsername());
     }
 
     public function getSalt()
@@ -101,13 +130,18 @@ class CbUserManager extends UserManager
      */
     public function updateUser(UserInterface $user)
     {
-        if ($user->getSalt() == null) {
-            // $user->setSalt($this->getSalt());
-        }
+ //       if($user->getSalt() == null)
+ //       {
+ //            $user->setSalt($this->getSalt());
+ //       }
 
         $this->updateCanonicalFields($user);
         $this->updatePassword($user);
 
-        $this->mdUser->upsert($user);
+        $this->mdUserAuth->upsert($user);
+        $email = $user->getEmail();
+
     }
+
+
 }

@@ -34,13 +34,16 @@ services:
     #     arguments:
     #         $someArgument: 'some_value'
 
-    user_bundle.couchbase_user_provider:
-        class: UserBundle\Service\CbUserProvider
-        arguments: ["@couchbase.connector"]
+    #user_bundle.couchbase_user_provider:
+    #    class: UserBundle\Service\CbUserProvider
+    #    arguments: ["@couchbase.connector"]
 
-    user_bundle.couchbase_user_manager:
-            class: UserBundle\Service\CbUserManager
-            arguments: ["@couchbase.connector",'@security.encoder_factory']
+    #user_bundle.couchbase_user_manager:
+    #        class: UserBundle\Service\CbUserManager
+    #      arguments: ["@couchbase.connector",'@security.encoder_factory']
+
+
+
 
     app_bundle.consumer.campaign_manager_service:
             class: AppBundle\Consumer\CampaignManagerConsumer
@@ -66,3 +69,7 @@ services:
             class: AppBundle\Controller\FrontApi\CampaignController
             arguments: ["@couchbase.connector"]
             tags: ['controller.service_arguments']
+
+imports:
+    - { resource: '@UserBundle/Resources/config/services.xml' }
+    - { resource: '@UserBundle/Resources/config/services.yml' }

@@ -1,0 +1,17 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/book/service_container.html
+
+parameters:
+
+services:
+    user_bundle.authentication.handler.login_result_handler:
+        class:  UserBundle\Result\LoginResultHandler
+        arguments:  ['@service_container', '@router', '@security.authorization_checker','@user_bundle.couchbase_user_manager']
+
+    user_bundle.couchbase_user_provider:
+        class: UserBundle\Service\CbUserProvider
+        arguments: ["@couchbase.connector"]
+
+    user_bundle.couchbase_user_manager:
+        class: UserBundle\Service\CbUserManager
+        arguments: ["@couchbase.connector",'@security.encoder_factory']

@@ -90,6 +90,15 @@ fos_user:
     from_email:
         address: "%mailer_user%"
         sender_name: "%mailer_user%"
+fos_oauth_server:
+    db_driver:           orm
+    client_class:        OAuthServerBundle\Entity\Client
+    access_token_class:  OAuthServerBundle\Entity\AccessToken
+    refresh_token_class: OAuthServerBundle\Entity\RefreshToken
+    auth_code_class:     OAuthServerBundle\Entity\AuthCode
+    service:
+        user_provider:  user_bundle.couchbase_user_provider
+        storage:        user_bundle.storage.default
 
 old_sound_rabbit_mq:
     connections:
