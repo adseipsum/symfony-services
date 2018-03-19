@@ -1,0 +1,16 @@
+echo "Installing repo"
+yum install libcouchbase-devel libcouchbase2-bin
+wget http://packages.couchbase.com/releases/couchbase-release/couchbase-release-1.0-4-x86_64.rpm
+sudo rpm -iv couchbase-release-1.0-4-x86_64.rpm
+echo "Installing extra extensions"
+mkdir /opt/app-root/php.d
+cd /opt/app-root/
+pecl bundle couchbase
+cd couchbase
+phpize
+./configure -q
+make
+echo "extension=/opt/app-root/couchbase/modules/couchbase.so" >> /opt/app-root/php.d/couchbase.ini
+echo "Running assemble script"
+cd /opt/app-root/src/
+/usr/libexec/s2i/assemble
