@@ -7,7 +7,7 @@ use Rbl\CouchbaseBundle\Entity\CbBlog;
 use Rbl\CouchbaseBundle\Model\BlogModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use Krombox\OAuth2\Client\Provider\Wordpress;
+use Krombox\OAuth2\Client\Provider\WordPress;
 
 class ImagePostingServiceExtension
 {

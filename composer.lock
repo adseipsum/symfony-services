@@ -4,7 +4,6 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "448cfc668922664c3c0db1e1d78d38a0",
     "content-hash": "c15e23bace1a0100cfe86a7e29f6c5bd",
     "packages": [
         {
@@ -61,7 +60,7 @@
                 "ssl",
                 "tls"
             ],
-            "time": "2017-11-29 09:37:33"
+            "time": "2017-11-29T09:37:33+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -129,7 +128,7 @@
                 "docblock",
                 "parser"
             ],
-            "time": "2017-12-06 07:11:42"
+            "time": "2017-12-06T07:11:42+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -203,7 +202,7 @@
                 "cache",
                 "caching"
             ],
-            "time": "2017-08-25 07:02:50"
+            "time": "2017-08-25T07:02:50+00:00"
         },
         {
             "name": "doctrine/collections",
@@ -270,7 +269,7 @@
                 "collections",
                 "iterator"
             ],
-            "time": "2017-07-22 10:37:32"
+            "time": "2017-07-22T10:37:32+00:00"
         },
         {
             "name": "doctrine/common",
@@ -343,7 +342,7 @@
                 "persistence",
                 "spl"
             ],
-            "time": "2017-08-31 08:43:38"
+            "time": "2017-08-31T08:43:38+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -416,7 +415,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2017-11-19 13:38:54"
+            "time": "2017-11-19T13:38:54+00:00"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -501,7 +500,7 @@
                 "orm",
                 "persistence"
             ],
-            "time": "2017-11-24 13:09:19"
+            "time": "2017-11-24T13:09:19+00:00"
         },
         {
             "name": "doctrine/doctrine-cache-bundle",
@@ -589,7 +588,7 @@
                 "cache",
                 "caching"
             ],
-            "time": "2017-10-12 17:23:29"
+            "time": "2017-10-12T17:23:29+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -656,7 +655,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2018-01-09 20:05:19"
+            "time": "2018-01-09T20:05:19+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -710,7 +709,7 @@
                 "constructor",
                 "instantiate"
             ],
-            "time": "2017-07-22 11:58:36"
+            "time": "2017-07-22T11:58:36+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -764,7 +763,7 @@
                 "lexer",
                 "parser"
             ],
-            "time": "2014-09-09 13:34:57"
+            "time": "2014-09-09T13:34:57+00:00"
         },
         {
             "name": "doctrine/orm",
@@ -846,7 +845,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2018-02-27 07:30:56"
+            "time": "2018-02-27T07:30:56+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -903,7 +902,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2017-11-15 23:40:40"
+            "time": "2017-11-15T23:40:40+00:00"
         },
         {
             "name": "fig/link-util",
@@ -957,7 +956,7 @@
                 "psr-13",
                 "rest"
             ],
-            "time": "2016-10-17 18:31:11"
+            "time": "2016-10-17T18:31:11+00:00"
         },
         {
             "name": "friendsofsymfony/oauth-server-bundle",
@@ -1029,7 +1028,7 @@
                 "oauth2",
                 "server"
             ],
-            "time": "2016-02-22 13:57:55"
+            "time": "2016-02-22T13:57:55+00:00"
         },
         {
             "name": "friendsofsymfony/oauth2-php",
@@ -1083,7 +1082,7 @@
                 "oauth",
                 "oauth2"
             ],
-            "time": "2018-01-30 19:58:25"
+            "time": "2018-01-30T19:58:25+00:00"
         },
         {
             "name": "friendsofsymfony/user-bundle",
@@ -1159,7 +1158,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2018-03-08 08:59:27"
+            "time": "2018-03-08T08:59:27+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1224,7 +1223,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2017-06-22 18:50:49"
+            "time": "2017-06-22T18:50:49+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -1275,7 +1274,7 @@
             "keywords": [
                 "promise"
             ],
-            "time": "2016-12-20 10:07:11"
+            "time": "2016-12-20T10:07:11+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -1340,7 +1339,7 @@
                 "uri",
                 "url"
             ],
-            "time": "2017-03-20 17:10:46"
+            "time": "2017-03-20T17:10:46+00:00"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -1391,7 +1390,7 @@
             "keywords": [
                 "parameters management"
             ],
-            "time": "2018-02-13 18:05:56"
+            "time": "2018-02-13T18:05:56+00:00"
         },
         {
             "name": "ircmaxell/random-lib",
@@ -1446,7 +1445,7 @@
                 "random-numbers",
                 "random-strings"
             ],
-            "time": "2016-09-07 15:52:06"
+            "time": "2016-09-07T15:52:06+00:00"
         },
         {
             "name": "ircmaxell/security-lib",
@@ -1492,7 +1491,7 @@
             ],
             "description": "A Base Security Library",
             "homepage": "https://github.com/ircmaxell/SecurityLib",
-            "time": "2015-03-20 14:31:23"
+            "time": "2015-03-20T14:31:23+00:00"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -1542,20 +1541,20 @@
                 "highlight",
                 "sql"
             ],
-            "time": "2014-01-12 16:20:24"
+            "time": "2014-01-12T16:20:24+00:00"
         },
         {
             "name": "krombox/oauth2-wordpress",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/krombox/oauth2-wordpress.git",
-                "reference": "8de42e5b5b0886a3ba4595d29ce9a1e801fe29cd"
+                "reference": "69e6e8d7f9f8c6e19b3f521b7d2f71dee9198095"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/krombox/oauth2-wordpress/zipball/8de42e5b5b0886a3ba4595d29ce9a1e801fe29cd",
-                "reference": "8de42e5b5b0886a3ba4595d29ce9a1e801fe29cd",
+                "url": "https://api.github.com/repos/krombox/oauth2-wordpress/zipball/69e6e8d7f9f8c6e19b3f521b7d2f71dee9198095",
+                "reference": "69e6e8d7f9f8c6e19b3f521b7d2f71dee9198095",
                 "shasum": ""
             },
             "require": {
@@ -1588,7 +1587,7 @@
                     "homepage": "https://github.com/krombox"
                 }
             ],
-            "description": "Wordpress OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+            "description": "WordPress OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
             "keywords": [
                 "authorisation",
                 "authorization",
@@ -1597,7 +1596,7 @@
                 "oauth2",
                 "wordpress"
             ],
-            "time": "2017-09-19 17:50:55"
+            "time": "2018-03-18T13:25:11+00:00"
         },
         {
             "name": "league/oauth2-client",
@@ -1660,7 +1659,7 @@
                 "oauth2",
                 "single sign on"
             ],
-            "time": "2016-07-28 13:20:43"
+            "time": "2016-07-28T13:20:43+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -1738,7 +1737,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2017-06-19 01:22:40"
+            "time": "2017-06-19T01:22:40+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -1786,7 +1785,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2017-09-27 21:40:39"
+            "time": "2017-09-27T21:40:39+00:00"
         },
         {
             "name": "php-amqplib/php-amqplib",
@@ -1857,7 +1856,7 @@
                 "queue",
                 "rabbitmq"
             ],
-            "time": "2018-02-11 19:28:00"
+            "time": "2018-02-11T19:28:00+00:00"
         },
         {
             "name": "php-amqplib/rabbitmq-bundle",
@@ -1925,7 +1924,7 @@
                 "queue",
                 "rabbitmq"
             ],
-            "time": "2017-12-08 12:54:50"
+            "time": "2017-12-08T12:54:50+00:00"
         },
         {
             "name": "psr/cache",
@@ -1971,7 +1970,7 @@
                 "psr",
                 "psr-6"
             ],
-            "time": "2016-08-06 20:24:11"
+            "time": "2016-08-06T20:24:11+00:00"
         },
         {
             "name": "psr/container",
@@ -2020,7 +2019,7 @@
                 "container-interop",
                 "psr"
             ],
-            "time": "2017-02-14 16:28:37"
+            "time": "2017-02-14T16:28:37+00:00"
         },
         {
             "name": "psr/http-message",
@@ -2070,7 +2069,7 @@
                 "request",
                 "response"
             ],
-            "time": "2016-08-06 14:39:51"
+            "time": "2016-08-06T14:39:51+00:00"
         },
         {
             "name": "psr/link",
@@ -2119,7 +2118,7 @@
                 "psr-13",
                 "rest"
             ],
-            "time": "2016-10-28 16:06:13"
+            "time": "2016-10-28T16:06:13+00:00"
         },
         {
             "name": "psr/log",
@@ -2166,20 +2165,20 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2016-10-10 12:19:37"
+            "time": "2016-10-10T12:19:37+00:00"
         },
         {
             "name": "psr/simple-cache",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/simple-cache.git",
-                "reference": "753fa598e8f3b9966c886fe13f370baa45ef0e24"
+                "reference": "408d5eafb83c57f6365a3ca330ff23aa4a5fa39b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/753fa598e8f3b9966c886fe13f370baa45ef0e24",
-                "reference": "753fa598e8f3b9966c886fe13f370baa45ef0e24",
+                "url": "https://api.github.com/repos/php-fig/simple-cache/zipball/408d5eafb83c57f6365a3ca330ff23aa4a5fa39b",
+                "reference": "408d5eafb83c57f6365a3ca330ff23aa4a5fa39b",
                 "shasum": ""
             },
             "require": {
@@ -2214,7 +2213,7 @@
                 "psr-16",
                 "simple-cache"
             ],
-            "time": "2017-01-02 13:31:39"
+            "time": "2017-10-23T01:57:42+00:00"
         },
         {
             "name": "rbl/couchbase-bundle",
@@ -2222,7 +2221,7 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:robobloglab/couchbase-bundle.git",
-                "reference": "2d7f37d18587ed7f74add438c8a1a910d51a65ee"
+                "reference": "edf9118451dd595500338a022fc31789890c7733"
             },
             "require": {
                 "ext-couchbase": "^2.4.0",
@@ -2248,7 +2247,7 @@
                 "couchbase",
                 "odm"
             ],
-            "time": "2018-03-03 13:41:54"
+            "time": "2018-03-16T08:22:10+00:00"
         },
         {
             "name": "rollerworks/password-strength-bundle",
@@ -2315,7 +2314,7 @@
                 "symfony",
                 "validator"
             ],
-            "time": "2017-11-04 10:54:08"
+            "time": "2017-11-04T10:54:08+00:00"
         },
         {
             "name": "rollerworks/password-strength-validator",
@@ -2383,7 +2382,7 @@
                 "symfony",
                 "validator"
             ],
-            "time": "2018-03-15 08:04:43"
+            "time": "2018-03-15T08:04:43+00:00"
         },
         {
             "name": "sensio/distribution-bundle",
@@ -2435,7 +2434,7 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2017-08-25 16:55:44"
+            "time": "2017-08-25T16:55:44+00:00"
         },
         {
             "name": "sensio/framework-extra-bundle",
@@ -2504,7 +2503,7 @@
                 "annotations",
                 "controllers"
             ],
-            "time": "2018-02-14 08:40:54"
+            "time": "2018-02-14T08:40:54+00:00"
         },
         {
             "name": "sensiolabs/security-checker",
@@ -2549,7 +2548,7 @@
                 }
             ],
             "description": "A security checker for your composer.lock",
-            "time": "2018-02-28 22:10:01"
+            "time": "2018-02-28T22:10:01+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -2604,20 +2603,20 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2017-09-30 22:39:41"
+            "time": "2017-09-30T22:39:41+00:00"
         },
         {
             "name": "symfony/monolog-bundle",
-            "version": "v3.1.2",
+            "version": "v3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/monolog-bundle.git",
-                "reference": "2b41b8b6d2c6edb1a5494f02f8e4129be2a44784"
+                "reference": "8781649349fe418d51d194f8c9d212c0b97c40dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/monolog-bundle/zipball/2b41b8b6d2c6edb1a5494f02f8e4129be2a44784",
-                "reference": "2b41b8b6d2c6edb1a5494f02f8e4129be2a44784",
+                "url": "https://api.github.com/repos/symfony/monolog-bundle/zipball/8781649349fe418d51d194f8c9d212c0b97c40dd",
+                "reference": "8781649349fe418d51d194f8c9d212c0b97c40dd",
                 "shasum": ""
             },
             "require": {
@@ -2667,7 +2666,7 @@
                 "log",
                 "logging"
             ],
-            "time": "2017-11-06 16:02:17"
+            "time": "2018-03-05T14:51:36+00:00"
         },
         {
             "name": "symfony/polyfill-apcu",
@@ -2723,7 +2722,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-01-30 19:27:44"
+            "time": "2018-01-30T19:27:44+00:00"
         },
         {
             "name": "symfony/polyfill-intl-icu",
@@ -2781,7 +2780,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-01-30 19:27:44"
+            "time": "2018-01-30T19:27:44+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -2840,7 +2839,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-01-30 19:27:44"
+            "time": "2018-01-30T19:27:44+00:00"
         },
         {
             "name": "symfony/polyfill-php56",
@@ -2896,7 +2895,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-01-30 19:27:44"
+            "time": "2018-01-30T19:27:44+00:00"
         },
         {
             "name": "symfony/polyfill-php70",
@@ -2955,7 +2954,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-01-30 19:27:44"
+            "time": "2018-01-30T19:27:44+00:00"
         },
         {
             "name": "symfony/polyfill-util",
@@ -3007,20 +3006,20 @@
                 "polyfill",
                 "shim"
             ],
-            "time": "2018-01-31 18:08:44"
+            "time": "2018-01-31T18:08:44+00:00"
         },
         {
             "name": "symfony/swiftmailer-bundle",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/swiftmailer-bundle.git",
-                "reference": "7756867d9b21231ae0ce746a6b861b7e293cc885"
+                "reference": "20e71c247a5a43ceb655db9712394d08c09b33ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/swiftmailer-bundle/zipball/7756867d9b21231ae0ce746a6b861b7e293cc885",
-                "reference": "7756867d9b21231ae0ce746a6b861b7e293cc885",
+                "url": "https://api.github.com/repos/symfony/swiftmailer-bundle/zipball/20e71c247a5a43ceb655db9712394d08c09b33ef",
+                "reference": "20e71c247a5a43ceb655db9712394d08c09b33ef",
                 "shasum": ""
             },
             "require": {
@@ -3069,20 +3068,20 @@
             ],
             "description": "Symfony SwiftmailerBundle",
             "homepage": "http://symfony.com",
-            "time": "2018-02-14 08:09:24"
+            "time": "2018-03-08T16:39:26+00:00"
         },
         {
             "name": "symfony/symfony",
-            "version": "v3.4.5",
+            "version": "v3.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "8a023e125a68c0bce08d2a8c72d67e07f0d74cab"
+                "reference": "874d4d659774d7bab90538072c83ed532dd17dc5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/8a023e125a68c0bce08d2a8c72d67e07f0d74cab",
-                "reference": "8a023e125a68c0bce08d2a8c72d67e07f0d74cab",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/874d4d659774d7bab90538072c83ed532dd17dc5",
+                "reference": "874d4d659774d7bab90538072c83ed532dd17dc5",
                 "shasum": ""
             },
             "require": {
@@ -3223,20 +3222,20 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2018-03-01 19:24:09"
+            "time": "2018-03-05T20:02:01+00:00"
         },
         {
             "name": "twig/twig",
-            "version": "v2.4.6",
+            "version": "v2.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "d2117ec118c1ff3d28ccddca8212d82787a4809f"
+                "reference": "69aacd44dbbaa3199d5afb68605c996d577896fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/d2117ec118c1ff3d28ccddca8212d82787a4809f",
-                "reference": "d2117ec118c1ff3d28ccddca8212d82787a4809f",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/69aacd44dbbaa3199d5afb68605c996d577896fc",
+                "reference": "69aacd44dbbaa3199d5afb68605c996d577896fc",
                 "shasum": ""
             },
             "require": {
@@ -3245,8 +3244,8 @@
             },
             "require-dev": {
                 "psr/container": "^1.0",
-                "symfony/debug": "~2.7",
-                "symfony/phpunit-bridge": "~3.3@dev"
+                "symfony/debug": "^2.7",
+                "symfony/phpunit-bridge": "^3.3"
             },
             "type": "library",
             "extra": {
@@ -3289,7 +3288,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2018-03-03 16:23:01"
+            "time": "2018-03-20T04:31:17+00:00"
         }
     ],
     "packages-dev": [
@@ -3345,7 +3344,7 @@
                 }
             ],
             "description": "This bundle generates code for you",
-            "time": "2017-12-07 15:36:41"
+            "time": "2017-12-07T15:36:41+00:00"
         }
     ],
     "aliases": [],
