@@ -63,6 +63,7 @@ class PostingServiceExtension
             'status' => 'publish',
             'ping_status' => 'closed',
             'type' => 'post',
+            'categories' => array(1),
             'featured_media' => $this->taskObject->getImageId(),
             'meta' => array(
                 '_yoast_wpseo_metadesc' => $seoDescriptionObject->getText(),

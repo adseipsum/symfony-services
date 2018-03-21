@@ -3,6 +3,11 @@ front-api:
     type: annotation
     prefix: '/frontapi/'
 
+auth:
+    resource: '@AppBundle/Controller/Auth'
+    type: annotation
+    prefix: '/auth/'
+
 #user_auth:
 #    resource: '@UserBundle/Controller/'
 #    type: annotation

@@ -18,18 +18,14 @@ use UserBundle\Repository\UserModel;
 
 class AuthController extends Controller
 {
-
     /**
-     * @Route("/v1/challenge", name="auth_api_get_challenge")
+     * @Route("/v1/getuserinfo", name="auth_api_get_user_info")
      * @Method("GET")
      *
      * @return JsonResponse
      */
-    public function actionGetChallenge(Request $request)
-    {
-        $ip = $request->getClientIp();
-
-        return ApiResponse::resultValue(self::genChallengeForIp($ip));
+    public function actionGetUserInfo(){
+        return ApiResponse::resultValue($this->get('security.token_storage')->getToken()->getUser());
     }
 
     /**
@@ -128,12 +124,6 @@ class AuthController extends Controller
         {
             return ApiResponse::resultException($e);
         }
-    }
-
-    //todo:move to bcrypt scheme
-    private static function genChallengeForIp($ip)
-    {
-        return base64_encode(hash("sha256", $ip, True));;
     }
 
     /**
