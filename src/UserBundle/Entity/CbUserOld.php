@@ -9,7 +9,7 @@ use FOS\UserBundle\Model\UserInterface as FOSUserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class CbUser extends CbBaseObject implements UserInterface, EquatableInterface, FOSUserInterface
+class CbUserOld extends CbBaseObject implements UserInterface, EquatableInterface, FOSUserInterface
 {
 
     // const ROLE_DEFAULT = 'ROLE_UNKNOWN';

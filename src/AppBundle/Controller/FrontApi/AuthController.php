@@ -21,13 +21,15 @@ class AuthController extends Controller
 {
     /**
      * @Route("/v1/getuserinfo", name="frontapi_get_user_info")
-     * @Method("GET")
+     * @Method("POST")
      * @param UserInterface $user
      * @return JsonResponse
      */
     public function actionGetUserInfo(UserInterface $user){
-        print_r($user);
-        return ApiResponse::resultValue($user);
+        return new ApiResponse(array(
+            'username' => $user->getUsername(),
+            'roles' => $user->getRoles(),
+        ));
     }
 
     /**

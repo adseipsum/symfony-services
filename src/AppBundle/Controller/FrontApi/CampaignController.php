@@ -82,7 +82,7 @@ class CampaignController extends Controller
 
             $this->campaignModel->upsert($object);
 
-            return ApiResponse::resultValues(true);
+            return new ApiResponse(true);
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
         }
@@ -141,7 +141,7 @@ class CampaignController extends Controller
                     $ret[] = $campaign;
                 }
 
-                return ApiResponse::resultValue($ret);
+                return new ApiResponse($ret);
             } else {
                 return ApiResponse::resultNotFound();
             }

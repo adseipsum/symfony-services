@@ -20,9 +20,20 @@ class BacklinkServiceExtension
     protected $endOfText = false;
     protected $link = array();
     protected $additionalKeywords = array(
-        'Click here',
         'Read more',
-        'More information'
+        'Get more information on this',
+        'Full text here',
+        'Click to read more',
+        'See full list',
+        'The full list here',
+        'Click here',
+        'Get more information here ',
+        'Click to read more',
+        'Get more information here',
+        'Click to read more about the treatment',
+        'More information here',
+        'Click to see more',
+        'Read more about the, here'
     );
 
     const THIS_SERVICE_KEY = 'bln';
