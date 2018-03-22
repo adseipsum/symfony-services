@@ -42,9 +42,6 @@ services:
     #        class: UserBundle\Service\CbUserManager
     #      arguments: ["@couchbase.connector",'@security.encoder_factory']
 
-
-
-
     app_bundle.consumer.campaign_manager_service:
             class: AppBundle\Consumer\CampaignManagerConsumer
             arguments: ['@service_container']
@@ -54,8 +51,8 @@ services:
             arguments: ['@service_container']
 
     app_bundle.consumer.backlink_service:
-                class: AppBundle\Consumer\BacklinkServiceConsumer
-                arguments: ['@service_container']
+            class: AppBundle\Consumer\BacklinkServiceConsumer
+            arguments: ['@service_container']
 
     app_bundle.consumer.posting_service:
             class: AppBundle\Consumer\PostingServiceConsumer

@@ -1,12 +1,13 @@
 <?php
 
-namespace  AppBundle\Controller\Auth;
+namespace  AppBundle\Controller\FrontApi;
 
 use AppBundle\Extension\ApiResponse;
 use AppBundle\Extension\JSonBody;
 use FOS\UserBundle\Util\TokenGenerator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,13 +20,13 @@ use UserBundle\Repository\UserModel;
 class AuthController extends Controller
 {
     /**
-     * @Route("/v1/getuserinfo", name="auth_api_get_user_info")
+     * @Route("/v1/getuserinfo", name="frontapi_get_user_info")
      * @Method("GET")
-     *
+     * @param UserInterface $user
      * @return JsonResponse
      */
-    public function actionGetUserInfo(){
-        return ApiResponse::resultValue($this->get('security.token_storage')->getToken()->getUser());
+    public function actionGetUserInfo(UserInterface $user){
+        return ApiResponse::resultValue($user);
     }
 
     /**
