@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use OAuth2\OAuth2;
 use OAuth2\OAuth2ServerException;
 use OAuth2\OAuth2AuthenticateException;
-use UserBundle\Repository\UserAuthModel;
+use UserBundle\Repository\UserModel;
 
 /**
  * OAuthProvider class.
@@ -74,7 +74,7 @@ class OAuthProvider implements AuthenticationProviderInterface
                 if (null !== $username) {
                     try {
                         global $kernel;
-                        $model = new UserAuthModel($kernel->getContainer()->get('edm_couchbase.connector'));
+                        $model = new UserModel($kernel->getContainer()->get('couchbase.connector'));
 
                         $user = $model->getUserByUsername($username);
                         $this->userChecker->checkPreAuth($user);
@@ -116,6 +116,9 @@ class OAuthProvider implements AuthenticationProviderInterface
                     }
 
                     $token->setUser($user);
+
+                    //print_r($user);
+                    //print_r($token);
                 }
 
                 return $token;

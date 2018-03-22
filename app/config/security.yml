@@ -33,6 +33,12 @@ security:
             pattern:    ^/oauth/v2/token
             security:   false
 
+        auth:
+            pattern: ^/auth      # All URLs are protected
+            fos_oauth: true     # OAuth2 protected resource
+            stateless: true     # Do no set session cookies
+            anonymous: false    # Anonymous access is not allowed
+
         main:
             pattern: ^/
             form_login:
@@ -42,14 +48,10 @@ security:
                 # csrf_provider: form.csrf_provider
             anonymous:    true
 
-        auth:
-            pattern: ^/auth      # All URLs are protected
-            fos_oauth: true     # OAuth2 protected resource
-            stateless: true     # Do no set session cookies
-            anonymous: false    # Anonymous access is not allowed
+
 
     access_control:
-        - { path: ^/auth/, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/auth/, role: IS_AUTHENTICATED_FULLY }
         - { path: ^/frontapi/, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: ROLE_SUPER_ADMIN }

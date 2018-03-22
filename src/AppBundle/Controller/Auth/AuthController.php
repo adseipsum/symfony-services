@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\User\UserInterface;
 use UserBundle\Entity\CbUser;
 use UserBundle\Entity\Validation\UserRegistrationRequest;
 use UserBundle\Repository\UserModel;
@@ -24,8 +25,11 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    public function actionGetUserInfo(){
-        return ApiResponse::resultValue($this->get('security.token_storage')->getToken()->getUser());
+    public function actionGetUserInfo(UserInterface $user){
+        //print_r($user);
+        //$user = $this->getUser();
+        print_r($user);
+        return ApiResponse::resultValue($user);
     }
 
     /**
