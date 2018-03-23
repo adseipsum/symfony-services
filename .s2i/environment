@@ -1,1 +1,13 @@
 PHP_INI_SCAN_DIR=/etc/opt/rh/rh-php71/php.d:/opt/app-root/php.d
+TOKEN_SECRET=cHrZr26B5RWW8fyi1lbSzqnOBCBt0Mfd
+AMPQ_HOST=rmq.cloud.robobloglab.com
+amqp_port=5672
+amqp_user=worker
+amqp_password=wrNzQ3OGRhYlkjhlMDxcwZGZ
+amqp_vhost=/
+ampq_environment=prod
+
+couchbase_environment=prod
+couchbase_uri=couchbase://88.99.193.160
+couchbase_user=worker
+couchbase_password=wrNzQ3OGRhYlkjhlMDxcwZGZ
