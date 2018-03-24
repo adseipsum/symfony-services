@@ -20,7 +20,7 @@ use UserBundle\Repository\UserModel;
 class AuthController extends Controller
 {
     /**
-     * @Route("/v1/getuserinfo", name="frontapi_get_user_info")
+     * @Route("/v1/getuserinfo", name="frontapi_get_user_info_post")
      * @Method("POST")
      * @param UserInterface $user
      * @return JsonResponse
