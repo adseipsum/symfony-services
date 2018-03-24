@@ -25,6 +25,19 @@ class AuthController extends Controller
      * @param UserInterface $user
      * @return JsonResponse
      */
+    public function actionGetUserInfoPost(UserInterface $user){
+        return new ApiResponse(array(
+            'username' => $user->getUsername(),
+            'roles' => $user->getRoles(),
+        ));
+    }
+
+    /**
+     * @Route("/v1/getuserinfo", name="frontapi_get_user_info")
+     * @Method("GET")
+     * @param UserInterface $user
+     * @return JsonResponse
+     */
     public function actionGetUserInfo(UserInterface $user){
         return new ApiResponse(array(
             'username' => $user->getUsername(),

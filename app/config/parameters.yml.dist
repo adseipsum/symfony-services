@@ -29,12 +29,3 @@ parameters:
     couchbase_uri: ~
     couchbase_user: ~
     couchbase_password: ~
-
-    python_bin: ~
-    ngram_mc_bin: ~
-    generator_home: ~
-    generator_home: ~
-    generator_demo_tmp_dir: ~
-    generator_demo_template_dir: ~
-    generator_user_dir: ~
-    generator_quickcheck_base: ~
