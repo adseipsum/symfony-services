@@ -10,7 +10,7 @@ class ApiResponse extends JsonResponse
     public function __construct($data = null, $status = 200, $headers = array())
     {
         parent::__construct($data, $status, $headers);
-        ApiResponse::applyCORS($this);
+        //ApiResponse::applyCORS($this);
     }
 
     public static function resultError($status, $message, $ttl = 0)
