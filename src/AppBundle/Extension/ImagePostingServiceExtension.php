@@ -110,7 +110,7 @@ class ImagePostingServiceExtension
 
         $idString = explode('::', $message->taskId);
         $taskId = $idString[1];
-
+ 
         $this->taskObject = $this->taskModel->get($taskId);
 
         if($this->taskObject){

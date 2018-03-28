@@ -180,12 +180,12 @@ class CampaignController extends Controller
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @Route("/campaign/toggle", name="frontapi_campaign_toggle")
+     * @Route("/campaign/enable", name="frontapi_campaign_enable")
      * @param Request $request
      * @Method("GET")
      * @return ApiResponse
      */
-    public function toggleCampaign(Request $request)
+    public function enableCampaign(Request $request)
     {
         $data = json_decode($request->getContent(), true);
         $this->checkCampaignId($data);
