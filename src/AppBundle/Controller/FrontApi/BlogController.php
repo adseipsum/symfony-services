@@ -249,6 +249,39 @@ class BlogController extends Controller
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * @Route("/blog/lock", name="frontapi_block_lock")
+     * @param Request $request
+     * @Method("GET")
+     * @return ApiResponse
+     */
+    public function lockBlog(Request $request)
+    {
+        $data = $request->query->all();
+
+        if(!isset($data['locked']) || !isset($data['blogId'])){
+            return ApiResponse::resultNotFound();
+        }
+
+        try {
+            /* @var $cb CouchbaseService */
+            $cb = $this->get('couchbase.connector');
+            $model = new BlogModel($cb);
+            $blogObject = $model->get($data['blogId']);
+            $blogObject->setLocked(filter_var($data['locked'], FILTER_VALIDATE_BOOLEAN));
+            $this->blogModel->upsert($blogObject);
+
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
+
+        return ApiResponse::resultValue(true);
+
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     private function multipleExplode($delimiters, $string) {
         $ready = str_replace($delimiters, $delimiters[0], $string);
         $exploded = explode($delimiters[0], $ready);
