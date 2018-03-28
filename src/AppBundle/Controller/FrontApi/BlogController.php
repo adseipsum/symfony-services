@@ -269,7 +269,7 @@ class BlogController extends Controller
             $model = new BlogModel($cb);
             $blogObject = $model->get($data['blogId']);
             $blogObject->setLocked(filter_var($data['locked'], FILTER_VALIDATE_BOOLEAN));
-            $this->blogModel->upsert($blogObject);
+            $model->upsert($blogObject);
 
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
