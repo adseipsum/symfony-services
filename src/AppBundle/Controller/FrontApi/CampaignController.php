@@ -187,8 +187,7 @@ class CampaignController extends Controller
      */
     public function enableCampaign(Request $request)
     {
-        $data = json_decode($request->getContent(), true);
-        $this->checkCampaignId($data);
+        $data = $request->query->all();
 
         if(!isset($data['enabled'])){
             return ApiResponse::resultNotFound();
@@ -196,8 +195,9 @@ class CampaignController extends Controller
 
         try {
             $campaignObject = $this->campaignModel->get($data['campaignId']);
-            $campaignObject->setEnabled($data['enabled'] ? true : false);
+            $campaignObject->setEnabled(filter_var($data['enabled'], FILTER_VALIDATE_BOOLEAN));
             $this->campaignModel->upsert($campaignObject);
+
         } catch (Exception $e) {
             return ApiResponse::resultError(500, $e->getMessage());
         }
