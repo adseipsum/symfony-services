@@ -96,7 +96,9 @@ class BlogController extends Controller
                         'realIp' => $object->getRealIp(),
                         'postPeriodSeconds' => $object->getPostPeriodSeconds(),
                         'tags' => $object->getTags(),
-                        'lastPostDate' => $object->getLastPostDate()? $object->getLastPostDate()->getTimestamp() : -1,
+                        'lastPostDate' => $object->getLastPostDate() ? $object->getLastPostDate()->getTimestamp() : -1,
+                        'lastPostId' => $object->getLastPostId(),
+                        'lastBacklinkedPostId' => $object->getLastBacklinkedPostId(),
                     );
 
                     /* @var $seoBlogDataObject CbSeoBlog */
