@@ -5,6 +5,7 @@ use Rbl\CouchbaseBundle\Entity\CbCampaign;
 use Rbl\CouchbaseBundle\Entity\CbTask;
 use Rbl\CouchbaseBundle\Model\TaskModel;
 use Rbl\CouchbaseBundle\Model\CampaignModel;
+use Rbl\CouchbaseBundle\Model\BlogModel;
 use Rbl\CouchbaseBundle\Model\TextGenerationResultModel;
 use Rbl\CouchbaseBundle\CouchbaseService;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -134,7 +135,11 @@ class PostManagerServiceExtension
 
                 break;
             case CbTask::STATUS_BACKLINK_INSERT:
-                $this->backlinked = true;
+
+                $taskObject = $this->taskModel->get($taskId);
+                $taskObject->setBacklinked(true);
+                $this->taskModel->upsert($taskObject);
+
                 $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_BACKLINK_INSERT));
                 //send message to image posting service
                 $this->sendMessage(self::IMAGE_POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_IMAGE_POST);
@@ -147,8 +152,9 @@ class PostManagerServiceExtension
             case CbTask::STATUS_TEXT_POST:
                 $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_TEXT_POST));
 
-                if($this->backlinked){
-                    $taskObject = $this->taskModel->get($taskId);
+                $taskObject = $this->taskModel->get($taskId);
+
+                if($taskObject->getBacklinked()){
                     $blogModel = new BlogModel($this->cb);
                     $blogObject = $blogModel->get($taskObject->getBlogId());
                     $blogObject->setLastBacklinkedPostId($blogObject->getLastPostId());
