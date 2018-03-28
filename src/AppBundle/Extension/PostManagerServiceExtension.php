@@ -16,6 +16,7 @@ class PostManagerServiceExtension
     protected $amqp;
     protected $taskModel;
     protected $textModel;
+    protected $backlinked = false;
 
     const THIS_SERVICE_KEY = 'pms';
     const TEXT_GENERATION_RESULT_KEY = 'tgrst';
@@ -133,6 +134,7 @@ class PostManagerServiceExtension
 
                 break;
             case CbTask::STATUS_BACKLINK_INSERT:
+                $this->backlinked = true;
                 $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_BACKLINK_INSERT));
                 //send message to image posting service
                 $this->sendMessage(self::IMAGE_POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_IMAGE_POST);
@@ -144,6 +146,15 @@ class PostManagerServiceExtension
                 break;
             case CbTask::STATUS_TEXT_POST:
                 $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_TEXT_POST));
+
+                if($this->backlinked){
+                    $taskObject = $this->taskModel->get($taskId);
+                    $blogModel = new BlogModel($this->cb);
+                    $blogObject = $blogModel->get($taskObject->getBlogId());
+                    $blogObject->setLastBacklinkedPostId($blogObject->getLastPostId());
+                    $blogModel->upsert($blogObject);
+                }
+
                 //send message to Campaign Manager
                 $this->sendMessage(self::CAMPAIGN_MANAGER_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_COMPLETED);
                 break;

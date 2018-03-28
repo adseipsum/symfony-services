@@ -99,6 +99,7 @@ class PostingServiceExtension
 
             if(!isset($response['code'])){
                 $blogObject->setLastPostDate(new \DateTime());
+                $blogObject->setLastPostId($response['id']);
             }else{
                 $blogObject->setLastErrorMessage($response['code']);
             }
