@@ -17,12 +17,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 class BlogController extends Controller
 {
     /**
-     * @Route("/blog/new", name="frontapi_blog_new")
+     * @Route("/blog/upsert", name="frontapi_blog_upsert")
      * @param Request $request
      * @Method("POST")
      * @return ApiResponse
      */
-    public function addNewBlog(Request $request)
+    public function upsertBlog(Request $request)
     {
         $data = json_decode($request->getContent(), true);
 
@@ -32,17 +32,26 @@ class BlogController extends Controller
             $model = new BlogModel($cb);
 
             $object = new CbBlog();
+            $object->setRecordCreated();
             $object->setEnabled(true);
             $object->setLocked(false);
+
+            if(isset($data['blogId']) && $data['blogId']) {
+                $object = $model->get($data['blogId']);
+                if(!$object){
+                    return ApiResponse::resultNotFound();
+                }
+                $object->setRecordUpdated();
+            }
+
             $object->setDomainName($data['domainName']);
             $object->setRealIp($data['realIp']);
-            $object->setPostingUserLogin($data['postingUserLogin']);
-            $object->setPostingUserPassword($data['postingUserPassword']);
-            $object->setClientId($data['clientId']);
-            $object->setClientSecret($data['clientSecret']);
+            $object->setPostingUserLogin(isset($data['postingUserLogin']) ? $data['postingUserLogin'] : $object->getPostingUserLogin());
+            $object->setPostingUserPassword(isset($data['postingUserPassword']) ? $data['postingUserPassword'] : $object->getPostingUserPassword());
+            $object->setClientId(isset($data['clientId']) ? $data['clientId'] : $object->getClientId());
+            $object->setClientSecret(isset($data['clientSecret']) ? $data['clientSecret'] : $object->getClientSecret());
             $object->setPostPeriodSeconds($data['postPeriodSeconds']);
             $object->setTags($this->multipleExplode(array(",",".","|",":"), $data['tags']));
-            $object->setRecordCreated();
 
             $model->upsert($object);
 
