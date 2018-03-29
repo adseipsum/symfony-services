@@ -46,10 +46,10 @@ class BlogController extends Controller
 
             $object->setDomainName($data['domainName']);
             $object->setRealIp($data['realIp']);
-            $object->setPostingUserLogin(isset($data['postingUserLogin']) ? $data['postingUserLogin'] : $object->getPostingUserLogin());
-            $object->setPostingUserPassword(isset($data['postingUserPassword']) ? $data['postingUserPassword'] : $object->getPostingUserPassword());
-            $object->setClientId(isset($data['clientId']) ? $data['clientId'] : $object->getClientId());
-            $object->setClientSecret(isset($data['clientSecret']) ? $data['clientSecret'] : $object->getClientSecret());
+            $object->setPostingUserLogin(isset($data['postingUserLogin']) && $data['postingUserLogin'] ? $data['postingUserLogin'] : $object->getPostingUserLogin());
+            $object->setPostingUserPassword(isset($data['postingUserPassword']) && $data['postingUserPassword'] ? $data['postingUserPassword'] : $object->getPostingUserPassword());
+            $object->setClientId(isset($data['clientId']) && $data['clientId'] ? $data['clientId'] : $object->getClientId());
+            $object->setClientSecret(isset($data['clientSecret']) && $data['clientSecret'] ? $data['clientSecret'] : $object->getClientSecret());
             $object->setPostPeriodSeconds($data['postPeriodSeconds']);
             $object->setTags($this->multipleExplode(array(",",".","|",":"), $data['tags']));
 
