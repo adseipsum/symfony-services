@@ -10,7 +10,6 @@ class ApiResponse extends JsonResponse
     public function __construct($data = null, $status = 200, $headers = array())
     {
         parent::__construct($data, $status, $headers);
-        //ApiResponse::applyCORS($this);
     }
 
     public static function resultError($status, $message, $ttl = 0)
@@ -26,21 +25,6 @@ class ApiResponse extends JsonResponse
         }
 
         return $response;
-    }
-
-    /**
-     * добавляет в ответ Cross Origin Resource Sharing (CORS)
-     *
-     * @param ApiResponse $response - ответ сервера
-     */
-    protected static function applyCORS(ApiResponse $response)
-    {
-        $response->headers->set('Access-Control-Allow-Credentials', 'true');
-        $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, PATCH, OPTIONS');
-        $response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');
-        $response->headers->set('Access-Control-Allow-Origin', '*');
-        $response->headers->set('Vary', 'Origin');
-        $response->headers->set('Access-Control-Max-Age', 3600);
     }
 
     public static function resultException(\Exception $exception)

@@ -114,14 +114,29 @@ class BlogController extends Controller
                     $seoBlogDataObject = $seoModel->get('seo-' . $id);
 
                     if($seoBlogDataObject){
+                        $proxyIp = null;
                         $pings = $seoBlogDataObject->getPings();
                         $pingsCountAll = 0;
                         $pingsCountValid = 0;
                         foreach($pings as $ping) {
                             $pingsCountAll++;
                             $status = $ping['status'];
+                            if ($proxyIp == null) {
+                                $proxyIp = $ping['ip'];
+                            }
                             if ($status == 1) {
                                 $pingsCountValid++;
+                            }
+                        }
+
+                        $pingsRealIp = $seoBlogDataObject->getPingsRealIp();
+                        $pingsRealIpCountAll = 0;
+                        $pingsRealIpCountValid = 0;
+                        foreach($pingsRealIp as $ping) {
+                            $pingsRealIpCountAll++;
+                            $status = $ping['status'];
+                            if ($status == 1) {
+                                $pingsRealIpCountValid++;
                             }
                         }
 
@@ -145,6 +160,8 @@ class BlogController extends Controller
                             'isGoogleCheck' => $seoBlogDataObject->isGoogleCheck(),
                             'pingsCountAll' => $pingsCountAll,
                             'pingsCountValid' => $pingsCountValid,
+                            'pingsRealIpCountAll' => $pingsRealIpCountAll,
+                            'pingsRealIpCountValid' => $pingsRealIpCountValid,
                             'availabilitiesCountAll' => $availabilitiesCountAll,
                             'availabilitiesCountValid' => $availabilitiesCountValid,
                             'domainExpirationDate' => $expirationDate,
@@ -153,8 +170,12 @@ class BlogController extends Controller
                             'urlIndex' => $seoBlogDataObject->getUrlIndex(),
                             'isCheckGoogle' => $seoBlogDataObject->isCheckGoogle(),
                             'seo' => $seoBlogDataObject->getSeo(),
+                            'seoPrev' => $seoBlogDataObject->getSeoPrev(),
                             'checkTimestamp' => $seoBlogDataObject->getCheckTimestamp(),
                             'seoCheckTimestamp' => $seoBlogDataObject->getSeoCheckTimestamp(),
+                            'domainRegistrar' => $seoBlogDataObject->getDomainRegistrar(),
+                            'domainRegistrantName' => $seoBlogDataObject->getDomainRegistrantName(),
+                            'proxyIp' => $proxyIp,
                         );
                         $blog = array_merge($blog, $seoData);
                     }
@@ -180,6 +201,35 @@ class BlogController extends Controller
      * @return ApiResponse
      */
     public function getBlogSeoPings(Request $request, string $blogId)
+    {
+        /* @var $cb CouchbaseService */
+        $cb = $this->get('couchbase.connector');
+        $seoModel = new SeoBlogModel($cb);
+
+        try {
+            /* @var $seoBlogDataObject CbSeoBlog */
+            $seoBlogDataObject = $seoModel->get('seo-' . $blogId);
+
+            if($seoBlogDataObject){
+                $ret = $seoBlogDataObject->getPingsRealIp();
+                return ApiResponse::resultValue($ret);
+            } else {
+                return ApiResponse::resultNotFound();
+            }
+        } catch (Exception $e) {
+            return ApiResponse::resultError(500, $e->getMessage());
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @Route("blog/seo/pings_proxy/{blogId}", name="frontapi_blog_seo_pings_proxy", requirements={"template": "[a-zA-Z0-9_\-]+"})
+     * @method ("GET")
+     * @param Request $request
+     * @return ApiResponse
+     */
+    public function getBlogSeoPingsProxy(Request $request, string $blogId)
     {
         /* @var $cb CouchbaseService */
         $cb = $this->get('couchbase.connector');
@@ -276,6 +326,8 @@ class BlogController extends Controller
             /* @var $cb CouchbaseService */
             $cb = $this->get('couchbase.connector');
             $model = new BlogModel($cb);
+
+            /* @var $blogObject CbBlog */
             $blogObject = $model->get($data['blogId']);
             $blogObject->setLocked(filter_var($data['locked'], FILTER_VALIDATE_BOOLEAN));
             $model->upsert($blogObject);
@@ -287,7 +339,6 @@ class BlogController extends Controller
         return ApiResponse::resultValue(true);
 
     }
-
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

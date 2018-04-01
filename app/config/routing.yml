@@ -2,7 +2,7 @@ front-api:
     resource: '@AppBundle/Controller/FrontApi'
     type: annotation
     prefix: '/frontapi/'
-
+    methods:  [GET, POST, OPTIONS]
 
 #user_auth:
 #    resource: '@UserBundle/Controller/'
