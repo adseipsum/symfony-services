@@ -39,9 +39,9 @@ class SatConfigController extends Controller
         $data = json_decode($request->getContent(), true);
 
         try {
-            $object = $this->satConfigModel->get(self::SAT_CONFIG);
-            $object->setAdditionalKeywords($data['additionalKeywords']);
-            $this->satConfigModel->upsert($object);
+            $satConfigObject = $this->satConfigModel->get(self::SAT_CONFIG);
+            $satConfigObject->setAdditionalKeywords($data['additionalKeywords']);
+            $this->satConfigModel->upsert($satConfigObject);
 
             return new ApiResponse(true);
         } catch (Exception $e) {
@@ -60,7 +60,8 @@ class SatConfigController extends Controller
     {
         try {
             $satConfigObject = $this->satConfigModel->get(self::SAT_CONFIG);
-
+            $satConfigObject->setAdditionalKeywords(array());
+            $this->satConfigModel->upsert($satConfigObject);
             if (!$satConfigObject) {
                 return ApiResponse::resultNotFound();
             }
