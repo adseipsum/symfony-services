@@ -32,7 +32,7 @@ class SatConfigController extends Controller
     }
 
     /**
-     * @Route("/satconfig/save", name="frontapi_satconfig_save")
+     * @Route("/config/save", name="frontapi_config_save")
      * @param Request $request
      * @Method("POST")
      * @return ApiResponse
@@ -55,7 +55,7 @@ class SatConfigController extends Controller
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @Route("/satconfig/show", name="frontapi_satconfig_show")
+     * @Route("/config/show", name="frontapi_config_show")
      * @Method("GET")
      * @return ApiResponse
      */
