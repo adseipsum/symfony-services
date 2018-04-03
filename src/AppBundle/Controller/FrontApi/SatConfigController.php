@@ -60,8 +60,6 @@ class SatConfigController extends Controller
     {
         try {
             $satConfigObject = $this->satConfigModel->get(self::SAT_CONFIG);
-            $satConfigObject->setAdditionalKeywords(array());
-            $this->satConfigModel->upsert($satConfigObject);
             if (!$satConfigObject) {
                 return ApiResponse::resultNotFound();
             }
