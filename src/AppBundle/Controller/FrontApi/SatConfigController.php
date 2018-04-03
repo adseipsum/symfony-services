@@ -12,9 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Rbl\CouchbaseBundle\CouchbaseService;
 
-/**
- * @Route(service="app_bundle.sat-config.controller")
- */
 
 class SatConfigController extends Controller
 {
