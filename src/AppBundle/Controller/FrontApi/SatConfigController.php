@@ -37,7 +37,7 @@ class SatConfigController extends Controller
     public function saveSatConfig(Request $request)
     {
         $data = json_decode($request->getContent(), true);
-        $additionalKeywords = isset($data['additionalKeywords']) && $data['additionalKeywords'] ? explode(',', $data['additionalKeywords']) : array();
+        $additionalKeywords = isset($data['additionalKeywords']) && $data['additionalKeywords'] ? array_map('trim', explode(',', $data['additionalKeywords'])) : array();
         try {
             $satConfigObject = $this->satConfigModel->get(self::SAT_CONFIG);
             $satConfigObject->setAdditionalKeywords($additionalKeywords);
