@@ -1,12 +1,12 @@
-echo "Installing extra extensions"
-mkdir /opt/app-root/php.d
-cd /opt/app-root/
-pecl bundle couchbase
-cd couchbase
-phpize
-./configure -q
-make
-echo "extension=/opt/app-root/couchbase/modules/couchbase.so" >> /opt/app-root/php.d/couchbase.ini
-echo "Running assemble script"
+#echo "Installing extra extensions"
+#mkdir /opt/app-root/php.d
+#cd /opt/app-root/
+#pecl bundle couchbase
+#cd couchbase
+#phpize
+#./configure -q
+#make
+#echo "extension=/opt/app-root/couchbase/modules/couchbase.so" >> /opt/app-root/php.d/couchbase.ini
+#echo "Running assemble script"
 cd /opt/app-root/src/
 /usr/libexec/s2i/assemble
