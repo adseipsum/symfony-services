@@ -11,9 +11,9 @@ class AppKernel extends Kernel
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new Symfony\Bundle\MonologBundle\MonologBundle(),
-            new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
             new Rbl\CouchbaseBundle\RblCouchbaseBundle(),
+            new Symfony\Bundle\TwigBundle\TwigBundle(),
             new AppBundle\AppBundle()
         ];
         
@@ -26,7 +26,6 @@ class AppKernel extends Kernel
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
 
             if ('dev' === $this->getEnvironment()) {
-                $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
                 $bundles[] = new Symfony\Bundle\WebServerBundle\WebServerBundle();
             }
         }
