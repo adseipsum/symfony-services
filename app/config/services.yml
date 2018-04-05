@@ -14,12 +14,6 @@ services:
         # if you need to do this, you can override this setting on individual services
         public: false
 
-    app_bundle.cors_listener:
-        class: AppBundle\Listener\CorsListener
-        tags:
-           - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: -10000 }
-           - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 10000 }
-
     # makes classes in src/AppBundle available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     AppBundle\:
@@ -30,10 +24,10 @@ services:
 
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
-    AppBundle\Controller\:
-        resource: '../../src/AppBundle/Controller'
-        public: true
-        tags: ['controller.service_arguments']
+#    AppBundle\Controller\:
+#        resource: '../../src/AppBundle/Controller'
+#        public: true
+#        tags: ['controller.service_arguments']
 
     # add more services, or override services that need manual wiring
     # AppBundle\Service\ExampleService:
@@ -67,12 +61,3 @@ services:
     app_bundle.consumer.image_posting_service:
         class: AppBundle\Consumer\ImagePostingServiceConsumer
         arguments: ['@service_container']
-
-    app_bundle.campaign.controller:
-        class: AppBundle\Controller\FrontApi\CampaignController
-        arguments: ["@couchbase.connector"]
-        tags: ['controller.service_arguments']
-
-imports:
-    - { resource: '@UserBundle/Resources/config/services.xml' }
-    - { resource: '@UserBundle/Resources/config/services.yml' }

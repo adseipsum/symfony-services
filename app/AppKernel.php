@@ -10,18 +10,11 @@ class AppKernel extends Kernel
         $bundles = [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
-            new Symfony\Bundle\TwigBundle\TwigBundle(),
             new Symfony\Bundle\MonologBundle\MonologBundle(),
-            new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
-            new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new FOS\UserBundle\FOSUserBundle(),
-            new FOS\OAuthServerBundle\FOSOAuthServerBundle(),
             new OldSound\RabbitMqBundle\OldSoundRabbitMqBundle(),
             new Rbl\CouchbaseBundle\RblCouchbaseBundle(),
-            new AppBundle\AppBundle(),
-            new UserBundle\UserBundle(),
-            new OAuthServerBundle\OAuthServerBundle()
+            new AppBundle\AppBundle()
         ];
         
         if (in_array($this->getEnvironment(), [

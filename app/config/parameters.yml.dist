@@ -2,30 +2,28 @@
 # Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
 # https://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
-    database_host: 127.0.0.1
-    database_port: ~
-    database_name: symfony
-    database_user: root
-    database_password: ~
-    # You should uncomment this if you want to use pdo_sqlite
-    #database_path: '%kernel.project_dir%/var/data/data.sqlite'
+    database_host: none
+    database_port: 3306
+    database_name: none
+    database_user: none
+    database_password: none
 
     mailer_transport: smtp
     mailer_host: 127.0.0.1
-    mailer_user: ~
-    mailer_password: ~
+    mailer_user: none
+    mailer_password: none
 
     # A secret key that's used to generate certain security-related tokens
-    secret: ThisTokenIsNotSoSecretChangeIt
+    secret: '%env(TOKEN_SECRET)%'
 
-    amqp_host:     ~
-    amqp_port:    ~
-    amqp_user:     ~
-    amqp_password: ~
-    amqp_vhost:    ~
+    amqp_host: '%env(AMPQ_HOST)%'
+    amqp_port: '%env(AMPQ_PORT)%'
+    amqp_user: '%env(AMPQ_USER)%'
+    amqp_password: '%env(AMPQ_PASSWORD)%'
+    amqp_vhost: /
     ampq_environment: prod
 
-    couchbase_environment: ~
-    couchbase_uri: ~
-    couchbase_user: ~
-    couchbase_password: ~
+    couchbase_environment: prod
+    couchbase_uri: '%env(COUCHBASE_URI)%'
+    couchbase_user: '%env(COUCHBASE_USER)%'
+    couchbase_password: '%env(COUCHBASE_PASSWORD)%'

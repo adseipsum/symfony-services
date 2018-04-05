@@ -22,4 +22,9 @@
 /.settings
 /env.bat
 /*.log
+<<<<<<< HEAD
 .DS_Store
+=======
+docker
+.ssh
+>>>>>>> build/master
