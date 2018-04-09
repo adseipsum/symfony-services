@@ -118,7 +118,7 @@ class BacklinkServiceExtension
      */
     public function insertBacklink(){
         $bodyObject = $this->textModel->getSingle($this->taskObject->getBodyId());
-        $link = ' <a href="http://' . $this->link['href'] . '" target="_blank">' . $this->link['name'] . '</a> ';
+        $link = ' <a href="https://' . $this->link['href'] . '" target="_blank">' . $this->link['name'] . '</a> ';
         $text = $bodyObject->getText();
 
         if($this->endOfText){
