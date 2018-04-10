@@ -73,7 +73,7 @@ class BacklinkServiceExtension
 
             $mainPostedPercentage = $mainLinksPosted * 100 / $postMainDomainLinks;
 
-            $keywords = explode(',', $this->campaignObject->getMainKeywords());
+            $keywords = $this->campaignObject->getMainKeywords();
             $this->link = array('href' =>  $mainDomain, 'name' =>  $keywords[array_rand($keywords)]);
 
             //Great random occurrence 2
@@ -95,7 +95,7 @@ class BacklinkServiceExtension
             $randomSubLink = $subLinks[array_rand($subLinks)];
             $subLinksPostedPercentage = $subLinksPosted * 100 / $postSubLinks;
 
-            $keywords = explode(',', $randomSubLink['subLinkKeywords']);
+            $keywords = $randomSubLink['subLinkKeywords'];
             $this->link = array('href' =>  $randomSubLink['subLink'], 'name' =>  $keywords[array_rand($keywords)]);
 
             //Great random occurrence 2
