@@ -132,6 +132,9 @@ class BacklinkServiceExtension
         $bodyObject->setBacklinkedText($text);
         $this->textModel->upsert($bodyObject);
 
+        echo "link: \n";
+        var_dump($link);
+        
         return true;
     }
     /**
