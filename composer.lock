@@ -1530,7 +1530,7 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.com:robobloglab/couchbase-bundle.git",
-                "reference": "d41537f7ca0dc742b8c6c5ecfbd7af6cad7b3d68"
+                "reference": "029b9206fe199dd291fa644716a7cd3ef365941c"
             },
             "require": {
                 "ext-couchbase": "^2.4.0",
@@ -1556,7 +1556,7 @@
                 "couchbase",
                 "odm"
             ],
-            "time": "2018-04-12T22:34:05+00:00"
+            "time": "2018-04-14T16:47:56+00:00"
         },
         {
             "name": "sensio/distribution-bundle",
