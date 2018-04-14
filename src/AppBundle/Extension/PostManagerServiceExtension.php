@@ -13,11 +13,15 @@ use Krombox\OAuth2\Client\Provider\Wordpress;
 
 class PostManagerServiceExtension
 {
-    protected $cb;
-    protected $amqp;
-    protected $taskModel;
-    protected $textModel;
-    protected $backlinked = false;
+    private $cb;
+    private $amqp;
+    private $taskModel;
+    private $textModel;
+    private $backlinked = false;
+    private $taskId;
+    private $message;
+    private $textConfig;
+    private $taskObject;
 
     const THIS_SERVICE_KEY = 'pms';
     const TEXT_GENERATION_RESULT_KEY = 'tgrst';
@@ -44,132 +48,176 @@ class PostManagerServiceExtension
     }
 
     public function processMessage($msg){
-        $message = json_decode($msg->getBody());
-        $idString = explode('::', $message->taskId);
-        $taskId = $idString[1];
+        $this->message = json_decode($msg->getBody());
+        $idString = explode('::', $this->message->taskId);
+        $this->taskId = $idString[1];
+        $this->taskObject = $this->taskModel->get($this->taskId);
         $statusKey = $idString[2];
 
-        $textConfig = array(
-            'type' => 'template'
-        );
-
         echo "received message: \n";
-        var_dump($message);
+        var_dump($this->message);
 
         switch($statusKey){
             case CbTask::STATUS_NEW:
-                $textConfig['paragraph'] = true;
-                $textConfig['paragraphSize'] = array(200, 250);
-                $textConfig['type'] = 'random';
-                $textConfig['size'] = 1500;
-                $textConfig['ngram'] = array(
-                    'apply' => true,
-                    'mode' => 'insert',
-                    'framesize' => 4,
-                    'probability' => 0.6
-                );
-
-                //send message to generate text
-                $this->sendMessage(self::TEXT_GENERATION_ROUTING_KEY, $taskId,CbTask::STATUS_BODY_GEN, $textConfig);
+                $this->generateBody();
                 break;
             case CbTask::STATUS_BODY_GEN:
-                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_BODY_GEN, 'setBodyId' => $message->resultKey));
-
-                $textConfig['templateId'] = 'tpl-57';
-                $textConfig['inputTextId'] = $message->resultKey;
-                $textConfig['mainSubject'] = 'Subject2';
-
-                $this->sendMessage(self::TEXT_GENERATION_ROUTING_KEY, $taskId,CbTask::STATUS_HEADER_GEN, $textConfig);
+                if(!$this->message->success){
+                    $this->generateBody();
+                    break;
+                }
+                $this->taskModel->updateTask($this->taskId, array('setStatus' => CbTask::STATUS_BODY_GEN, 'setBodyId' => $this->message->resultKey));
+                $this->generateHeader();
                 break;
             case CbTask::STATUS_HEADER_GEN:
-
-                //if generated header length more than allowed limit
-                $textObject = $this->textModel->get($message->resultKey);
-                if(strlen($textObject->getText()) > self::HEADER_MAX_LENGTH){
-                    $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_NEW));
-                    $this->sendMessage(self::RESPONSE_ROUTING_KEY, $taskId,CbTask::STATUS_NEW);
+                if(!$this->message->success){
+                    $this->generateHeader();
                     break;
                 }
 
-                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_HEADER_GEN, 'setHeaderId' => $message->resultKey));
+                //if generated header length more than allowed limit
+                $textObject = $this->textModel->get($this->message->resultKey);
+                if(strlen($textObject->getText()) > self::HEADER_MAX_LENGTH){
+                    $this->taskModel->updateTask($this->taskId, array('setStatus' => CbTask::STATUS_NEW));
+                    $this->sendMessage(self::RESPONSE_ROUTING_KEY, $this->taskId,CbTask::STATUS_NEW);
+                    break;
+                }
 
-                $textConfig['templateId'] = 'tpl-58';
-                $taskObject = $this->taskModel->get($taskId);
-                $textConfig['inputTextId'] = $taskObject->getBodyId();
-                $textConfig['mainSubject'] = 'Subject2';
+                $this->taskModel->updateTask($this->taskId, array('setStatus' => CbTask::STATUS_HEADER_GEN, 'setHeaderId' => $this->message->resultKey));
 
-                $this->sendMessage(self::TEXT_GENERATION_ROUTING_KEY, $taskId,CbTask::STATUS_SEO_TITLE_GEN, $textConfig);
+                $this->generateSeoTitle();
                 break;
             case CbTask::STATUS_SEO_TITLE_GEN:
-                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_SEO_TITLE_GEN, 'setSeoTitleId' => $message->resultKey));
+                if(!$this->message->success){
+                    $this->generateSeoTitle();
+                    break;
+                }
 
-                $textConfig['type'] = 'description';
-                $taskObject = $this->taskModel->get($taskId);
-                $textConfig['inputTextId'] = $taskObject->getBodyId();
-                $textConfig['size'] = 160;
+                $this->taskModel->updateTask($this->taskId, array('setStatus' => CbTask::STATUS_SEO_TITLE_GEN, 'setSeoTitleId' => $this->message->resultKey));
 
-                $this->sendMessage(self::TEXT_DPN_GENERATION_ROUTING_KEY, $taskId,CbTask::STATUS_SEO_DESCRIPTION_GEN, $textConfig);
+
                 break;
             case CbTask::STATUS_SEO_DESCRIPTION_GEN:
-                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_SEO_DESCRIPTION_GEN, 'setSeoDescriptionId' => $message->resultKey));
+                if(!$this->message->success){
+                    $this->generateSeoDescription();
+                    break;
+                }
 
-                $textConfig['type'] = 'imagealt';
-                $taskObject = $this->taskModel->get($taskId);
-                $textConfig['inputTextId'] = $taskObject->getBodyId();
-                $textConfig['size'] = 160;
+                $this->taskModel->updateTask($this->taskId, array('setStatus' => CbTask::STATUS_SEO_DESCRIPTION_GEN, 'setSeoDescriptionId' => $this->message->resultKey));
 
-                $this->sendMessage(self::TEXT_DPN_GENERATION_ROUTING_KEY, $taskId,CbTask::STATUS_IMAGE_ALT_GEN, $textConfig);
+                $this->generateImgAlt();
                 break;
             case CbTask::STATUS_IMAGE_ALT_GEN:
-                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_IMAGE_ALT_GEN, 'setImageAltId' => $message->resultKey));
+                if(!$this->message->success){
+                    $this->generateImgAlt();
+                    break;
+                }
 
-                $taskObject = $this->taskModel->get($taskId);
+                $this->taskModel->updateTask($this->taskId, array('setStatus' => CbTask::STATUS_IMAGE_ALT_GEN, 'setImageAltId' => $this->message->resultKey));
+
                 $campaignModel = new CampaignModel($this->cb);
-                $campaignObject = $campaignModel->get($taskObject->getCampaignId());
+                $campaignObject = $campaignModel->get($this->taskObject->getCampaignId());
 
                 if($campaignObject->getType() == CbCampaign::TYPE_REGULAR){
-                    $this->sendMessage(self::IMAGE_POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_IMAGE_POST);
+                    $this->sendMessage(self::IMAGE_POSTING_SERVICE_ROUTING_KEY, $this->taskId, CbTask::STATUS_IMAGE_POST);
                 }else{
-                    $this->sendMessage(self::BACKLINK_INSERT_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_BACKLINK_INSERT);
+                    $this->sendMessage(self::BACKLINK_INSERT_SERVICE_ROUTING_KEY, $this->taskId, CbTask::STATUS_BACKLINK_INSERT);
                 }
 
                 break;
             case CbTask::STATUS_BACKLINK_INSERT:
+                $this->taskObject->setBacklinked(true);
+                $this->taskModel->upsert($this->taskObject);
 
-                $taskObject = $this->taskModel->get($taskId);
-                $taskObject->setBacklinked(true);
-                $this->taskModel->upsert($taskObject);
-
-                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_BACKLINK_INSERT));
+                $this->taskModel->updateTask($this->taskId, array('setStatus' => CbTask::STATUS_BACKLINK_INSERT));
                 //send message to image posting service
-                $this->sendMessage(self::IMAGE_POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_IMAGE_POST);
+                $this->sendMessage(self::IMAGE_POSTING_SERVICE_ROUTING_KEY, $this->taskId, CbTask::STATUS_IMAGE_POST);
                 break;
             case CbTask::STATUS_IMAGE_POST:
-                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_IMAGE_POST, 'setImageId' => $message->imageId));
+                $this->taskModel->updateTask($this->taskId, array('setStatus' => CbTask::STATUS_IMAGE_POST, 'setImageId' => $this->message->imageId));
                 //send message to posting service
-                $this->sendMessage(self::POSTING_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_TEXT_POST);
+                $this->sendMessage(self::POSTING_SERVICE_ROUTING_KEY, $this->taskId, CbTask::STATUS_TEXT_POST);
                 break;
             case CbTask::STATUS_TEXT_POST:
-                $this->taskModel->updateTask($taskId, array('setStatus' => CbTask::STATUS_TEXT_POST));
+                $this->taskModel->updateTask($this->taskId, array('setStatus' => CbTask::STATUS_TEXT_POST));
 
-                $taskObject = $this->taskModel->get($taskId);
-
-                if($taskObject->getBacklinked()){
+                if($this->taskObject->getBacklinked()){
                     $blogModel = new BlogModel($this->cb);
-                    $blogObject = $blogModel->get($taskObject->getBlogId());
+                    $blogObject = $blogModel->get($this->taskObject->getBlogId());
                     $blogObject->setLastBacklinkedPostId($blogObject->getLastPostId());
                     $blogModel->upsert($blogObject);
                 }
 
                 //send message to Campaign Manager
-                $this->sendMessage(self::CAMPAIGN_MANAGER_SERVICE_ROUTING_KEY, $taskId, CbTask::STATUS_COMPLETED);
+                $this->sendMessage(self::CAMPAIGN_MANAGER_SERVICE_ROUTING_KEY, $this->taskId, CbTask::STATUS_COMPLETED);
                 break;
             default:
                 break;
         }
     }
 
-    private function sendMessage($routingKey, $taskId, $statusKey, $textConfig = array()){
+    protected function generateBody(){
+
+        $this->textConfig = array(
+            'type' => 'random',
+            'paragraph' => true,
+            'paragraphSize' => array(200, 250),
+            'size' => 1500,
+            'ngram' => array(
+                'apply' => true,
+                'mode' => 'insert',
+                'framesize' => 4,
+                'probability' => 0.6
+            )
+        );
+
+        //send message to generate text
+        $this->sendMessage(self::TEXT_GENERATION_ROUTING_KEY, $this->taskId,CbTask::STATUS_BODY_GEN);
+    }
+
+    protected function generateHeader(){
+        $this->textConfig = array(
+            'type' => 'template',
+            'templateId' => 'tpl-57',
+            'inputTextId' => $this->message->resultKey,
+            'mainSubject' => 'Subject2'
+        );
+
+        $this->sendMessage(self::TEXT_GENERATION_ROUTING_KEY, $this->taskId,CbTask::STATUS_HEADER_GEN);
+    }
+
+    protected function generateSeoTitle(){
+        $this->textConfig = array(
+            'type' => 'template',
+            'templateId' => 'tpl-58',
+            'inputTextId' => $this->taskObject->getBodyId(),
+            'mainSubject' => 'Subject2'
+        );
+
+        $this->sendMessage(self::TEXT_GENERATION_ROUTING_KEY, $this->taskId,CbTask::STATUS_SEO_TITLE_GEN);
+    }
+
+    protected function generateSeoDescription(){
+        $this->textConfig = array(
+            'type' => 'description',
+            'inputTextId' => $this->taskObject->getBodyId(),
+            'size' => 160
+        );
+
+        $this->sendMessage(self::TEXT_DPN_GENERATION_ROUTING_KEY, $this->taskId,CbTask::STATUS_SEO_DESCRIPTION_GEN);
+    }
+
+    protected function generateImgAlt(){
+        $this->textConfig = array(
+            'type' => 'imagealt',
+            'inputTextId' => $this->taskObject->getBodyId(),
+            'size' => 160
+        );
+
+        $this->sendMessage(self::TEXT_DPN_GENERATION_ROUTING_KEY, $this->taskId,CbTask::STATUS_IMAGE_ALT_GEN);
+    }
+
+    private function sendMessage($routingKey, $taskId, $statusKey){
         $generatedTaskId = implode('::', array(self::THIS_SERVICE_KEY, $taskId, $statusKey));
 
         $msg = array(
@@ -178,8 +226,8 @@ class PostManagerServiceExtension
         );
 
         //if something needs to be saved in CB
-        if($textConfig){
-            $msg['textconfig'] = $textConfig;
+        if($this->textConfig){
+            $msg['textconfig'] = $this->textConfig;
             $generatedResultKeyId = implode('::', array(self::TEXT_GENERATION_RESULT_KEY, $taskId, $statusKey));
             $msg['resultKey'] = $generatedResultKeyId;
         }
