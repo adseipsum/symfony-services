@@ -37,7 +37,7 @@ class PostManagerServiceExtension
     const TEXT_GENERATED = 'text';
     const TEXT_DPN_GENERATED = 'textdpn';
 
-    const HEADER_MAX_LENGTH = 70;
+    const HEADER_MAX_LENGTH = 90;
 
     public function __construct(CouchbaseService $cb, $amqp)
     {
@@ -98,7 +98,7 @@ class PostManagerServiceExtension
 
                 $this->taskModel->updateTask($this->taskId, array('setStatus' => CbTask::STATUS_SEO_TITLE_GEN, 'setSeoTitleId' => $this->message->resultKey));
 
-
+                $this->generateSeoDescription();
                 break;
             case CbTask::STATUS_SEO_DESCRIPTION_GEN:
                 if($this->message->status->code != 200){
