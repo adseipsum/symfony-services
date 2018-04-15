@@ -78,6 +78,14 @@ class PostingServiceExtension
             'domain'                  => $blogObject->getDomainName()
         ]);
 
+        $checkApi = file_get_contents('http://' . $blogObject->getDomainName() .'/wp-json/');
+        $apiResponse = json_decode($checkApi);
+        if(!$apiResponse){
+            $blogObject->setLastErrorMessage('Blog hasn\'t responded');
+            $this->blogModel->upsert($blogObject);
+            return false;
+        }
+
         try {
             $accessToken = $provider->getAccessToken('password', [
                 'username' => $blogObject->getPostingUserLogin(),

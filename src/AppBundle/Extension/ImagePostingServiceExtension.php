@@ -61,14 +61,35 @@ class ImagePostingServiceExtension
             );
 
             $image = file_get_contents(self::IMAGE_SOURCE_URL . http_build_query($imageRequest));
+
+            if($image === false){
+                //LOG:
+                echo 'Image request failed';
+                return false;
+            }
+
             $generatedFileName = 'TMP_IMG_' . uniqid();
 
-            file_put_contents(sys_get_temp_dir() . '/' . $generatedFileName . '.jpg', $image);
+            $fileDownloaded = file_put_contents(sys_get_temp_dir() . '/' . $generatedFileName . '.jpg', $image);
+
+            if($fileDownloaded === false){
+                //LOG:
+                echo 'File hasn\'t be saved from the source';
+                return false;
+            }
 
             $options['body'] = $image;
             $options['headers']['content-type'] = 'image/jpg';
             $options['headers']['content-disposition'] = 'attachment; filename="' . sys_get_temp_dir() . '/' . $generatedFileName . '.jpg';
             $options['headers']['access_token'] = $accessToken->getToken();
+
+            $checkApi = file_get_contents('http://' . $this->blogObject->getDomainName() .'/wp-json/');
+            $apiResponse = json_decode($checkApi);
+            if(!$apiResponse){
+                $this->blogObject->setLastErrorMessage('Blog hasn\'t responded');
+                $this->blogModel->upsert($this->blogObject);
+                return false;
+            }
 
             $request = $provider->getAuthenticatedRequest(
                 'POST',
@@ -110,7 +131,7 @@ class ImagePostingServiceExtension
 
         $idString = explode('::', $message->taskId);
         $taskId = $idString[1];
- 
+
         $this->taskObject = $this->taskModel->get($taskId);
 
         if($this->taskObject){
