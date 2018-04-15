@@ -62,7 +62,8 @@ class PostManagerServiceExtension
                 $this->generateBody();
                 break;
             case CbTask::STATUS_BODY_GEN:
-                if(!$this->message->success){
+                if($this->message->status->code != 200){
+                    echo $this->message->status->text;
                     $this->generateBody();
                     break;
                 }
@@ -70,7 +71,8 @@ class PostManagerServiceExtension
                 $this->generateHeader();
                 break;
             case CbTask::STATUS_HEADER_GEN:
-                if(!$this->message->success){
+                if($this->message->status->code != 200){
+                    echo $this->message->status->text;
                     $this->generateHeader();
                     break;
                 }
@@ -88,7 +90,8 @@ class PostManagerServiceExtension
                 $this->generateSeoTitle();
                 break;
             case CbTask::STATUS_SEO_TITLE_GEN:
-                if(!$this->message->success){
+                if($this->message->status->code != 200){
+                    echo $this->message->status->text;
                     $this->generateSeoTitle();
                     break;
                 }
@@ -98,7 +101,8 @@ class PostManagerServiceExtension
 
                 break;
             case CbTask::STATUS_SEO_DESCRIPTION_GEN:
-                if(!$this->message->success){
+                if($this->message->status->code != 200){
+                    echo $this->message->status->text;
                     $this->generateSeoDescription();
                     break;
                 }
@@ -108,7 +112,8 @@ class PostManagerServiceExtension
                 $this->generateImgAlt();
                 break;
             case CbTask::STATUS_IMAGE_ALT_GEN:
-                if(!$this->message->success){
+                if($this->message->status->code != 200){
+                    echo $this->message->status->text;
                     $this->generateImgAlt();
                     break;
                 }
