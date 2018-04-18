@@ -1,6 +1,8 @@
 <?php
 namespace AppBundle\Extension;
 
+use Rbl\CouchbaseBundle\Entity\CbSatConfig;
+use Rbl\CouchbaseBundle\Model\SatConfigModel;
 use Rbl\CouchbaseBundle\Entity\CbTask;
 use Rbl\CouchbaseBundle\Model\TaskModel;
 use Rbl\CouchbaseBundle\Model\BlogModel;
@@ -19,22 +21,6 @@ class BacklinkServiceExtension
     protected $campaignObject;
     protected $endOfText = false;
     protected $link = array();
-    protected $additionalKeywords = array(
-        'Read more',
-        'Get more information on this',
-        'Full text here',
-        'Click to read more',
-        'See full list',
-        'The full list here',
-        'Click here',
-        'Get more information here ',
-        'Click to read more',
-        'Get more information here',
-        'Click to read more about the treatment',
-        'More information here',
-        'Click to see more',
-        'Read more about the, here'
-    );
 
     const THIS_SERVICE_KEY = 'bln';
     const POST_MANAGER_ROUTING_KEY = 'srv.postmanager.v1';
@@ -48,6 +34,7 @@ class BacklinkServiceExtension
         $this->blogModel = new BlogModel($this->cb);
         $this->textModel = new TextGenerationResultModel($this->cb);
         $this->textModel->setBucket($this->cb->getBucketForType('TextGenerationResult'));
+        $this->satConfigModel = new SatConfigModel($this->cb);
 
         $this->amqp = $amqp;
     }
@@ -64,8 +51,9 @@ class BacklinkServiceExtension
         $postSubLinks = $this->campaignObject->getPostSubLinks();
         $subLinksPosted = $this->campaignObject->getSubLinksPosted();
 
-
         $subLinks = $this->campaignObject->getSubLinks();
+        $noFollowPercentage = $this->campaignObject->getNoFollowPercentage();
+        $noFollow = '';
 
         //Great random occurrence 1
         if($this->getRandomBoolean() && $postMainDomainLinks > $mainLinksPosted && !in_array($mainDomain, $blogObject->getMainDomainLinksPosted())){
@@ -74,12 +62,17 @@ class BacklinkServiceExtension
             $mainPostedPercentage = $mainLinksPosted * 100 / $postMainDomainLinks;
 
             $keywords = $this->campaignObject->getMainKeywords();
-            $this->link = array('href' =>  $mainDomain, 'name' =>  $keywords[array_rand($keywords)]);
+
+            if($noFollowPercentage &&  $noFollowPercentage >= rand(1,100)){
+                $noFollow = 'nofollow';
+            }
+
+            $this->link = array('href' =>  $mainDomain, 'name' =>  $keywords[array_rand($keywords)], 'rel' => $noFollow);
 
             //Great random occurrence 2
             if($this->getRandomBoolean() && 100 - $mainPostedPercentage > intval($this->campaignObject->getAdditionalKeysPercentage())){
                 $this->endOfText = true;
-                $this->link = array('href' =>  $mainDomain, 'name' =>  $this->additionalKeywords[array_rand($this->additionalKeywords)]);
+                $this->link = array('href' =>  $mainDomain, 'name' =>  $this->satConfigModel->getRandomAdditionalKeyword());
             }
 
             $this->campaignObject->getMainLinksPosted($this->campaignObject->getMainLinksPosted() + 1);
@@ -95,13 +88,17 @@ class BacklinkServiceExtension
             $randomSubLink = $subLinks[array_rand($subLinks)];
             $subLinksPostedPercentage = $subLinksPosted * 100 / $postSubLinks;
 
+            if($noFollowPercentage &&  $noFollowPercentage >= rand(1,100)){
+                $noFollow = 'nofollow';
+            }
+
             $keywords = $randomSubLink['subLinkKeywords'];
-            $this->link = array('href' =>  $randomSubLink['subLink'], 'name' =>  $keywords[array_rand($keywords)]);
+            $this->link = array('href' =>  $randomSubLink['subLink'], 'name' =>  $keywords[array_rand($keywords)], 'rel' => $noFollow);
 
             //Great random occurrence 2
             if($this->getRandomBoolean() && 100 - $subLinksPostedPercentage > intval($randomSubLink['subAdditionalKeywordsPercentage'])){
                 $this->endOfText = true;
-                $this->link = array('href' =>  $randomSubLink['subLink'], 'name' =>  $this->additionalKeywords[array_rand($this->additionalKeywords)]);
+                $this->link = array('href' =>  $randomSubLink['subLink'], 'name' =>  $this->satConfigModel->getRandomAdditionalKeyword());
             }
             $this->campaignObject->setSubLinksPosted($this->campaignObject->getSubLinksPosted() + 1);
 
@@ -118,7 +115,16 @@ class BacklinkServiceExtension
      */
     public function insertBacklink(){
         $bodyObject = $this->textModel->getSingle($this->taskObject->getBodyId());
-        $link = ' <a href="' . $this->link['href'] . '" target="_blank">' . $this->link['name'] . '</a> ';
+
+        $rel = isset($this->link['rel']) ? 'rel="' . $this->link['rel'] . '"' : '';
+
+        $link = ' <a href="' . $this->link['href'] . '" target="_blank" ' . $rel . '>' . $this->link['name'] . '</a> ';
+
+        if(strpos($this->link['name'], '#') !== false){
+            $link = ' ' . $this->link['name'];
+            $link = str_replace('#', '<a href="' . $this->link['href'] . '" target="_blank" ' . $rel . '>' . $this->link['href'] . '</a> ', $link);
+        }
+
         $text = $bodyObject->getText();
 
         if($this->endOfText){
