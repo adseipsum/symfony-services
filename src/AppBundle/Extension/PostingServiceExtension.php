@@ -79,7 +79,7 @@ class PostingServiceExtension
                 'password' => $blogObject->getPostingUserPassword()
             ]);
 
-            $categories = $this->getCategories();
+            $categories = $this->getCategories($provider, $accessToken);
             $postToCategories = array(1);
             if($categories){
                 $category = $categories[array_rand($categories)];
