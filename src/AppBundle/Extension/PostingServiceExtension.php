@@ -24,6 +24,7 @@ class PostingServiceExtension
 
     const WP_POSTS_PATH = '/wp-json/wp/v2/posts/';
     const WP_MEDIA_PATH = '/wp-json/wp/v2/media/';
+    const WP_CATEGORIES_PATH = '/wp-json/wp/v2/categories';
     const WP_BACKLINK = 'oob';
 
     public function __construct(CouchbaseService $cb, $amqp)
@@ -57,20 +58,6 @@ class PostingServiceExtension
             $bodyText = $this->setTagMore($bodyObject->getText());
         }
 
-        $WPRequestBody = array(
-            'title' => $headerObject->getText(),
-            'content' => $bodyText,
-            'status' => 'publish',
-            'ping_status' => 'closed',
-            'type' => 'post',
-            'categories' => array(1),
-            'featured_media' => $this->taskObject->getImageId(),
-            'meta' => array(
-                '_yoast_wpseo_metadesc' => $seoDescriptionObject->getText(),
-                '_yoast_wpseo_title' => $seoTitleObject->getText()
-            )
-        );
-
         $provider = new Wordpress([
             'clientId'                => $blogObject->getClientId(),
             'clientSecret'            => $blogObject->getClientSecret(),
@@ -91,6 +78,29 @@ class PostingServiceExtension
                 'username' => $blogObject->getPostingUserLogin(),
                 'password' => $blogObject->getPostingUserPassword()
             ]);
+
+            $categories = $this->getCategories();
+            $postToCategories = array(1);
+            if($categories){
+                $category = $categories[array_rand($categories)];
+                if(isset($category['id'])){
+                    $postToCategories = array($category['id']);
+                }
+            }
+
+            $WPRequestBody = array(
+                'title' => $headerObject->getText(),
+                'content' => $bodyText,
+                'status' => 'publish',
+                'ping_status' => 'closed',
+                'type' => 'post',
+                'categories' => $postToCategories,
+                'featured_media' => $this->taskObject->getImageId(),
+                'meta' => array(
+                    '_yoast_wpseo_metadesc' => $seoDescriptionObject->getText(),
+                    '_yoast_wpseo_title' => $seoTitleObject->getText()
+                )
+            );
 
             $options['body'] = json_encode($WPRequestBody);
             $options['headers']['Content-Type'] = 'application/json;charset=UTF-8';
@@ -167,6 +177,37 @@ class PostingServiceExtension
         }
 
         return false;
+    }
+
+    /**
+     * @return void
+     */
+    public function getCategories($provider, $accessToken){
+
+        $blogObject = $this->blogModel->get($this->taskObject->getBlogId());
+
+        try {
+            $options['headers']['Content-Type'] = 'application/json;charset=UTF-8';
+            $options['headers']['access_token'] = $accessToken->getToken();
+
+            $request = $provider->getAuthenticatedRequest(
+                'GET',
+                $blogObject->getDomainName() . self::WP_CATEGORIES_PATH,
+                $accessToken->getToken(),
+                $options
+            );
+
+            $response = $provider->getResponse($request);
+
+            if($response){
+                return $response;
+            }
+
+            return false;
+
+        } catch (IdentityProviderException $e) {
+            echo $e->getMessage();
+        }
     }
 
     /**
